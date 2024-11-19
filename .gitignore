@@ -1,0 +1,15 @@
+.DS_Store
+
+# JavaScript
+.env*
+*.tsbuildinfo
+.turbo
+.wrangler
+dist
+node_modules
+
+# Sui
+.coverage_map.mvcov
+.trace
+build
+Move.lock
