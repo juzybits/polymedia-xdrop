@@ -8,6 +8,7 @@ use std::{
 use sui::{
     balance::{Self, Balance},
     coin::{Self, Coin},
+    package::{Self},
     table::{Self, Table},
 };
 use suilink::suilink::{SuiLink};
@@ -25,6 +26,8 @@ const E_AMOUNT_MISMATCH: u64 = 3006;
 // === constants ===
 
 // === structs ===
+
+public struct XDROP has drop {}
 
 /// XDrop manages coin distributions across chains, allowing users to claim coins
 /// on Sui based on ownership proofs from other networks (e.g., Ethereum, Solana).
@@ -147,5 +150,11 @@ public fun value<C, N>(xdrop: &XDrop<C, N>): u64 { xdrop.balance.value() }
 public fun claims<C, N>(xdrop: &XDrop<C, N>): &Table<String, Claim> { &xdrop.claims }
 
 // === initialization ===
+
+fun init(otw: XDROP, ctx: &mut TxContext)
+{
+    let publisher = package::claim(otw, ctx);
+    transfer::public_transfer(publisher, ctx.sender());
+}
 
 // === test functions ===
