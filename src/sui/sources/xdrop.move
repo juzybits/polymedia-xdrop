@@ -16,6 +16,7 @@ use suilink::suilink::{SuiLink};
 
 const E_ADDRESS_NOT_FOUND: u64 = 3000;
 const E_ALREADY_CLAIMED: u64 = 3001;
+const E_NOT_ADMIN: u64 = 3002;
 
 // === constants ===
 
@@ -28,7 +29,10 @@ const E_ALREADY_CLAIMED: u64 = 3001;
 /// N: The source network where ownership was verified.
 public struct XDrop<phantom C, phantom N> has key, store {
     id: UID,
-    /// total balance left in the xdrop
+    admin: address,
+    /// whether the xdrop can be claimed
+    open: bool,
+    /// total balance remaining in the xdrop
     balance: Balance<C>,
     /// keys are addresses in the foreign network
     claims: Table<String, Claim>,
@@ -39,19 +43,48 @@ public struct Claim has store {
     claimed: bool,
 }
 
-// === public-mutative functions ===
+// === admin functions ===
 
-public fun new<C, N>(
+public fun admin_creates_xdrop<C, N>(
     ctx: &mut TxContext,
 ): XDrop<C, N> {
     XDrop {
         id: object::new(ctx),
+        admin: ctx.sender(),
+        open: false,
         balance: balance::zero(),
         claims: table::new(ctx),
     }
 }
 
-public fun claim<C, N>(
+public fun admin_opens_xdrop<C, N>(
+    xdrop: &mut XDrop<C, N>,
+    ctx: &mut TxContext,
+) {
+    assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    xdrop.open = true;
+}
+
+public fun admin_closes_xdrop<C, N>(
+    xdrop: &mut XDrop<C, N>,
+    ctx: &mut TxContext,
+) {
+    assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    xdrop.open = false;
+}
+
+public fun admin_sets_admin_address<C, N>(
+    xdrop: &mut XDrop<C, N>,
+    new_admin: address,
+    ctx: &mut TxContext,
+) {
+    assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    xdrop.admin = new_admin;
+}
+
+// === user functions ===
+
+public fun user_claims<C, N>(
     xdrop: &mut XDrop<C, N>,
     suilink: &SuiLink<N>,
     ctx: &mut TxContext,
@@ -70,11 +103,12 @@ public fun claim<C, N>(
 
 // === private functions ===
 
-// === public-view status helpers ===
+// === accessors ===
 
-// === public-view accessors: auction ===
-
-// === public-view accessors: config ===
+public fun admin<C, N>(xdrop: &XDrop<C, N>): address { xdrop.admin }
+public fun open<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.open }
+public fun value<C, N>(xdrop: &XDrop<C, N>): u64 { xdrop.balance.value() }
+public fun claims<C, N>(xdrop: &XDrop<C, N>): &Table<String, Claim> { &xdrop.claims }
 
 // === initialization ===
 
