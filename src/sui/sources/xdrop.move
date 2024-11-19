@@ -22,6 +22,7 @@ const E_LENGTH_MISMATCH: u64 = 3003;
 const E_ADDRESS_ALREADY_ADDED: u64 = 3004;
 const E_ZERO_AMOUNT: u64 = 3005;
 const E_AMOUNT_MISMATCH: u64 = 3006;
+const E_NOT_OPEN: u64 = 3007;
 
 // === constants ===
 
@@ -129,6 +130,8 @@ public fun user_claims<C, N>(
     ctx: &mut TxContext,
 ): Coin<C>
 {
+    assert!( xdrop.open, E_NOT_OPEN );
+
     let addr = suilink.network_address();
     assert!( xdrop.claims.contains(addr), E_ADDRESS_NOT_FOUND );
 
