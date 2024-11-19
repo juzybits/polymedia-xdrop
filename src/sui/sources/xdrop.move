@@ -23,6 +23,8 @@ const E_ADDRESS_ALREADY_ADDED: u64 = 3004;
 const E_ZERO_AMOUNT: u64 = 3005;
 const E_AMOUNT_MISMATCH: u64 = 3006;
 const E_NOT_OPEN: u64 = 3007;
+const E_ENDED: u64 = 3008;
+const E_NOT_ENDED: u64 = 3009;
 
 // === constants ===
 
@@ -40,6 +42,8 @@ public struct XDrop<phantom C, phantom N> has key, store {
     admin: address,
     /// whether the xdrop can be claimed
     open: bool,
+    /// whether the xdrop has ended permanently
+    ended: bool,
     /// total balance remaining in the xdrop
     balance: Balance<C>,
     /// keys are addresses in the foreign network
@@ -60,6 +64,7 @@ public fun admin_creates_xdrop<C, N>(
         id: object::new(ctx),
         admin: ctx.sender(),
         open: false,
+        ended: false,
         balance: balance::zero(),
         claims: table::new(ctx),
     }
@@ -73,6 +78,7 @@ public fun admin_adds_claims<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    assert!( !xdrop.ended, E_ENDED );
     assert!( addrs.length() == amounts.length(), E_LENGTH_MISMATCH );
 
     let mut total_amount = 0;
@@ -97,11 +103,21 @@ public fun admin_adds_claims<C, N>(
     coin::put(&mut xdrop.balance, coin);
 }
 
+public fun admin_sets_admin_address<C, N>(
+    xdrop: &mut XDrop<C, N>,
+    new_admin: address,
+    ctx: &mut TxContext,
+) {
+    assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    xdrop.admin = new_admin;
+}
+
 public fun admin_opens_xdrop<C, N>(
     xdrop: &mut XDrop<C, N>,
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    assert!( !xdrop.ended, E_ENDED );
     xdrop.open = true;
 }
 
@@ -110,16 +126,29 @@ public fun admin_closes_xdrop<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    assert!( !xdrop.ended, E_ENDED );
     xdrop.open = false;
 }
 
-public fun admin_sets_admin_address<C, N>(
+public fun admin_ends_xdrop<C, N>(
     xdrop: &mut XDrop<C, N>,
-    new_admin: address,
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    xdrop.admin = new_admin;
+    xdrop.ended = true;
+    xdrop.open = false;
+}
+
+public fun admin_reclaims_balance<C, N>(
+    xdrop: &mut XDrop<C, N>,
+    ctx: &mut TxContext,
+): Coin<C>
+{
+    assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    assert!( xdrop.ended, E_NOT_ENDED );
+
+    let value = xdrop.balance.value();
+    return coin::take(&mut xdrop.balance, value, ctx)
 }
 
 // === user functions ===
