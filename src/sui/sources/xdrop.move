@@ -22,11 +22,15 @@ const E_LENGTH_MISMATCH: u64 = 3003;
 const E_ADDRESS_ALREADY_ADDED: u64 = 3004;
 const E_ZERO_AMOUNT: u64 = 3005;
 const E_AMOUNT_MISMATCH: u64 = 3006;
-const E_NOT_OPEN: u64 = 3007;
-const E_ENDED: u64 = 3008;
-const E_NOT_ENDED: u64 = 3009;
+const E_ENDED: u64 = 3007;
+const E_NOT_ENDED: u64 = 3008;
+const E_NOT_OPEN: u64 = 3009;
 
 // === constants ===
+
+const STATUS_PAUSED: u8 = 0;
+const STATUS_OPEN: u8 = 1;
+const STATUS_ENDED: u8 = 2;
 
 // === structs ===
 
@@ -40,10 +44,10 @@ public struct XDROP has drop {}
 public struct XDrop<phantom C, phantom N> has key, store {
     id: UID,
     admin: address,
-    /// whether the xdrop can be claimed
-    open: bool,
-    /// whether the xdrop has ended permanently
-    ended: bool,
+    /// 0: paused - users cannot claim
+    /// 1: open - users can claim
+    /// 2: ended - ended permanently (users can never claim again; admin can reclaim balance)
+    status: u8,
     /// total balance remaining in the xdrop
     balance: Balance<C>,
     /// keys are addresses in the foreign network
@@ -63,8 +67,7 @@ public fun admin_creates_xdrop<C, N>(
     XDrop {
         id: object::new(ctx),
         admin: ctx.sender(),
-        open: false,
-        ended: false,
+        status: STATUS_PAUSED,
         balance: balance::zero(),
         claims: table::new(ctx),
     }
@@ -78,7 +81,7 @@ public fun admin_adds_claims<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    assert!( !xdrop.ended, E_ENDED );
+    assert!( !xdrop.is_ended(), E_ENDED );
     assert!( addrs.length() == amounts.length(), E_LENGTH_MISMATCH );
 
     let mut total_amount = 0;
@@ -117,17 +120,17 @@ public fun admin_opens_xdrop<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    assert!( !xdrop.ended, E_ENDED );
-    xdrop.open = true;
+    assert!( !xdrop.is_ended(), E_ENDED );
+    xdrop.status = STATUS_OPEN;
 }
 
-public fun admin_closes_xdrop<C, N>(
+public fun admin_pauses_xdrop<C, N>(
     xdrop: &mut XDrop<C, N>,
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    assert!( !xdrop.ended, E_ENDED );
-    xdrop.open = false;
+    assert!( !xdrop.is_ended(), E_ENDED );
+    xdrop.status = STATUS_PAUSED;
 }
 
 public fun admin_ends_xdrop<C, N>(
@@ -135,8 +138,7 @@ public fun admin_ends_xdrop<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    xdrop.ended = true;
-    xdrop.open = false;
+    xdrop.status = STATUS_ENDED;
 }
 
 public fun admin_reclaims_balance<C, N>(
@@ -145,7 +147,7 @@ public fun admin_reclaims_balance<C, N>(
 ): Coin<C>
 {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    assert!( xdrop.ended, E_NOT_ENDED );
+    assert!( xdrop.is_ended(), E_NOT_ENDED );
 
     let value = xdrop.balance.value();
     return coin::take(&mut xdrop.balance, value, ctx)
@@ -155,13 +157,13 @@ public fun admin_reclaims_balance<C, N>(
 
 public fun user_claims<C, N>(
     xdrop: &mut XDrop<C, N>,
-    suilink: &SuiLink<N>,
+    link: &SuiLink<N>,
     ctx: &mut TxContext,
 ): Coin<C>
 {
-    assert!( xdrop.open, E_NOT_OPEN );
+    assert!( xdrop.is_open(), E_NOT_OPEN );
 
-    let addr = suilink.network_address();
+    let addr = link.network_address();
     assert!( xdrop.claims.contains(addr), E_ADDRESS_NOT_FOUND );
 
     let claim = xdrop.claims.borrow_mut(addr);
@@ -174,10 +176,16 @@ public fun user_claims<C, N>(
 
 // === private functions ===
 
+// === helpers ===
+
+public fun is_paused<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.status == STATUS_PAUSED }
+public fun is_open<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.status == STATUS_OPEN }
+public fun is_ended<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.status == STATUS_ENDED }
+
 // === accessors ===
 
 public fun admin<C, N>(xdrop: &XDrop<C, N>): address { xdrop.admin }
-public fun open<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.open }
+public fun status<C, N>(xdrop: &XDrop<C, N>): u8 { xdrop.status }
 public fun value<C, N>(xdrop: &XDrop<C, N>): u64 { xdrop.balance.value() }
 public fun claims<C, N>(xdrop: &XDrop<C, N>): &Table<String, Claim> { &xdrop.claims }
 
