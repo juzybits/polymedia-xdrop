@@ -2,13 +2,15 @@ import {
     ConnectModal,
     SuiClientProvider,
     WalletProvider,
+    useSignTransaction,
     useSuiClient,
 } from "@mysten/dapp-kit";
 import "@mysten/dapp-kit/dist/index.css";
 import { SuiClient } from "@mysten/sui/client";
 import { ExplorerName, ReactSetter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
+import { OBJECT_IDS, XDropClient } from "@polymedia/xdrop-sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comps/glitch";
 import { IconInfo } from "./comps/icons";
@@ -103,7 +105,7 @@ export type AppContext = {
     openConnectModal: () => void;
     setModalContent: ReactSetter<React.ReactNode>;
     header: React.ReactNode;
-    suiClient: SuiClient;
+    xdropClient: XDropClient;
 };
 
 const App: React.FC<{
@@ -120,14 +122,23 @@ const App: React.FC<{
 {
     // === state ===
 
-    const suiClient = useSuiClient();
-
     const [ explorer, setExplorer ] = useState(loadExplorer("Polymedia"));
     const [ modalContent, setModalContent ] = useState<React.ReactNode>(null);
-
     const [ isWorking, setIsWorking ] = useState(false);
     // const [ showMobileNav, setShowMobileNav ] = useState(false);
     const [ showConnectModal, setShowConnectModal ] = useState(false);
+
+    const suiClient = useSuiClient();
+    const { mutateAsync: walletSignTx } = useSignTransaction();
+    const xdropClient = useMemo(() => {
+        return new XDropClient({
+            network,
+            xdropPkgId: OBJECT_IDS[network].xdropPkgId,
+            suilinkPkgId: OBJECT_IDS[network].suilinkPkgId,
+            suiClient,
+            signTransaction: (tx) => walletSignTx({ transaction: tx }),
+        });
+    }, [suiClient, walletSignTx]);
 
     const openConnectModal = () => {
         setShowConnectModal(true);
@@ -142,7 +153,7 @@ const App: React.FC<{
         openConnectModal: openConnectModal,
         setModalContent,
         header: <Header />,
-        suiClient,
+        xdropClient,
     };
 
     // === effects ===
