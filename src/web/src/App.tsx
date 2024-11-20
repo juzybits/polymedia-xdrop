@@ -9,7 +9,9 @@ import { SuiClient } from "@mysten/sui/client";
 import { ExplorerName, ReactSetter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
+import { Glitch } from "./comps/glitch";
+import { IconInfo } from "./comps/icons";
 import { loadNetworkConfig } from "./lib/network";
 import "./styles/App.less";
 
@@ -93,7 +95,7 @@ export type AppContext = {
     // showMobileNav: boolean; setShowMobileNav: ReactSetter<boolean>;
     openConnectModal: () => void;
     setModalContent: ReactSetter<React.ReactNode>;
-    // header: React.ReactNode;
+    header: React.ReactNode;
     suiClient: SuiClient;
 };
 
@@ -132,7 +134,7 @@ const App: React.FC<{
         // showMobileNav, setShowMobileNav,
         openConnectModal: openConnectModal,
         setModalContent,
-        // header: <Header />,
+        header: <Header />,
         suiClient,
     };
 
@@ -182,28 +184,21 @@ const App: React.FC<{
 
 /* One-off components */
 
-// const Header: React.FC = () =>
-// {
-//     const { network } = useAppContext();
-//     const currAcct = useCurrentAccount();
-//     return <header>
-//         <div className="header-item">
-//             <Link to="/">
-//                 <Glitch text="XDROP" />
-//                 {network !== "mainnet" && <span className="header-network-label">{network}</span>}
-//             </Link>
-//         </div>
-//         <Link to="/new" className="header-item" title="Create XDrop">
-//             <IconNew />
-//         </Link>
-//         {currAcct && <Link to={`/user/${currAcct.address}/bids`} className="header-item" title="Your History">
-//             <IconHistory />
-//         </Link>}
-//         <Link to="/settings" className="header-item" title="Settings">
-//             <IconGears />
-//         </Link>
-//     </header>;
-// };
+const Header: React.FC = () =>
+{
+    const { network } = useAppContext();
+    return <header>
+        <div className="header-item">
+            <Link to="/">
+                <Glitch text="XDROP" />
+                {network !== "mainnet" && <span className="header-network-label">{network}</span>}
+            </Link>
+        </div>
+        <Link to="/about" className="header-item" title="About">
+            <IconInfo />
+        </Link>
+    </header>;
+};
 
 /* quick and dirty */
 
