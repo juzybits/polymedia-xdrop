@@ -30,12 +30,13 @@ export const PageClaimDETF: React.FC = () =>
                     <p>Step 1: Link your Ethereum address</p>
                 </div>
                 <div className="card-description">
-                    <div>
-                        Go to <LinkExternal href="https://www.suilink.io/">SuiLink</LinkExternal> to prove ownership of your Ethereum address.
-                    </div>
-                    <div>
-                        If you hold DETF in multiple wallets, you can link them all to the same Sui address.
-                    </div>
+                    <p>Prove ownership of your Ethereum address by linking it to your Sui address.</p>
+                </div>
+                <div className="card-description">
+                    If you hold DETF in multiple wallets, you can link all of them to the same Sui address.
+                </div>
+                <div className="center-element">
+                    <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
                 </div>
             </div>
 
@@ -44,21 +45,23 @@ export const PageClaimDETF: React.FC = () =>
                     <p>Step 2: Claim your DETF on Sui</p>
                 </div>
                 <div className="card-description">
-                    <div>
-                        Once your Ethereum address is linked, you can claim the same amount of Sui DETF as you hold in Ethereum.
-                    </div>
-                    <div>
-                        {!currAcct
-                        ? <>
-                            <div>Connect your Sui wallet to claim.</div>
-                            <BtnConnect />
-                        </>
-                        : <>
-                            <div>You are connected as {shortenAddress(currAcct.address)}. <a onClick={() => disconnect()}>Disconnect</a></div>
-                            <Btn onClick={() => {}}>CLAIM DETF</Btn>
-                        </>}
-                    </div>
+                    Once your Ethereum address is linked, you can claim the same amount of Sui DETF as you hold on Ethereum.
                 </div>
+                {!currAcct
+                    ? <>
+                        <div className="card-description">
+                            Connect your Sui wallet to claim.
+                        </div>
+                        <BtnConnect />
+                    </>
+                : <>
+                    <div className="card-description">
+                        <p>You are connected as {shortenAddress(currAcct.address)} (<a onClick={() => disconnect()}>disconnect</a>).</p>
+                    </div>
+                    <div className="center-element">
+                        <Btn onClick={() => {}}>CLAIM DETF</Btn>
+                    </div>
+                </>}
             </div>
 
         </div>
