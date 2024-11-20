@@ -10,7 +10,7 @@ export type ObjectIds = {
 export const OBJECT_IDS: Record<NetworkName, ObjectIds> = {
     mainnet: {
         xdropPackageId: "",
-        suilinkPackageId: "",
+        suilinkPackageId: "0xf857fa9df5811e6df2a0240a1029d365db24b5026896776ddd1c3c70803bccd3", // v1
     },
     testnet: {
         xdropPackageId: "",

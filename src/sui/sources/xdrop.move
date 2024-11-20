@@ -28,9 +28,13 @@ const E_NOT_OPEN: u64 = 3009;
 
 // === constants ===
 
-const STATUS_PAUSED: u8 = 0;
-const STATUS_OPEN: u8 = 1;
-const STATUS_ENDED: u8 = 2;
+const XDROP_STATUS_PAUSED: u8 = 0;
+const XDROP_STATUS_OPEN: u8 = 1;
+const XDROP_STATUS_ENDED: u8 = 2;
+
+const CLAIM_STATUS_NOT_FOUND: u8 = 0;
+const CLAIM_STATUS_UNCLAIMED: u8 = 1;
+const CLAIM_STATUS_CLAIMED: u8 = 2;
 
 // === structs ===
 
@@ -67,7 +71,7 @@ public fun admin_creates_xdrop<C, N>(
     XDrop {
         id: object::new(ctx),
         admin: ctx.sender(),
-        status: STATUS_PAUSED,
+        status: XDROP_STATUS_PAUSED,
         balance: balance::zero(),
         claims: table::new(ctx),
     }
@@ -121,7 +125,7 @@ public fun admin_opens_xdrop<C, N>(
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
     assert!( !xdrop.is_ended(), E_ENDED );
-    xdrop.status = STATUS_OPEN;
+    xdrop.status = XDROP_STATUS_OPEN;
 }
 
 public fun admin_pauses_xdrop<C, N>(
@@ -130,7 +134,7 @@ public fun admin_pauses_xdrop<C, N>(
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
     assert!( !xdrop.is_ended(), E_ENDED );
-    xdrop.status = STATUS_PAUSED;
+    xdrop.status = XDROP_STATUS_PAUSED;
 }
 
 public fun admin_ends_xdrop<C, N>(
@@ -138,7 +142,7 @@ public fun admin_ends_xdrop<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    xdrop.status = STATUS_ENDED;
+    xdrop.status = XDROP_STATUS_ENDED;
 }
 
 public fun admin_reclaims_balance<C, N>(
@@ -174,13 +178,36 @@ public fun user_claims<C, N>(
     return coin::take(&mut xdrop.balance, claim.amount, ctx)
 }
 
-// === private functions ===
+// === devinspect functions ===
+
+public fun get_claim_statuses<C, N>(
+    xdrop: &XDrop<C, N>,
+    addrs: vector<String>,
+): vector<u8>
+{
+    let mut statuses = vector::empty<u8>();
+    let mut i = 0;
+    let len = addrs.length();
+    while (i < len)
+    {
+        let addr = *addrs.borrow(i);
+        if (!xdrop.claims.contains(addr)) {
+            vector::push_back(&mut statuses, CLAIM_STATUS_NOT_FOUND);
+        } else {
+            let claim = xdrop.claims.borrow(addr);
+            let status = if (claim.claimed) CLAIM_STATUS_CLAIMED else CLAIM_STATUS_UNCLAIMED;
+            vector::push_back(&mut statuses, status);
+        };
+        i = i + 1;
+    };
+    statuses
+}
 
 // === helpers ===
 
-public fun is_paused<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.status == STATUS_PAUSED }
-public fun is_open<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.status == STATUS_OPEN }
-public fun is_ended<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.status == STATUS_ENDED }
+public fun is_paused<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.status == XDROP_STATUS_PAUSED }
+public fun is_open<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.status == XDROP_STATUS_OPEN }
+public fun is_ended<C, N>(xdrop: &XDrop<C, N>): bool { xdrop.status == XDROP_STATUS_ENDED }
 
 // === accessors ===
 
