@@ -1,14 +1,18 @@
+import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
+import { shortenAddress } from "@polymedia/suitcase-core";
+import { LinkExternal } from "@polymedia/suitcase-react";
 import React from "react";
 import { useAppContext } from "./App";
-import { IconInfo } from "./comps/icons";
-import { LinkExternal } from "@polymedia/suitcase-react";
+import { Btn } from "./comps/button";
+import { BtnConnect } from "./comps/connect";
 
-// xdrop.polymedia.app/claim-detf
+const coinType = "0x123::detf::detf";
+const coinDecimals = 9;
 
 export const PageClaimDETF: React.FC = () =>
 {
-    const coinType = "0x123::detf::detf";
-    const coinDecimals = 9;
+    const currAcct = useCurrentAccount();
+    const { mutate: disconnect } = useDisconnectWallet();
 
     const { header } = useAppContext();
     return <>
@@ -26,12 +30,12 @@ export const PageClaimDETF: React.FC = () =>
                     <p>Step 1: Link your Ethereum address</p>
                 </div>
                 <div className="card-description">
-                    <p>
+                    <div>
                         Go to <LinkExternal href="https://www.suilink.io/">SuiLink</LinkExternal> to prove ownership of your Ethereum address.
-                    </p>
-                    <p>
+                    </div>
+                    <div>
                         If you hold DETF in multiple wallets, you can link them all to the same Sui address.
-                    </p>
+                    </div>
                 </div>
             </div>
 
@@ -40,9 +44,20 @@ export const PageClaimDETF: React.FC = () =>
                     <p>Step 2: Claim your DETF on Sui</p>
                 </div>
                 <div className="card-description">
-                    <p>
+                    <div>
                         Once your Ethereum address is linked, you can claim the same amount of Sui DETF as you hold in Ethereum.
-                    </p>
+                    </div>
+                    <div>
+                        {!currAcct
+                        ? <>
+                            <div>Connect your Sui wallet to claim.</div>
+                            <BtnConnect />
+                        </>
+                        : <>
+                            <div>You are connected as {shortenAddress(currAcct.address)}. <a onClick={() => disconnect()}>Disconnect</a></div>
+                            <Btn onClick={() => {}}>CLAIM DETF</Btn>
+                        </>}
+                    </div>
                 </div>
             </div>
 
