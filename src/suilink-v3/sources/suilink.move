@@ -106,4 +106,19 @@ module suilink::suilink
     ): SuiLink<T0> {
         sui::transfer::receive<SuiLink<T0>>(uid, receiving)
     }
+
+    #[test_only]
+    public fun mint_for_testing<T0>(
+        recipient: address,
+        network_address: std::string::String,
+        timestamp_ms: u64,
+        ctx: &mut sui::tx_context::TxContext
+    ) {
+        let link = SuiLink<T0> {
+            id: sui::object::new(ctx),
+            network_address,
+            timestamp_ms,
+        };
+        transfer(link, recipient);
+    }
 }
