@@ -13,6 +13,9 @@ import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comps/glitch";
 import { IconInfo } from "./comps/icons";
 import { loadNetworkConfig } from "./lib/network";
+import { PageAbout } from "./PageAbout";
+import { PageHome } from "./PageHome";
+import { PageNotFound } from "./PageNotFound";
 import "./styles/App.less";
 
 /* App router */
@@ -23,6 +26,8 @@ export const AppRouter: React.FC = () => {
         <Routes>
             <Route path="/" element={<AppSuiProviders />} >
                 <Route index element={<PageHome />} />
+                <Route path="/about" element={<PageAbout />} />
+                <Route path="*" element={<PageNotFound />} />
             </Route>
         </Routes>
     </BrowserRouter>
@@ -198,14 +203,4 @@ const Header: React.FC = () =>
             <IconInfo />
         </Link>
     </header>;
-};
-
-/* quick and dirty */
-
-export const PageHome: React.FC = () => {
-    return (
-        <div>
-            <h1>GM</h1>
-        </div>
-    );
 };
