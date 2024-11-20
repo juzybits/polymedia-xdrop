@@ -5,11 +5,12 @@ import {
     useSuiClient,
 } from "@mysten/dapp-kit";
 import "@mysten/dapp-kit/dist/index.css";
-import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import { SuiClient } from "@mysten/sui/client";
 import { ExplorerName, ReactSetter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { loadNetworkConfig } from "./lib/network";
 import "./styles/App.less";
 
 /* App router */
@@ -35,7 +36,7 @@ const [ defaultNetwork, supportedNetworks ] =
     isLocalhost()  ? ["localnet" as const, ["mainnet", "testnet", "devnet", "localnet"] as const]
     : isDevDomain  ? ["devnet"   as const, ["devnet"] as const]
     : isTestDomain ? ["testnet"  as const, ["testnet"] as const]
-    : /* prod */     ["mainnet"  as const, ["mainnet", "testnet"] as const];
+    : /* prod */     ["mainnet"  as const, ["mainnet"] as const];
 
 export { supportedNetworks };
 
@@ -47,10 +48,10 @@ const AppSuiProviders: React.FC = () =>
     const [ network, setNetwork ] = useState(loadNetwork(supportedNetworks, defaultNetwork));
 
     const [ networkConfig, setNetworkConfig ] = useState({
-        mainnet: { url: getFullnodeUrl("mainnet") },
-        testnet: { url: getFullnodeUrl("testnet") },
-        devnet: { url: getFullnodeUrl("devnet") },
-        localnet: { url: getFullnodeUrl("localnet") },
+        mainnet: loadNetworkConfig("mainnet"),
+        testnet: loadNetworkConfig("testnet"),
+        devnet: loadNetworkConfig("devnet"),
+        localnet: loadNetworkConfig("localnet"),
     });
 
     const rpc = networkConfig[network].url;
