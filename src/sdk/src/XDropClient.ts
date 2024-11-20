@@ -1,6 +1,7 @@
-import { SuiClient, SuiObjectResponse, SuiParsedData, SuiTransactionBlockResponseOptions } from "@mysten/sui/client";
+import { bcs } from "@mysten/sui/bcs";
+import { SuiClient, SuiParsedData, SuiTransactionBlockResponseOptions } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
-import { NetworkName, objResToContent, SignTransaction, SuiClientBase, WaitForTxOptions } from "@polymedia/suitcase-core";
+import { devInspectAndGetReturnValues, NetworkName, objResToContent, objResToFields, SignTransaction, SuiClientBase, WaitForTxOptions } from "@polymedia/suitcase-core";
 import { XDropModule } from "./XDropFunctions";
 import { getLinkType, LinkNetwork } from "./config";
 
@@ -39,7 +40,7 @@ export class XDropClient extends SuiClientBase
         owner: string,
         network: LinkNetwork,
     ) {
-        const objs: SuiParsedData[] = [];
+        const objs: Record<string, any>[] = [];
         let cursor: string|null|undefined = null;
         let hasNextPage = true;
         while (hasNextPage) {
@@ -50,12 +51,36 @@ export class XDropClient extends SuiClientBase
                 filter: { StructType: getLinkType(this.suilinkPkgId, network) },
             });
             for (const obj of resp.data) {
-                objs.push(objResToContent(obj));
+                objs.push(objResToFields(obj));
             }
             cursor = resp.nextCursor;
             hasNextPage = resp.hasNextPage;
         }
         return objs;
+    }
+
+    public async fetchLinkStatuses(
+        typeCoin: string,
+        linkNetwork: LinkNetwork,
+        xdropId: string,
+        addrs: string[],
+    ) {
+        const tx = new Transaction();
+
+        XDropModule.get_claim_statuses(
+            tx,
+            this.xdropPkgId,
+            typeCoin,
+            getLinkType(this.suilinkPkgId, linkNetwork),
+            xdropId,
+            addrs,
+        );
+
+        const blockReturns = await devInspectAndGetReturnValues(
+            this.suiClient, tx, [ [ bcs.vector(bcs.U8) ] ]
+        );
+
+        return blockReturns[0] as number[];
     }
 
     // === data parsing ===

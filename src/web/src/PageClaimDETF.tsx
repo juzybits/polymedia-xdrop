@@ -7,6 +7,7 @@ import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
 
+const xdropId = "0x123";
 const coinType = "0x123::detf::detf";
 const coinDecimals = 9;
 const linkNetwork: LinkNetwork = "ethereum";
@@ -81,8 +82,19 @@ const ClaimWidget: React.FC<{
 
     const { xdropClient } = useAppContext();
 
-    const links = useFetch(async () =>
-        await xdropClient.fetchOwnedLinks(currAddr, linkNetwork)
+    const links = useFetch(
+        async () => await xdropClient.fetchOwnedLinks(currAddr, linkNetwork),
+        [currAddr, linkNetwork]
+    );
+
+    const statuses = useFetch(
+        async () => {
+            if (!links.data) { return undefined; }
+            return await xdropClient.fetchLinkStatuses(
+                coinType, linkNetwork, xdropId, links.data.map(l => l.network_address)
+            );
+        },
+        [coinType, linkNetwork, xdropId, links.data]
     );
 
     useEffect(() => {
