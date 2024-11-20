@@ -90,7 +90,7 @@ fun admin_adds_claims(
 // === tests: ... ===
 
 #[test]
-fun test_foo()
+fun test_end_to_end()
 {
     let mut runner = begin_with_xdrop_and_coin();
 
@@ -100,6 +100,16 @@ fun test_foo()
         vector[ 100, 200 ],
     );
 
-    assert_eq(1, 1);
+    runner.scen.next_tx(ADMIN);
+    let xdrop = runner.scen.take_shared<XDrop<DEVCOIN, Ethereum>>();
+    assert_eq(xdrop.is_paused(), true);
+    assert_eq(xdrop.is_open(), false);
+    assert_eq(xdrop.is_ended(), false);
+    assert_eq(xdrop.admin(), ADMIN);
+    assert_eq(xdrop.status(), 0); // XDROP_STATUS_PAUSED
+    assert_eq(xdrop.value(), 300);
+    assert_eq(xdrop.claims().length(), 2);
+
     test_utils::destroy(runner);
+    test_utils::destroy(xdrop);
 }
