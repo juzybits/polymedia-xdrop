@@ -1,13 +1,15 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { shortenAddress } from "@polymedia/suitcase-core";
-import { LinkExternal } from "@polymedia/suitcase-react";
-import React from "react";
+import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
+import { LinkNetwork } from "@polymedia/xdrop-sdk";
+import React, { useEffect } from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
 
 const coinType = "0x123::detf::detf";
 const coinDecimals = 9;
+const linkNetwork: LinkNetwork = "ethereum";
 
 export const PageClaimDETF: React.FC = () =>
 {
@@ -52,20 +54,44 @@ export const PageClaimDETF: React.FC = () =>
                         <div className="card-description">
                             Connect your Sui wallet to claim.
                         </div>
-                        <BtnConnect />
+                        <div className="center-element">
+                            <BtnConnect />
+                        </div>
                     </>
                 : <>
                     <div className="card-description">
                         <p>You are connected as {shortenAddress(currAcct.address)} (<a onClick={() => disconnect()}>disconnect</a>).</p>
                     </div>
-                    <div className="center-element">
-                        <Btn onClick={() => {}}>CLAIM DETF</Btn>
-                    </div>
+                    <ClaimWidget currAddr={currAcct.address} />
                 </>}
             </div>
 
         </div>
 
     </div>
+    </>;
+};
+
+const ClaimWidget: React.FC<{
+    currAddr: string;
+}> = ({
+    currAddr,
+}) =>
+{
+
+    const { xdropClient } = useAppContext();
+
+    const links = useFetch(async () =>
+        await xdropClient.fetchOwnedLinks(currAddr, linkNetwork)
+    );
+
+    useEffect(() => {
+        if (links.data) { console.log(JSON.stringify(links.data, null, 2)); }
+    }, [links]);
+
+    return <>
+        <div className="center-element">
+            <Btn onClick={() => {}}>CLAIM DETF</Btn>
+        </div>
     </>;
 };

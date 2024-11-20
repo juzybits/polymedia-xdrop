@@ -26,6 +26,15 @@ export const OBJECT_IDS: Record<NetworkName, ObjectIds> = {
     },
 };
 
+// === SuiLink package ===
+
+export type LinkNetwork = "ethereum" | "solana";
+
+export function getLinkType(pkgId: string, network: LinkNetwork): string {
+    const moduleAndType = network === "ethereum" ? "ethereum::Ethereum" : "solana::Solana";
+    return `${pkgId}::suilink::SuiLink<${pkgId}::${moduleAndType}>`;
+}
+
 // === auction package ===
 
 export const ERRORS_CODES: Record<number, string> = {
