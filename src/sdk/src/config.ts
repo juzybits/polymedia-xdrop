@@ -3,26 +3,26 @@
 import { NetworkName } from "@polymedia/suitcase-core";
 
 export type ObjectIds = {
-    xdropPackageId: string;
-    suilinkPackageId: string;
+    xdropPkgId: string;
+    suilinkPkgId: string;
 };
 
 export const OBJECT_IDS: Record<NetworkName, ObjectIds> = {
     mainnet: {
-        xdropPackageId: "",
-        suilinkPackageId: "0xf857fa9df5811e6df2a0240a1029d365db24b5026896776ddd1c3c70803bccd3", // v1
+        xdropPkgId: "",
+        suilinkPkgId: "0xf857fa9df5811e6df2a0240a1029d365db24b5026896776ddd1c3c70803bccd3", // v1
     },
     testnet: {
-        xdropPackageId: "",
-        suilinkPackageId: "",
+        xdropPkgId: "",
+        suilinkPkgId: "",
     },
     devnet: {
-        xdropPackageId: "",
-        suilinkPackageId: "",
+        xdropPkgId: "",
+        suilinkPkgId: "",
     },
     localnet: {
-        xdropPackageId: "",
-        suilinkPackageId: "",
+        xdropPkgId: "",
+        suilinkPkgId: "",
     },
 };
 
