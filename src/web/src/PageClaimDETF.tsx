@@ -5,7 +5,6 @@ import React, { useEffect } from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
-import { getAppConfig, AppConfig } from "./lib/config";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { SuiLink } from "@polymedia/xdrop-sdk";
 
@@ -14,8 +13,7 @@ export const PageClaimDETF: React.FC = () =>
     const currAcct = useCurrentAccount();
     const { mutate: disconnect } = useDisconnectWallet();
 
-    const { header, network } = useAppContext();
-    const appCnf = getAppConfig(network);
+    const { header, appCnf } = useAppContext();
 
     return <>
     {header}
@@ -62,7 +60,7 @@ export const PageClaimDETF: React.FC = () =>
                     <div className="card-description">
                         <p>You are connected as {shortenAddress(currAcct.address)} (<a onClick={() => disconnect()}>disconnect</a>).</p>
                     </div>
-                    <ClaimWidget currAddr={currAcct.address} appCnf={appCnf} />
+                    <ClaimWidget currAddr={currAcct.address} />
                 </>}
             </div>
 
@@ -74,13 +72,11 @@ export const PageClaimDETF: React.FC = () =>
 
 const ClaimWidget: React.FC<{
     currAddr: string;
-    appCnf: AppConfig;
 }> = ({
     currAddr,
-    appCnf,
 }) =>
 {
-    const { xdropClient } = useAppContext();
+    const { appCnf, xdropClient } = useAppContext();
 
     const links = useFetch(
         async () => await xdropClient.fetchOwnedLinks(currAddr, appCnf.linkNetwork),
@@ -125,7 +121,6 @@ const ClaimWidget: React.FC<{
                         {links.data.map((link, index) => (
                             <CardClaimableItem
                                 key={link.id}
-                                appCnf={appCnf}
                                 link={link}
                                 amount={amounts.data![index]}
                             />
@@ -140,15 +135,13 @@ const ClaimWidget: React.FC<{
 };
 
 const CardClaimableItem: React.FC<{
-    appCnf: AppConfig;
     link: SuiLink;
     amount: bigint;
 }> = ({
-    appCnf,
     link,
     amount,
 }) => {
-    const { explorer, network } = useAppContext();
+    const { appCnf, explorer, network } = useAppContext();
     return <div className={`card compact`}>
         <div className="card-header">
             <div className="card-title">

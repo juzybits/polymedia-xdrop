@@ -5,15 +5,13 @@ import React from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
-import { getAppConfig } from "./lib/config";
 
 export const PageDevLink: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
 
-    const { header, network, xdropClient, isWorking, setIsWorking } = useAppContext();
+    const { header, appCnf, network, xdropClient, isWorking, setIsWorking } = useAppContext();
     const netCnf = getNetworkConfig(network);
-    const appCnf = getAppConfig(network);
 
     const disableSubmit = isWorking || !currAcct;
 

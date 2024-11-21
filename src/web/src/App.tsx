@@ -13,6 +13,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comps/glitch";
 import { IconInfo } from "./comps/icons";
+import { AppConfig, getAppConfig } from "./lib/config";
 import { loadNetworkConfig } from "./lib/network";
 import { PageAbout } from "./PageAbout";
 import { PageAddClaims } from "./PageAddClaims";
@@ -106,11 +107,11 @@ export type AppContext = {
     network: NetworkName; setNetwork: ReactSetter<NetworkName>;
     rpc: string; setRpc: (rpc: string) => void;
     isWorking: boolean; setIsWorking: ReactSetter<boolean>;
-    // showMobileNav: boolean; setShowMobileNav: ReactSetter<boolean>;
     openConnectModal: () => void;
     setModalContent: ReactSetter<React.ReactNode>;
     header: React.ReactNode;
     xdropClient: XDropClient;
+    appCnf: AppConfig;
 };
 
 const App: React.FC<{
@@ -130,11 +131,11 @@ const App: React.FC<{
     const [ explorer, setExplorer ] = useState(loadExplorer("Polymedia"));
     const [ modalContent, setModalContent ] = useState<React.ReactNode>(null);
     const [ isWorking, setIsWorking ] = useState(false);
-    // const [ showMobileNav, setShowMobileNav ] = useState(false);
     const [ showConnectModal, setShowConnectModal ] = useState(false);
 
     const suiClient = useSuiClient();
     const { mutateAsync: walletSignTx } = useSignTransaction();
+
     const netCnf = getNetworkConfig(network);
     const xdropClient = useMemo(() => {
         return new XDropClient({
@@ -146,20 +147,16 @@ const App: React.FC<{
         });
     }, [suiClient, walletSignTx]);
 
-    const openConnectModal = () => {
-        setShowConnectModal(true);
-    };
-
     const appContext: AppContext = {
         explorer, setExplorer,
         network, setNetwork,
         rpc, setRpc,
         isWorking, setIsWorking,
-        // showMobileNav, setShowMobileNav,
-        openConnectModal: openConnectModal,
+        openConnectModal: () => { setShowConnectModal(true); },
         setModalContent,
         header: <Header />,
         xdropClient,
+        appCnf: getAppConfig(network),
     };
 
     // === effects ===
@@ -178,9 +175,6 @@ const App: React.FC<{
     // === html ===
 
     const layoutClasses: string[] = [];
-    // if (showMobileNav) {
-    //     layoutClasses.push("menu-open");
-    // }
     if (isWorking) {
         layoutClasses.push("disabled");
     }

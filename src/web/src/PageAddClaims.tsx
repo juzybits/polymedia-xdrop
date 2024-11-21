@@ -3,14 +3,12 @@ import React from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
-import { getAppConfig } from "./lib/config";
 
 export const PageAddClaims: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
 
-    const { header, network, xdropClient, isWorking, setIsWorking } = useAppContext();
-    const appCnf = getAppConfig(network);
+    const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
 
     const disableSubmit = isWorking || !currAcct;
 

@@ -2,15 +2,13 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import React from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
-import { getAppConfig } from "./lib/config";
 import { BtnConnect } from "./comps/connect";
 
 export const PageNew: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
 
-    const { header, network, xdropClient, isWorking, setIsWorking } = useAppContext();
-    const appCnf = getAppConfig(network);
+    const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
 
     const disableSubmit = isWorking || !currAcct;
 
