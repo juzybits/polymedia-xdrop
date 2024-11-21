@@ -12,9 +12,9 @@ import {
     TransferModule,
     WaitForTxOptions,
 } from "@polymedia/suitcase-core";
-import { XDropModule } from "./xdrop-functions";
-import { getLinkType, LinkNetwork } from "./config";
-import { SuiLink } from "./xdrop-structs";
+import { XDropModule } from "./xdrop-functions.js";
+import { getLinkType, LinkNetwork } from "./config.js";
+import { objResToSuiLink, SuiLink } from "./xdrop-structs.js";
 
 /**
  * Execute transactions on the XDrop Sui package.
@@ -50,8 +50,9 @@ export class XDropClient extends SuiClientBase
     public async fetchOwnedLinks(
         owner: string,
         linkNetwork: LinkNetwork,
-    ): Promise<SuiLink[]> {
-        const objs: Record<string, any>[] = [];
+    ): Promise<SuiLink[]>
+    {
+        const links: SuiLink[] = [];
         let cursor: string|null|undefined = null;
         let hasNextPage = true;
         while (hasNextPage) {
@@ -61,17 +62,13 @@ export class XDropClient extends SuiClientBase
                 options: { showContent: true },
                 filter: { StructType: getLinkType(this.suilinkPkgId, linkNetwork, "outer") },
             });
-            for (const obj of resp.data) {
-                objs.push(objResToFields(obj));
+            for (const objRes of resp.data) {
+                objResToSuiLink(objRes);
             }
             cursor = resp.nextCursor;
             hasNextPage = resp.hasNextPage;
         }
-        return objs.map(o => ({
-            id: o.id.id,
-            network_address: o.network_address,
-            timestamp_ms: o.timestamp_ms,
-        }));
+        return links;
     }
 
     public async getClaimableAmounts(
