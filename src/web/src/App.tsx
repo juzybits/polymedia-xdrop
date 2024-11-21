@@ -20,6 +20,7 @@ import { PageAddClaims } from "./PageAddClaims";
 import { PageClaimDETF } from "./PageClaimDETF";
 import { PageDevLink } from "./PageDevLink";
 import { PageHome } from "./PageHome";
+import { PageManage } from "./PageManage";
 import { PageNew } from "./PageNew";
 import { PageNotFound } from "./PageNotFound";
 import "./styles/App.less";
@@ -36,6 +37,7 @@ export const AppRouter: React.FC = () => {
                 <Route path="/add-claims" element={<PageAddClaims />} />
                 <Route path="/claim-detf" element={<PageClaimDETF />} />
                 <Route path="/dev-link" element={<PageDevLink />} />
+                <Route path="/manage" element={<PageManage />} />
                 <Route path="/new" element={<PageNew />} />
                 <Route path="*" element={<PageNotFound />} />
             </Route>

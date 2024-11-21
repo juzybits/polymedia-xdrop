@@ -121,10 +121,11 @@ const ClaimWidget: React.FC<{
         try {
             setIsWorking(true);
             const resp = await xdropClient.userClaims(
+                currAddr,
                 appCnf.coinType,
                 appCnf.linkNetwork,
                 appCnf.xdropId,
-                links.data!.map(l => l.id)
+                links.data!.map(l => l.id),
             );
             console.log("[onSubmit] okay:", resp);
         } catch (err) {

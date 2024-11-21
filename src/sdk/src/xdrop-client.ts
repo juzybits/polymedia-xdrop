@@ -159,7 +159,26 @@ export class XDropClient extends SuiClientBase
         return await this.signAndExecuteTransaction(tx);
     }
 
+    public async adminOpensXDrop(
+        typeCoin: string,
+        linkNetwork: LinkNetwork,
+        xdropId: string,
+    ) {
+        const tx = new Transaction();
+
+        XDropModule.admin_opens_xdrop(
+            tx,
+            this.xdropPkgId,
+            typeCoin,
+            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+            xdropId,
+        );
+
+        return await this.signAndExecuteTransaction(tx);
+    }
+
     public async userClaims(
+        sender: string,
         typeCoin: string,
         linkNetwork: LinkNetwork,
         xdropId: string,
@@ -168,13 +187,19 @@ export class XDropClient extends SuiClientBase
         const tx = new Transaction();
 
         for (const linkId of linkIds) {
-            XDropModule.user_claims(
+            const [claimed_coin] = XDropModule.user_claims(
                 tx,
                 this.xdropPkgId,
                 typeCoin,
                 getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
                 xdropId,
                 linkId,
+            );
+            TransferModule.public_transfer(
+                tx,
+                `0x2::coin::Coin<${typeCoin}>`,
+                claimed_coin,
+                sender,
             );
         }
 
