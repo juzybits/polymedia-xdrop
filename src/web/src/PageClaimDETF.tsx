@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
-import { getWebConfig, WebConfig } from "./lib/config";
+import { getAppConfig, AppConfig } from "./lib/config";
 
 export const PageClaimDETF: React.FC = () =>
 {
@@ -13,7 +13,7 @@ export const PageClaimDETF: React.FC = () =>
     const { mutate: disconnect } = useDisconnectWallet();
 
     const { header, network } = useAppContext();
-    const cnf = getWebConfig(network);
+    const appCnf = getAppConfig(network);
 
     return <>
     {header}
@@ -22,7 +22,7 @@ export const PageClaimDETF: React.FC = () =>
         <div className="page-content">
 
             <div className="page-title">
-                Claim Sui {cnf.coinTicker}
+                Claim Sui {appCnf.coinTicker}
             </div>
 
             <div className="card compact">
@@ -33,7 +33,7 @@ export const PageClaimDETF: React.FC = () =>
                     <p>Prove ownership of your Ethereum address by linking it to your Sui address.</p>
                 </div>
                 <div className="card-description">
-                    If you hold {cnf.coinTicker} in multiple wallets, you can link all of them to the same Sui address.
+                    If you hold {appCnf.coinTicker} in multiple wallets, you can link all of them to the same Sui address.
                 </div>
                 <div className="center-element">
                     <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
@@ -42,10 +42,10 @@ export const PageClaimDETF: React.FC = () =>
 
             <div className="card compact">
                 <div className="card-title">
-                    <p>Step 2: Claim your {cnf.coinTicker} on Sui</p>
+                    <p>Step 2: Claim your {appCnf.coinTicker} on Sui</p>
                 </div>
                 <div className="card-description">
-                    Once your Ethereum address is linked, you can claim the same amount of Sui {cnf.coinTicker} as you hold on Ethereum.
+                    Once your Ethereum address is linked, you can claim the same amount of Sui {appCnf.coinTicker} as you hold on Ethereum.
                 </div>
                 {!currAcct
                     ? <>
@@ -60,7 +60,7 @@ export const PageClaimDETF: React.FC = () =>
                     <div className="card-description">
                         <p>You are connected as {shortenAddress(currAcct.address)} (<a onClick={() => disconnect()}>disconnect</a>).</p>
                     </div>
-                    <ClaimWidget currAddr={currAcct.address} cnf={cnf} />
+                    <ClaimWidget currAddr={currAcct.address} appCnf={appCnf} />
                 </>}
             </div>
 
@@ -72,28 +72,28 @@ export const PageClaimDETF: React.FC = () =>
 
 const ClaimWidget: React.FC<{
     currAddr: string;
-    cnf: WebConfig;
+    appCnf: AppConfig;
 }> = ({
     currAddr,
-    cnf,
+    appCnf,
 }) =>
 {
 
     const { xdropClient } = useAppContext();
 
     const links = useFetch(
-        async () => await xdropClient.fetchOwnedLinks(currAddr, cnf.linkNetwork),
-        [currAddr, cnf.linkNetwork]
+        async () => await xdropClient.fetchOwnedLinks(currAddr, appCnf.linkNetwork),
+        [currAddr, appCnf.linkNetwork]
     );
 
     const statuses = useFetch(
         async () => {
             if (!links.data) { return undefined; }
             return await xdropClient.getClaimableAmounts(
-                cnf.coinType, cnf.linkNetwork, cnf.xdropId, links.data.map(l => l.network_address)
+                appCnf.coinType, appCnf.linkNetwork, appCnf.xdropId, links.data.map(l => l.network_address)
             );
         },
-        [cnf.coinType, cnf.linkNetwork, cnf.xdropId, links.data]
+        [appCnf.coinType, appCnf.linkNetwork, appCnf.xdropId, links.data]
     );
 
     useEffect(() => {
@@ -102,7 +102,7 @@ const ClaimWidget: React.FC<{
 
     return <>
         <div className="center-element">
-            <Btn onClick={() => {}}>CLAIM {cnf.coinTicker}</Btn>
+            <Btn onClick={() => {}}>CLAIM {appCnf.coinTicker}</Btn>
         </div>
     </>;
 };

@@ -1,7 +1,7 @@
 import { NetworkName } from "@polymedia/suitcase-core";
 import { LinkNetwork } from "@polymedia/xdrop-sdk";
 
-export type WebConfig = {
+export type AppConfig = {
     xdropId: string;
     coinType: string;
     coinDecimals: number;
@@ -9,7 +9,7 @@ export type WebConfig = {
     linkNetwork: LinkNetwork;
 };
 
-const config: WebConfig = {
+const config: AppConfig = {
     xdropId: "0x123",
     coinType: "0x123::detf::detf",
     coinDecimals: 9,
@@ -17,13 +17,13 @@ const config: WebConfig = {
     linkNetwork: "ethereum",
 };
 
-export const WEB_CONFIG: Record<NetworkName, WebConfig> = {
+export const APP_CONFIG: Record<NetworkName, AppConfig> = {
     "mainnet": config,
     "testnet": config,
     "devnet": config,
     "localnet": config,
 };
 
-export function getWebConfig(network: NetworkName): WebConfig {
-    return WEB_CONFIG[network];
+export function getAppConfig(network: NetworkName): AppConfig {
+    return APP_CONFIG[network];
 }

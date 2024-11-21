@@ -2,7 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import React from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
-import { getWebConfig } from "./lib/config";
+import { getAppConfig } from "./lib/config";
 import { BtnConnect } from "./comps/connect";
 
 export const PageNew: React.FC = () =>
@@ -10,7 +10,7 @@ export const PageNew: React.FC = () =>
     const currAcct = useCurrentAccount();
 
     const { header, network } = useAppContext();
-    const cnf = getWebConfig(network);
+    const appCnf = getAppConfig(network);
 
     const onCreate = () => {
         if (!currAcct) { return; }
@@ -32,11 +32,11 @@ export const PageNew: React.FC = () =>
                     <p>Config:</p>
                 </div>
                 <div className="card-description">
-                    <p>XDrop ID: {cnf.xdropId}</p>
-                    <p>Coin Type: {cnf.coinType}</p>
-                    <p>Coin Decimals: {cnf.coinDecimals}</p>
-                    <p>Coin Ticker: {cnf.coinTicker}</p>
-                    <p>Link Network: {cnf.linkNetwork}</p>
+                    <p>XDrop ID: {appCnf.xdropId}</p>
+                    <p>Coin Type: {appCnf.coinType}</p>
+                    <p>Coin Decimals: {appCnf.coinDecimals}</p>
+                    <p>Coin Ticker: {appCnf.coinTicker}</p>
+                    <p>Link Network: {appCnf.linkNetwork}</p>
                 </div>
                 <div>
                     {currAcct

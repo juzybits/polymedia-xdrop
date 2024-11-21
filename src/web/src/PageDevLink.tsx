@@ -1,11 +1,11 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+import { getNetworkConfig } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
-import { getWebConfig } from "./lib/config";
 import { BtnConnect } from "./comps/connect";
-import { Transaction } from "@mysten/sui/transactions";
-import { getObjectIds } from "@polymedia/xdrop-sdk";
+import { getAppConfig } from "./lib/config";
 
 const linkedEthAddrs = [
     "eth address 1",
@@ -17,8 +17,7 @@ export const PageDevLink: React.FC = () =>
     const currAcct = useCurrentAccount();
 
     const { header, network, xdropClient, isWorking, setIsWorking } = useAppContext();
-    const cnf = getWebConfig(network);
-    const objIds = getObjectIds(network);
+    const netCnf = getNetworkConfig(network);
 
     const disableSubmit = isWorking || !currAcct;
 
@@ -31,7 +30,7 @@ export const PageDevLink: React.FC = () =>
             const tx = new Transaction();
             for (const ethAddr of linkedEthAddrs) {
                 tx.moveCall({
-                    package: objIds.suilinkPkgId,
+                    package: netCnf.suilinkPkgId,
                     module: "ethereum",
                     function: "dev_link",
                     arguments: [

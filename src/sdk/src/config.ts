@@ -2,12 +2,12 @@
 
 import { NetworkName } from "@polymedia/suitcase-core";
 
-export type ObjectIds = {
+export type NetworkConfig = {
     xdropPkgId: string;
     suilinkPkgId: string;
 };
 
-export const OBJECT_IDS: Record<NetworkName, ObjectIds> = {
+export const NETWORK_CONFIG: Record<NetworkName, NetworkConfig> = {
     mainnet: {
         xdropPkgId: "",
         suilinkPkgId: "0xf857fa9df5811e6df2a0240a1029d365db24b5026896776ddd1c3c70803bccd3", // v1
@@ -26,8 +26,8 @@ export const OBJECT_IDS: Record<NetworkName, ObjectIds> = {
     },
 };
 
-export function getObjectIds(network: NetworkName): ObjectIds {
-    return OBJECT_IDS[network];
+export function getNetworkConfig(network: NetworkName): NetworkConfig {
+    return NETWORK_CONFIG[network];
 }
 
 // === SuiLink package ===
