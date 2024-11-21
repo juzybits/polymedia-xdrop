@@ -1,12 +1,13 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
-import { shortenAddress } from "@polymedia/suitcase-core";
-import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
+import { formatBalance, formatTimeDiff, shortenAddress, shortenDigest } from "@polymedia/suitcase-core";
+import { LinkExternal, LinkToExplorer, useFetch } from "@polymedia/suitcase-react";
 import React, { useEffect } from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
 import { getAppConfig, AppConfig } from "./lib/config";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
+import { SuiLink } from "@polymedia/xdrop-sdk";
 
 export const PageClaimDETF: React.FC = () =>
 {
@@ -119,11 +120,49 @@ const ClaimWidget: React.FC<{
     return <>
             <div className="card-title">Claimable amounts</div>
             <div className="card-description">
-                {amounts.isLoading && <CardSpinner />}
-                {amounts.data && JSON.stringify(amounts.data, null, 2)}
+                {amounts.data && links.data && (
+                    <div className="card-list tx-list">
+                        {links.data.map((link, index) => (
+                            <CardClaimableItem
+                                key={link.id}
+                                appCnf={appCnf}
+                                link={link}
+                                amount={amounts.data![index]}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         <div className="center-element">
-            <Btn onClick={() => {}}>CLAIM {appCnf.coinTicker}</Btn>
+            <Btn onClick={() => {}}>CLAIM ALL</Btn>
         </div>
     </>;
+};
+
+const CardClaimableItem: React.FC<{
+    appCnf: AppConfig;
+    link: SuiLink;
+    amount: bigint;
+}> = ({
+    appCnf,
+    link,
+    amount,
+}) => {
+    const { explorer, network } = useAppContext();
+    return <div className={`card compact`}>
+        <div className="card-header">
+            <div className="card-title">
+                {formatBalance(amount, appCnf.coinDecimals)} {appCnf.coinTicker}
+            </div>
+        </div>
+        <div className="card-body">
+            <div>
+                ETH address: {link.network_address}
+            </div>
+                <div>Sui link: <LinkToExplorer addr={link.id} kind="object" explorer={explorer} network={network}>
+                        {shortenDigest(link.id)}
+                </LinkToExplorer>
+            </div>
+        </div>
+    </div>
 };
