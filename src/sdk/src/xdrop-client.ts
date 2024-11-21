@@ -79,7 +79,7 @@ export class XDropClient extends SuiClientBase
         linkNetwork: LinkNetwork,
         xdropId: string,
         addrs: string[],
-    ): Promise<bigint[]> {
+    ): Promise<(bigint|null)[]> {
         const tx = new Transaction();
 
         XDropModule.get_claimable_amounts(
@@ -95,7 +95,7 @@ export class XDropClient extends SuiClientBase
             this.suiClient, tx, [ [ bcs.vector(bcs.option(bcs.U64)) ] ]
         );
 
-        return blockReturns[0][0] as bigint[];
+        return blockReturns[0][0] as (bigint|null)[];
     }
 
     // === data parsing ===

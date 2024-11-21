@@ -146,15 +146,18 @@ const ClaimWidget: React.FC<{
     return <>
             <div className="card-title">Claimable amounts</div>
             <div className="card-description">
-                {amounts.data && links.data && (
+                {amounts.data && links.data && ( // have the same length
                     <div className="card-list tx-list">
-                        {links.data.map((link, index) => (
-                            <CardClaimableItem
-                                key={link.id}
-                                link={link}
-                                amount={amounts.data![index]}
-                            />
-                        ))}
+                        {links.data.map((link, i) => {
+                            const amount = amounts.data![i];
+                            return amount === null ? null : (
+                                <CardClaimableItem
+                                    key={link.id}
+                                    link={link}
+                                    amount={amount}
+                                />
+                            );
+                        })}
                     </div>
                 )}
             </div>
