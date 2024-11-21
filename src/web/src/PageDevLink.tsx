@@ -19,7 +19,7 @@ export const PageDevLink: React.FC = () =>
 
     const onSubmit = async () =>
     {
-        if (!disableSubmit) { return; }
+        if (disableSubmit) { return; }
 
         try {
             setIsWorking(true);
@@ -55,6 +55,13 @@ export const PageDevLink: React.FC = () =>
             </div>
 
             <div className="card compact">
+                <div className="card-title">
+                    <p>Config:</p>
+                </div>
+                <div className="card-description">
+                    <p>Link Network: {appCnf.linkNetwork}</p>
+                    <p>Linked Addresses: {appCnf.linkedAddrs.join(", ")}</p>
+                </div>
                 <div>
                     {currAcct
                         ? <Btn onClick={onSubmit}>Create</Btn>

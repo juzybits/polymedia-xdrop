@@ -12,18 +12,18 @@ export type AppConfig = {
 };
 
 const config: AppConfig = {
-    xdropId: "0x123",
-    coinType: "0x123::detf::detf",
+    coinTicker: "DOGCOIN",
+    coinType: "0xe4028d51c08dd03311e52669e29a800791da33e06d4bc5725c8f63165de7275d::dogcoin::DOGCOIN",
     coinDecimals: 9,
-    coinTicker: "DETF",
+    xdropId: "0x108b93ddbf235a35e944eab12c2ac23a648db38f216ae4bce36f58e3b71809aa",
     linkNetwork: "ethereum",
     linkedAddrs: [
         "eth address 1",
         "eth address 2",
     ],
     claimAmounts: [
-        100n,
-        200n,
+        100n * 1_000_000_000n,
+        200n * 1_000_000_000n,
     ],
 };
 

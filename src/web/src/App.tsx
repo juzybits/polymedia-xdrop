@@ -7,7 +7,7 @@ import {
 } from "@mysten/dapp-kit";
 import "@mysten/dapp-kit/dist/index.css";
 import { ExplorerName, ReactSetter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
-import { getNetworkConfig, XDropClient } from "@polymedia/xdrop-sdk";
+import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
@@ -15,7 +15,9 @@ import { Glitch } from "./comps/glitch";
 import { IconInfo } from "./comps/icons";
 import { loadNetworkConfig } from "./lib/network";
 import { PageAbout } from "./PageAbout";
+import { PageAddClaims } from "./PageAddClaims";
 import { PageClaimDETF } from "./PageClaimDETF";
+import { PageDevLink } from "./PageDevLink";
 import { PageHome } from "./PageHome";
 import { PageNew } from "./PageNew";
 import { PageNotFound } from "./PageNotFound";
@@ -30,7 +32,9 @@ export const AppRouter: React.FC = () => {
             <Route path="/" element={<AppSuiProviders />} >
                 <Route index element={<PageHome />} />
                 <Route path="/about" element={<PageAbout />} />
+                <Route path="/add-claims" element={<PageAddClaims />} />
                 <Route path="/claim-detf" element={<PageClaimDETF />} />
+                <Route path="/dev-link" element={<PageDevLink />} />
                 <Route path="/new" element={<PageNew />} />
                 <Route path="*" element={<PageNotFound />} />
             </Route>

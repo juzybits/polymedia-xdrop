@@ -9,12 +9,26 @@ export const PageNew: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
 
-    const { header, network } = useAppContext();
+    const { header, network, xdropClient, isWorking, setIsWorking } = useAppContext();
     const appCnf = getAppConfig(network);
 
-    const onCreate = () => {
-        if (!currAcct) { return; }
-        console.log("onCreate");
+    const disableSubmit = isWorking || !currAcct;
+
+    const onSubmit = async () =>
+    {
+        if (disableSubmit) { return; }
+
+        try {
+            setIsWorking(true);
+            const resp = await xdropClient.adminCreatesAndSharesXDrop(
+                appCnf.coinType, appCnf.linkNetwork
+            );
+            console.debug("[onSubmit] okay:", resp);
+        } catch (err) {
+            console.warn("[onSubmit] error:", err);
+        } finally {
+            setIsWorking(false);
+        }
     };
 
     return <>
@@ -32,7 +46,6 @@ export const PageNew: React.FC = () =>
                     <p>Config:</p>
                 </div>
                 <div className="card-description">
-                    <p>XDrop ID: {appCnf.xdropId}</p>
                     <p>Coin Type: {appCnf.coinType}</p>
                     <p>Coin Decimals: {appCnf.coinDecimals}</p>
                     <p>Coin Ticker: {appCnf.coinTicker}</p>
@@ -40,7 +53,7 @@ export const PageNew: React.FC = () =>
                 </div>
                 <div>
                     {currAcct
-                        ? <Btn onClick={onCreate}>Create</Btn>
+                        ? <Btn onClick={onSubmit}>Create</Btn>
                         : <BtnConnect />}
                 </div>
             </div>

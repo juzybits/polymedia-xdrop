@@ -48,7 +48,7 @@ export class XDropClient extends SuiClientBase
 
     public async fetchOwnedLinks(
         owner: string,
-        network: LinkNetwork,
+        linkNetwork: LinkNetwork,
     ) {
         const objs: Record<string, any>[] = [];
         let cursor: string|null|undefined = null;
@@ -58,7 +58,7 @@ export class XDropClient extends SuiClientBase
                 owner,
                 cursor,
                 options: { showContent: true },
-                filter: { StructType: getLinkType(this.suilinkPkgId, network) },
+                filter: { StructType: getLinkType(this.suilinkPkgId, linkNetwork) },
             });
             for (const obj of resp.data) {
                 objs.push(objResToFields(obj));
@@ -99,20 +99,22 @@ export class XDropClient extends SuiClientBase
 
     public async adminCreatesAndSharesXDrop(
         typeCoin: string,
-        typeNetwork: string,
+        linkNetwork: LinkNetwork,
     ): Promise<{
         resp: SuiTransactionBlockResponse;
         xdropObjChange: ObjChangeKind<"created">;
     }> {
         const tx = new Transaction();
 
+        const typeLink = getLinkType(this.suilinkPkgId, linkNetwork);
+
         const [xdropArg] = XDropModule.admin_creates_xdrop(
-            tx, this.xdropPkgId, typeCoin, typeNetwork
+            tx, this.xdropPkgId, typeCoin, typeLink
         );
 
         TransferModule.public_share_object(
             tx,
-            `${this.xdropPkgId}::xdrop::XDrop<${typeCoin},${typeNetwork}>`,
+            `${this.xdropPkgId}::xdrop::XDrop<${typeCoin},${typeLink}>`,
             xdropArg,
         );
 

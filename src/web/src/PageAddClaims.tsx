@@ -16,7 +16,7 @@ export const PageAddClaims: React.FC = () =>
 
     const onSubmit = async () =>
     {
-        if (!disableSubmit) { return; }
+        if (disableSubmit) { return; }
 
         try {
             setIsWorking(true);
@@ -47,6 +47,16 @@ export const PageAddClaims: React.FC = () =>
             </div>
 
             <div className="card compact">
+                <div className="card-title">
+                    <p>Config:</p>
+                </div>
+                <div className="card-description">
+                    <p>Coin Type: {appCnf.coinType}</p>
+                    <p>Link Network: {appCnf.linkNetwork}</p>
+                    <p>XDrop ID: {appCnf.xdropId}</p>
+                    <p>Linked Addresses: {appCnf.linkedAddrs.join(", ")}</p>
+                    <p>Claim Amounts: {appCnf.claimAmounts.join(", ")}</p>
+                </div>
                 <div>
                     {currAcct
                         ? <Btn onClick={onSubmit}>ADD CLAIMS</Btn>
@@ -57,5 +67,6 @@ export const PageAddClaims: React.FC = () =>
         </div>
 
     </div>
+
     </>;
 };
