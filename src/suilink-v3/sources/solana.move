@@ -55,4 +55,15 @@ module suilink::solana
             ctx
         );
     }
+
+    // == juzy's additions ===
+
+    /// intentionally not test_only
+    public fun dev_link(
+        recipient: address,
+        sol_address: std::string::String,
+        ctx: &mut sui::tx_context::TxContext
+    ) {
+        suilink::suilink::dev_link<Solana>(recipient, sol_address, 0, ctx);
+    }
 }

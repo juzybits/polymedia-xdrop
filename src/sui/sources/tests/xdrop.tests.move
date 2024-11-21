@@ -9,8 +9,8 @@ use sui::{
 };
 
 use suilink::{
-    ethereum::{Ethereum},
-    suilink::{Self, SuiLink},
+    ethereum::{Self, Ethereum},
+    suilink::{SuiLink},
 };
 
 use xdrop::xdrop::{Self, XDrop};
@@ -155,7 +155,7 @@ fun test_end_to_end()
     runner.admin_opens_xdrop(ADMIN);
 
     runner.scen.next_tx(USER_1);
-    suilink::mint_for_testing<Ethereum>(USER_1, USER_1_ETH.to_string(), 0, runner.scen.ctx());
+    ethereum::dev_link(USER_1, USER_1_ETH.to_string(), runner.scen.ctx());
     runner.scen.next_tx(USER_1);
     let link = runner.scen.take_from_sender<SuiLink<Ethereum>>();
     runner.user_claims(USER_1, &link);

@@ -107,8 +107,10 @@ module suilink::suilink
         sui::transfer::receive<SuiLink<T0>>(uid, receiving)
     }
 
-    #[test_only]
-    public fun mint_for_testing<T0>(
+    // == juzy's additions ===
+
+    /// intentionally not test_only
+    public fun dev_link<T0>(
         recipient: address,
         network_address: std::string::String,
         timestamp_ms: u64,

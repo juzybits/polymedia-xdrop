@@ -104,4 +104,15 @@ module suilink::ethereum
             ctx
         );
     }
+
+    // == juzy's additions ===
+
+    /// intentionally not test_only
+    public fun dev_link(
+        recipient: address,
+        eth_address: std::string::String,
+        ctx: &mut sui::tx_context::TxContext
+    ) {
+        suilink::suilink::dev_link<Ethereum>(recipient, eth_address, 0, ctx);
+    }
 }
