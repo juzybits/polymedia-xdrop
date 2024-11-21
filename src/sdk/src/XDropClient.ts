@@ -126,7 +126,7 @@ export class XDropClient extends SuiClientBase
         return { resp, xdropObjChange };
     }
 
-    public async adminAddsClaims(
+    public async adminAddsClaims( // TODO test limits
         sender: string,
         typeCoin: string,
         typeNetwork: string,
