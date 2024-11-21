@@ -1,18 +1,15 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Transaction } from "@mysten/sui/transactions";
-import { getNetworkConfig } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
 import { getAppConfig } from "./lib/config";
 
-export const PageDevLink: React.FC = () =>
+export const PageAddClaims: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
 
     const { header, network, xdropClient, isWorking, setIsWorking } = useAppContext();
-    const netCnf = getNetworkConfig(network);
     const appCnf = getAppConfig(network);
 
     const disableSubmit = isWorking || !currAcct;
@@ -23,19 +20,14 @@ export const PageDevLink: React.FC = () =>
 
         try {
             setIsWorking(true);
-            const tx = new Transaction();
-            for (const ethAddr of appCnf.linkedAddrs) {
-                tx.moveCall({
-                    package: netCnf.suilinkPkgId,
-                    module: appCnf.linkNetwork,
-                    function: "dev_link",
-                    arguments: [
-                        tx.pure.address(currAcct!.address),
-                        tx.pure.string(ethAddr),
-                    ],
-                });
-            }
-            const resp = await xdropClient.signAndExecuteTransaction(tx);
+            const resp = await xdropClient.adminAddsClaims(
+                currAcct!.address,
+                appCnf.coinType,
+                appCnf.linkNetwork,
+                appCnf.xdropId,
+                appCnf.linkedAddrs,
+                appCnf.claimAmounts,
+            );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
             console.warn("[onSubmit] error:", err);
@@ -46,18 +38,18 @@ export const PageDevLink: React.FC = () =>
 
     return <>
     {header}
-    <div id="page-dev-link" className="page-regular">
+    <div id="page-add-claims" className="page-regular">
 
         <div className="page-content">
 
             <div className="page-title">
-                Dev Link
+                Add Claims
             </div>
 
             <div className="card compact">
                 <div>
                     {currAcct
-                        ? <Btn onClick={onSubmit}>Create</Btn>
+                        ? <Btn onClick={onSubmit}>ADD CLAIMS</Btn>
                         : <BtnConnect />}
                 </div>
             </div>

@@ -7,6 +7,8 @@ export type AppConfig = {
     coinDecimals: number;
     coinTicker: string;
     linkNetwork: LinkNetwork;
+    linkedAddrs: string[];
+    claimAmounts: bigint[];
 };
 
 const config: AppConfig = {
@@ -15,6 +17,14 @@ const config: AppConfig = {
     coinDecimals: 9,
     coinTicker: "DETF",
     linkNetwork: "ethereum",
+    linkedAddrs: [
+        "eth address 1",
+        "eth address 2",
+    ],
+    claimAmounts: [
+        100n,
+        200n,
+    ],
 };
 
 export const APP_CONFIG: Record<NetworkName, AppConfig> = {

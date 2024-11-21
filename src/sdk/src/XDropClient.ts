@@ -129,7 +129,7 @@ export class XDropClient extends SuiClientBase
     public async adminAddsClaims( // TODO test limits
         sender: string,
         typeCoin: string,
-        typeNetwork: string,
+        linkNetwork: LinkNetwork,
         xdropId: string,
         addrs: string[],
         amounts: bigint[],
@@ -139,7 +139,14 @@ export class XDropClient extends SuiClientBase
         const [payCoinArg] = await getCoinOfValue(this.suiClient, tx, sender, typeCoin, totalAmount);
 
         XDropModule.admin_adds_claims(
-            tx, this.xdropPkgId, typeCoin, typeNetwork, xdropId, payCoinArg, addrs, amounts,
+            tx,
+            this.xdropPkgId,
+            typeCoin,
+            getLinkType(this.suilinkPkgId, linkNetwork),
+            xdropId,
+            payCoinArg,
+            addrs,
+            amounts,
         );
 
         return await this.signAndExecuteTransaction(tx);
