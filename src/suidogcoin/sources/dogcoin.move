@@ -1,22 +1,22 @@
-#[test_only]
-module xdrop::devcoin;
+module dogcoin::dogcoin;
 
 use sui::{
     coin::{Self},
+    url,
 };
 
-public struct DEVCOIN has drop {}
+public struct DOGCOIN has drop {}
 
-fun init(otw: DEVCOIN, ctx: &mut TxContext)
+fun init(otw: DOGCOIN, ctx: &mut TxContext)
 {
     // Create the coin
     let (mut treasury, metadata) = coin::create_currency(
         otw,
         9, // decimals
-        b"DEVCOIN", // symbol
-        b"DEVCOIN", // name
+        b"DOGCOIN", // symbol
+        b"DOGCOIN", // name
         b"", // description
-        option::none(), // icon_url
+        option::some(url::new_unsafe_from_bytes(b"https://i.pinimg.com/736x/04/8b/8d/048b8dbc061a104f266176b1b7bf828c.jpg")), // icon_url
         ctx,
     );
 
@@ -30,8 +30,4 @@ fun init(otw: DEVCOIN, ctx: &mut TxContext)
 
     // Fix the supply
     transfer::public_transfer(treasury, @0x0);
-}
-
-public fun init_for_testing(ctx: &mut TxContext) {
-    init(DEVCOIN {}, ctx);
 }
