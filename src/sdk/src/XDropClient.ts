@@ -67,7 +67,7 @@ export class XDropClient extends SuiClientBase
     ) {
         const tx = new Transaction();
 
-        XDropModule.get_claim_statuses(
+        XDropModule.get_claimable_amounts(
             tx,
             this.xdropPkgId,
             typeCoin,
@@ -77,7 +77,7 @@ export class XDropClient extends SuiClientBase
         );
 
         const blockReturns = await devInspectAndGetReturnValues(
-            this.suiClient, tx, [ [ bcs.vector(bcs.U8) ] ]
+            this.suiClient, tx, [ [ bcs.vector(bcs.option(bcs.U64)) ] ]
         );
 
         return blockReturns[0] as number[];

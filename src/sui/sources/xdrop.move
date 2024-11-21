@@ -33,10 +33,6 @@ const XDROP_STATUS_PAUSED: u8 = 0;
 const XDROP_STATUS_OPEN: u8 = 1;
 const XDROP_STATUS_ENDED: u8 = 2;
 
-const CLAIM_STATUS_NOT_FOUND: u8 = 0;
-const CLAIM_STATUS_UNCLAIMED: u8 = 1;
-const CLAIM_STATUS_CLAIMED: u8 = 2;
-
 // === structs ===
 
 public struct XDROP has drop {}
@@ -182,27 +178,29 @@ public fun user_claims<C, N>(
 
 // === devinspect functions ===
 
-public fun get_claim_statuses<C, N>(
+public fun get_claimable_amounts<C, N>(
     xdrop: &XDrop<C, N>,
     addrs: vector<String>,
-): vector<u8>
+): vector<Option<u64>>
 {
-    let mut statuses = vector::empty<u8>();
+    let mut amounts = vector::empty<Option<u64>>();
     let mut i = 0;
     let len = addrs.length();
     while (i < len)
     {
         let addr = *addrs.borrow(i);
         if (!xdrop.claims.contains(addr)) {
-            vector::push_back(&mut statuses, CLAIM_STATUS_NOT_FOUND);
+            vector::push_back(&mut amounts, option::none());
         } else {
             let claim = xdrop.claims.borrow(addr);
-            let status = if (claim.claimed) CLAIM_STATUS_CLAIMED else CLAIM_STATUS_UNCLAIMED;
-            vector::push_back(&mut statuses, status);
+            vector::push_back(
+                &mut amounts,
+                if (claim.claimed) option::some(0) else option::some(claim.amount),
+            );
         };
         i = i + 1;
     };
-    statuses
+    amounts
 }
 
 // === helpers ===

@@ -155,7 +155,7 @@ export const XDropModule =
 
     // === devinspect functions ===
 
-    get_claim_statuses: (
+    get_claimable_amounts: (
         tx: Transaction,
         packageId: string,
         type_coin: string,
@@ -165,7 +165,7 @@ export const XDropModule =
     ): TransactionResult =>
     {
         return tx.moveCall({
-            target: `${packageId}::xdrop::get_claim_statuses`,
+            target: `${packageId}::xdrop::get_claimable_amounts`,
             typeArguments: [ type_coin, type_network ],
             arguments: [
                 objectArg(tx, xdrop),
