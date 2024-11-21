@@ -90,7 +90,7 @@ const ClaimWidget: React.FC<{
     const statuses = useFetch(
         async () => {
             if (!links.data) { return undefined; }
-            return await xdropClient.fetchLinkStatuses(
+            return await xdropClient.getClaimableAmounts(
                 coinType, linkNetwork, xdropId, links.data.map(l => l.network_address)
             );
         },

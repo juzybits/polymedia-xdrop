@@ -1,7 +1,17 @@
 import { bcs } from "@mysten/sui/bcs";
-import { SuiClient, SuiParsedData, SuiTransactionBlockResponseOptions } from "@mysten/sui/client";
+import { SuiClient, SuiTransactionBlockResponse, SuiTransactionBlockResponseOptions } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
-import { devInspectAndGetReturnValues, NetworkName, objResToContent, objResToFields, SignTransaction, SuiClientBase, WaitForTxOptions } from "@polymedia/suitcase-core";
+import {
+    devInspectAndGetReturnValues,
+    getCoinOfValue,
+    NetworkName,
+    ObjChangeKind,
+    objResToFields,
+    SignTransaction,
+    SuiClientBase,
+    TransferModule,
+    WaitForTxOptions,
+} from "@polymedia/suitcase-core";
 import { XDropModule } from "./XDropFunctions";
 import { getLinkType, LinkNetwork } from "./config";
 
@@ -59,7 +69,7 @@ export class XDropClient extends SuiClientBase
         return objs;
     }
 
-    public async fetchLinkStatuses(
+    public async getClaimableAmounts(
         typeCoin: string,
         linkNetwork: LinkNetwork,
         xdropId: string,
@@ -86,4 +96,82 @@ export class XDropClient extends SuiClientBase
     // === data parsing ===
 
     // === module interactions ===
+
+    public async adminCreatesAndSharesXDrop(
+        typeCoin: string,
+        typeNetwork: string,
+    ): Promise<{
+        resp: SuiTransactionBlockResponse;
+        xdropObjChange: ObjChangeKind<"created">;
+    }> {
+        const tx = new Transaction();
+
+        const [xdropArg] = XDropModule.admin_creates_xdrop(
+            tx, this.xdropPkgId, typeCoin, typeNetwork
+        );
+
+        TransferModule.public_share_object(
+            tx,
+            `${this.xdropPkgId}::xdrop::XDrop<${typeCoin},${typeNetwork}>`,
+            xdropArg,
+        );
+
+        const resp = await this.signAndExecuteTransaction(tx);
+
+        const xdropObjChange = this.extractXDropObjCreated(resp);
+        if (!xdropObjChange) {
+            throw new Error(`Transaction succeeded but no XDrop object was found: ${JSON.stringify(resp, null, 2)}`);
+        }
+
+        return { resp, xdropObjChange };
+    }
+
+    public async adminAddsClaims(
+        sender: string,
+        typeCoin: string,
+        typeNetwork: string,
+        xdropId: string,
+        addrs: string[],
+        amounts: bigint[],
+    ) {
+        const tx = new Transaction();
+        const totalAmount = amounts.reduce((a, b) => a + b, 0n);
+        const [payCoinArg] = await getCoinOfValue(this.suiClient, tx, sender, typeCoin, totalAmount);
+
+        XDropModule.admin_adds_claims(
+            tx, this.xdropPkgId, typeCoin, typeNetwork, xdropId, payCoinArg, addrs, amounts,
+        );
+
+        return await this.signAndExecuteTransaction(tx);
+    }
+
+    // === object extractors ===
+
+    /**
+     * Extract the created XDrop object (if any) from `SuiTransactionBlockResponse.objectChanges`.
+     */
+    public extractXDropObjCreated(
+        resp: SuiTransactionBlockResponse,
+    ): ObjChangeKind<"created"> | undefined
+    {
+        return resp.objectChanges?.find(o =>
+            o.type === "created" && o.objectType.startsWith(`${this.xdropPkgId}::xdrop::XDrop<`)
+        ) as ObjChangeKind<"created"> | undefined;
+    }
+
+    // === helpers ===
+
+    public async signAndExecuteTransaction(
+        tx: Transaction,
+        waitForTxOptions: WaitForTxOptions | false = this.waitForTxOptions,
+        txResponseOptions: SuiTransactionBlockResponseOptions = this.txResponseOptions,
+    ): Promise<SuiTransactionBlockResponse> {
+        const resp = await super.signAndExecuteTransaction(
+            tx, waitForTxOptions, txResponseOptions
+        );
+        if (!resp.effects?.status.status) {
+            throw new Error(`Transaction failed: ${JSON.stringify(resp, null, 2)}`);
+        }
+        return resp;
+    }
 }
