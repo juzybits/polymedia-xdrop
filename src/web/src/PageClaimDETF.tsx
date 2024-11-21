@@ -1,5 +1,5 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
-import { formatBalance, formatTimeDiff, shortenAddress, shortenDigest } from "@polymedia/suitcase-core";
+import { formatBalance, shortenAddress, shortenDigest } from "@polymedia/suitcase-core";
 import { LinkExternal, LinkToExplorer, useFetch } from "@polymedia/suitcase-react";
 import React, { useEffect } from "react";
 import { useAppContext } from "./App";
@@ -175,7 +175,7 @@ const CardClaimableItem: React.FC<{
     amount,
 }) => {
     const { appCnf, explorer, network } = useAppContext();
-    return <div className={`card compact`}>
+    return <div className={"card compact"}>
         <div className="card-header">
             <div className="card-title">
                 {formatBalance(amount, appCnf.coinDecimals)} {appCnf.coinTicker}
@@ -190,5 +190,5 @@ const CardClaimableItem: React.FC<{
                 </LinkToExplorer>
             </div>
         </div>
-    </div>
+    </div>;
 };

@@ -28,7 +28,7 @@ export const PageDevLink: React.FC = () =>
                     module: appCnf.linkNetwork,
                     function: "dev_link",
                     arguments: [
-                        tx.pure.address(currAcct!.address),
+                        tx.pure.address(currAcct.address),
                         tx.pure.string(ethAddr),
                     ],
                 });

@@ -19,7 +19,7 @@ export const PageAddClaims: React.FC = () =>
         try {
             setIsWorking(true);
             const resp = await xdropClient.adminAddsClaims(
-                currAcct!.address,
+                currAcct.address,
                 appCnf.coinType,
                 appCnf.linkNetwork,
                 appCnf.xdropId,

@@ -63,7 +63,7 @@ export class XDropClient extends SuiClientBase
                 filter: { StructType: getLinkType(this.suilinkPkgId, linkNetwork, "outer") },
             });
             for (const objRes of resp.data) {
-                objResToSuiLink(objRes);
+                links.push(objResToSuiLink(objRes));
             }
             cursor = resp.nextCursor;
             hasNextPage = resp.hasNextPage;
