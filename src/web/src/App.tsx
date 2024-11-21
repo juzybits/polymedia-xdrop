@@ -18,6 +18,7 @@ import { loadNetworkConfig } from "./lib/network";
 import { PageAbout } from "./PageAbout";
 import { PageClaimDETF } from "./PageClaimDETF";
 import { PageHome } from "./PageHome";
+import { PageNew } from "./PageNew";
 import { PageNotFound } from "./PageNotFound";
 import "./styles/App.less";
 
@@ -31,6 +32,7 @@ export const AppRouter: React.FC = () => {
                 <Route index element={<PageHome />} />
                 <Route path="/about" element={<PageAbout />} />
                 <Route path="/claim-detf" element={<PageClaimDETF />} />
+                <Route path="/new" element={<PageNew />} />
                 <Route path="*" element={<PageNotFound />} />
             </Route>
         </Routes>
