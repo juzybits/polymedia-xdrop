@@ -12,9 +12,9 @@ import {
     TransferModule,
     WaitForTxOptions,
 } from "@polymedia/suitcase-core";
-import { XDropModule } from "./XDropFunctions";
+import { XDropModule } from "./xdrop-functions";
 import { getLinkType, LinkNetwork } from "./config";
-import { SuiLink } from "./types";
+import { SuiLink } from "./xdrop-structs";
 
 /**
  * Execute transactions on the XDrop Sui package.

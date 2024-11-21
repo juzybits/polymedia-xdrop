@@ -1,3 +1,3 @@
 export * from "./config.js";
-export * from "./XDropClient.js";
-export * from "./types.js";
+export * from "./xdrop-client.js";
+export * from "./xdrop-structs.js";
