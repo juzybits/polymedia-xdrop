@@ -13,7 +13,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comps/glitch";
 import { IconInfo } from "./comps/icons";
-import { AppConfig, getAppConfig } from "./lib/config";
+import { AppConfig, getAppConfig } from "./lib/app-config";
 import { loadNetworkConfig } from "./lib/network";
 import { PageAbout } from "./PageAbout";
 import { PageAddClaims } from "./PageAddClaims";

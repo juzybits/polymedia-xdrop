@@ -59,7 +59,7 @@ export class XDropClient extends SuiClientBase
                 owner,
                 cursor,
                 options: { showContent: true },
-                filter: { StructType: getLinkType(this.suilinkPkgId, linkNetwork) },
+                filter: { StructType: getLinkType(this.suilinkPkgId, linkNetwork, "outer") },
             });
             for (const obj of resp.data) {
                 objs.push(objResToFields(obj));
@@ -86,7 +86,7 @@ export class XDropClient extends SuiClientBase
             tx,
             this.xdropPkgId,
             typeCoin,
-            getLinkType(this.suilinkPkgId, linkNetwork),
+            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
             xdropId,
             addrs,
         );
@@ -111,7 +111,7 @@ export class XDropClient extends SuiClientBase
     }> {
         const tx = new Transaction();
 
-        const typeLink = getLinkType(this.suilinkPkgId, linkNetwork);
+        const typeLink = getLinkType(this.suilinkPkgId, linkNetwork, "inner");
 
         const [xdropArg] = XDropModule.admin_creates_xdrop(
             tx, this.xdropPkgId, typeCoin, typeLink
@@ -149,12 +149,34 @@ export class XDropClient extends SuiClientBase
             tx,
             this.xdropPkgId,
             typeCoin,
-            getLinkType(this.suilinkPkgId, linkNetwork),
+            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
             xdropId,
             payCoinArg,
             addrs,
             amounts,
         );
+
+        return await this.signAndExecuteTransaction(tx);
+    }
+
+    public async userClaims(
+        typeCoin: string,
+        linkNetwork: LinkNetwork,
+        xdropId: string,
+        linkIds: string[],
+    ) {
+        const tx = new Transaction();
+
+        for (const linkId of linkIds) {
+            XDropModule.user_claims(
+                tx,
+                this.xdropPkgId,
+                typeCoin,
+                getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+                xdropId,
+                linkId,
+            );
+        }
 
         return await this.signAndExecuteTransaction(tx);
     }

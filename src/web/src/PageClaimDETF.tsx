@@ -76,7 +76,11 @@ const ClaimWidget: React.FC<{
     currAddr,
 }) =>
 {
-    const { appCnf, xdropClient } = useAppContext();
+    // == state ==
+
+    const currAcct = useCurrentAccount();
+
+    const { appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
 
     const links = useFetch(
         async () => await xdropClient.fetchOwnedLinks(currAddr, appCnf.linkNetwork),
@@ -93,17 +97,42 @@ const ClaimWidget: React.FC<{
         [appCnf.coinType, appCnf.linkNetwork, appCnf.xdropId, links.data]
     );
 
-    useEffect(() => {
+    // == effects ==
+
+    useEffect(() => { // dev only
         if (links.data) {
             console.log("Owned links:",JSON.stringify(links.data, null, 2));
         }
     }, [links]);
 
-    useEffect(() => {
+    useEffect(() => { // dev only
         if (amounts.data) {
             console.log("Claimable amounts:",JSON.stringify(amounts.data, null, 2));
         }
     }, [amounts]);
+
+    // == functions ==
+
+    const disableSubmit = isWorking || !currAcct || !links.data || !amounts.data;
+
+    const onSubmit = async () => {
+        if (disableSubmit) { return; }
+
+        try {
+            setIsWorking(true);
+            const resp = await xdropClient.userClaims(
+                appCnf.coinType,
+                appCnf.linkNetwork,
+                appCnf.xdropId,
+                links.data!.map(l => l.id)
+            );
+            console.log("[onSubmit] okay:", resp);
+        } catch (err) {
+            console.warn("[onSubmit] error:", err);
+        } finally {
+            setIsWorking(false);
+        }
+    };
 
     // === html ===
 
@@ -129,7 +158,7 @@ const ClaimWidget: React.FC<{
                 )}
             </div>
         <div className="center-element">
-            <Btn onClick={() => {}}>CLAIM ALL</Btn>
+            <Btn onClick={onSubmit}>CLAIM ALL</Btn>
         </div>
     </>;
 };

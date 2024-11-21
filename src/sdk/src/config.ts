@@ -34,10 +34,16 @@ export function getNetworkConfig(network: NetworkName): NetworkConfig {
 
 export type LinkNetwork = "ethereum" | "solana";
 
-export function getLinkType(pkgId: string, network: LinkNetwork): string {
-    const moduleAndType = network === "ethereum" ? "ethereum::Ethereum" : "solana::Solana";
-    return `${pkgId}::suilink::SuiLink<${pkgId}::${moduleAndType}>`;
-}
+export function getLinkType(
+    pkgId: string,
+    network: LinkNetwork,
+    level: "outer" | "inner",
+): string
+{
+     const moduleAndStruct = network === "ethereum" ? "ethereum::Ethereum" : "solana::Solana";
+     const innerType = `${pkgId}::${moduleAndStruct}`;
+     return level === "inner" ? innerType : `${pkgId}::suilink::SuiLink<${innerType}>`;
+ }
 
 // === auction package ===
 
