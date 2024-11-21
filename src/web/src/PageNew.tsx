@@ -1,4 +1,4 @@
-import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 import React from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
@@ -8,12 +8,12 @@ import { BtnConnect } from "./comps/connect";
 export const PageNew: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
-    const { mutate: disconnect } = useDisconnectWallet();
 
     const { header, network } = useAppContext();
     const cnf = getWebConfig(network);
 
     const onCreate = () => {
+        if (!currAcct) { return; }
         console.log("onCreate");
     };
 

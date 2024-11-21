@@ -26,6 +26,10 @@ export const OBJECT_IDS: Record<NetworkName, ObjectIds> = {
     },
 };
 
+export function getObjectIds(network: NetworkName): ObjectIds {
+    return OBJECT_IDS[network];
+}
+
 // === SuiLink package ===
 
 export type LinkNetwork = "ethereum" | "solana";
