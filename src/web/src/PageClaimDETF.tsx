@@ -6,6 +6,7 @@ import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
 import { getAppConfig, AppConfig } from "./lib/config";
+import { CardSpinner, CardWithMsg } from "./comps/cards";
 
 export const PageClaimDETF: React.FC = () =>
 {
@@ -78,7 +79,6 @@ const ClaimWidget: React.FC<{
     appCnf,
 }) =>
 {
-
     const { xdropClient } = useAppContext();
 
     const links = useFetch(
@@ -86,7 +86,7 @@ const ClaimWidget: React.FC<{
         [currAddr, appCnf.linkNetwork]
     );
 
-    const statuses = useFetch(
+    const amounts = useFetch(
         async () => {
             if (!links.data) { return undefined; }
             return await xdropClient.getClaimableAmounts(
@@ -97,10 +97,31 @@ const ClaimWidget: React.FC<{
     );
 
     useEffect(() => {
-        if (links.data) { console.log(JSON.stringify(links.data, null, 2)); }
+        if (links.data) {
+            console.log("Owned links:",JSON.stringify(links.data, null, 2));
+        }
     }, [links]);
 
+    useEffect(() => {
+        if (amounts.data) {
+            console.log("Claimable amounts:",JSON.stringify(amounts.data, null, 2));
+        }
+    }, [amounts]);
+
+    // === html ===
+
+    if (links.error || amounts.error) {
+        return <CardWithMsg className="compact">{links.error ?? amounts.error}</CardWithMsg>;
+    } else if (links.isLoading || amounts.isLoading) {
+        return <CardSpinner />;
+    }
+
     return <>
+            <div className="card-title">Claimable amounts</div>
+            <div className="card-description">
+                {amounts.isLoading && <CardSpinner />}
+                {amounts.data && JSON.stringify(amounts.data, null, 2)}
+            </div>
         <div className="center-element">
             <Btn onClick={() => {}}>CLAIM {appCnf.coinTicker}</Btn>
         </div>

@@ -14,6 +14,7 @@ import {
 } from "@polymedia/suitcase-core";
 import { XDropModule } from "./XDropFunctions";
 import { getLinkType, LinkNetwork } from "./config";
+import { SuiLink } from "./types";
 
 /**
  * Execute transactions on the XDrop Sui package.
@@ -49,7 +50,7 @@ export class XDropClient extends SuiClientBase
     public async fetchOwnedLinks(
         owner: string,
         linkNetwork: LinkNetwork,
-    ) {
+    ): Promise<SuiLink[]> {
         const objs: Record<string, any>[] = [];
         let cursor: string|null|undefined = null;
         let hasNextPage = true;
@@ -66,7 +67,11 @@ export class XDropClient extends SuiClientBase
             cursor = resp.nextCursor;
             hasNextPage = resp.hasNextPage;
         }
-        return objs;
+        return objs.map(o => ({
+            id: o.id.id,
+            network_address: o.network_address,
+            timestamp_ms: o.timestamp_ms,
+        }));
     }
 
     public async getClaimableAmounts(
