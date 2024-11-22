@@ -29,6 +29,7 @@ const RANDO_ETH: vector<u8> = b"ethereum rando";
 
 public struct TestRunner {
     scen: Scenario,
+    supply: Coin<DEVCOIN>,
     xdrop: XDrop<DEVCOIN, Ethereum>,
 }
 
@@ -37,10 +38,12 @@ fun begin(
 ): TestRunner
 {
     let mut scen = scen::begin(sender);
-    let xdrop = xdrop::admin_creates_xdrop<DEVCOIN, Ethereum>(scen.ctx(), b"");
-    let mut runner = TestRunner { scen, xdrop };
+    devcoin::init_for_testing(scen.ctx());
+    scen.next_tx(sender);
+    let supply = scen.take_from_sender<Coin<DEVCOIN>>();
 
-    devcoin::init_for_testing(runner.scen.ctx());
+    let xdrop = xdrop::admin_creates_xdrop<DEVCOIN, Ethereum>(scen.ctx(), b"");
+    let mut runner = TestRunner { scen, supply,xdrop };
 
     runner.dev_link_ethereum(USER_1, USER_1_ETH); // changes next_tx(sender)
     runner.dev_link_ethereum(USER_2, USER_2_ETH);
@@ -79,13 +82,9 @@ fun admin_adds_claims(
 ) {
     runner.scen.next_tx(sender);
 
-    let mut coin_supply = runner.scen.take_from_sender<Coin<DEVCOIN>>();
-
     let total_amount = amounts.fold!(0, |acc, val| acc + val);
-    let coin_chunk = coin_supply.split(total_amount, runner.scen.ctx());
+    let coin_chunk = runner.supply.split(total_amount, runner.scen.ctx());
     runner.xdrop.admin_adds_claims(coin_chunk, addrs, amounts, runner.scen.ctx());
-
-    runner.scen.return_to_sender(coin_supply);
 }
 
 fun admin_opens_xdrop(
