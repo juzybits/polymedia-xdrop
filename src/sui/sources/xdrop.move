@@ -112,15 +112,6 @@ public fun admin_adds_claims<C, N>(
     coin::put(&mut xdrop.balance, coin);
 }
 
-public fun admin_sets_admin_address<C, N>(
-    xdrop: &mut XDrop<C, N>,
-    new_admin: address,
-    ctx: &mut TxContext,
-) {
-    assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    xdrop.admin = new_admin;
-}
-
 public fun admin_opens_xdrop<C, N>(
     xdrop: &mut XDrop<C, N>,
     ctx: &mut TxContext,
@@ -157,6 +148,15 @@ public fun admin_reclaims_balance<C, N>(
 
     let value = xdrop.balance.value();
     return coin::take(&mut xdrop.balance, value, ctx)
+}
+
+public fun admin_sets_admin_address<C, N>(
+    xdrop: &mut XDrop<C, N>,
+    new_admin: address,
+    ctx: &mut TxContext,
+) {
+    assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    xdrop.admin = new_admin;
 }
 
 // === user functions ===
