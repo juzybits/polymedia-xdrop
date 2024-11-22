@@ -184,7 +184,7 @@ public fun user_claims<C, N>(
 
 public fun get_claimable_amounts<C, N>(
     xdrop: &XDrop<C, N>,
-    addrs: vector<String>,
+    addrs: vector<vector<u8>>,
 ): vector<Option<u64>>
 {
     let mut amounts = vector::empty<Option<u64>>();
@@ -192,7 +192,7 @@ public fun get_claimable_amounts<C, N>(
     let len = addrs.length();
     while (i < len)
     {
-        let addr = *addrs.borrow(i);
+        let addr = (*addrs.borrow(i)).to_string();
         if (!xdrop.claims.contains(addr)) {
             vector::push_back(&mut amounts, option::none());
         } else {
