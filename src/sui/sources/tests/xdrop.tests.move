@@ -256,8 +256,8 @@ fun test_admin_adds_claims_e_ended()
     test_utils::destroy(runner);
 }
 
-#[test, expected_failure(abort_code = xdrop::E_ZERO_LENGTH)]
-fun test_admin_adds_claims_e_zero_length()
+#[test, expected_failure(abort_code = xdrop::E_ZERO_LENGTH_VECTOR)]
+fun test_admin_adds_claims_e_zero_length_vector()
 {
     let mut runner = begin(ADMIN);
     runner.admin_adds_claims(ADMIN, vector[], vector[]);
@@ -301,6 +301,14 @@ fun test_admin_adds_claims_e_amount_mismatch()
         vector[100, 200],
         runner.scen.ctx(),
     );
+    test_utils::destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ZERO_LENGTH_ADDRESS)]
+fun test_admin_adds_claims_e_zero_length_address()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_adds_claims(ADMIN, vector[b""], vector[100]);
     test_utils::destroy(runner);
 }
 

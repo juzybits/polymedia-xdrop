@@ -21,11 +21,12 @@ const E_NOT_ADMIN: u64 = 3002;
 const E_LENGTH_MISMATCH: u64 = 3003;
 const E_ADDRESS_ALREADY_ADDED: u64 = 3004;
 const E_ZERO_AMOUNT: u64 = 3005;
-const E_ZERO_LENGTH: u64 = 3006;
+const E_ZERO_LENGTH_VECTOR: u64 = 3006;
 const E_AMOUNT_MISMATCH: u64 = 3007;
 const E_ENDED: u64 = 3008;
 const E_NOT_ENDED: u64 = 3009;
 const E_NOT_OPEN: u64 = 3010;
+const E_ZERO_LENGTH_ADDRESS: u64 = 3011;
 
 // === constants ===
 
@@ -88,12 +89,13 @@ public fun admin_adds_claims<C, N>(
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
     assert!( !xdrop.is_ended(), E_ENDED );
     assert!( addrs.length() == amounts.length(), E_LENGTH_MISMATCH );
-    assert!( addrs.length() > 0, E_ZERO_LENGTH );
+    assert!( addrs.length() > 0, E_ZERO_LENGTH_VECTOR );
 
     let mut total_amount = 0;
     while (addrs.length() > 0)
     {
         let addr = addrs.pop_back().to_string();
+        assert!( addr.length() > 0, E_ZERO_LENGTH_ADDRESS );
         assert!( !xdrop.claims.contains(addr), E_ADDRESS_ALREADY_ADDED );
 
         let amount = amounts.pop_back();
