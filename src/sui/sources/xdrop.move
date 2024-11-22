@@ -53,8 +53,8 @@ public struct XDrop<phantom C, phantom N> has key, store {
     balance: Balance<C>,
     /// keys are addresses in the foreign network
     claims: Table<String, Claim>,
-    // JSON
-    info: String,
+    /// Application-specific details (name, description, project URL, etc)
+    info_json: String,
 }
 
 public struct Claim has store {
@@ -66,6 +66,7 @@ public struct Claim has store {
 
 public fun admin_creates_xdrop<C, N>(
     ctx: &mut TxContext,
+    info_json: vector<u8>,
 ): XDrop<C, N> {
     XDrop {
         id: object::new(ctx),
@@ -73,7 +74,7 @@ public fun admin_creates_xdrop<C, N>(
         status: XDROP_STATUS_PAUSED,
         balance: balance::zero(),
         claims: table::new(ctx),
-        info: b"".to_string(),
+        info_json: info_json.to_string(),
     }
 }
 

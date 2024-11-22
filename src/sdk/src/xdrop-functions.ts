@@ -13,12 +13,15 @@ export const XDropModule =
         packageId: string,
         type_coin: string,
         type_network: string,
+        info_json: string,
     ): TransactionResult =>
     {
         return tx.moveCall({
             target: `${packageId}::xdrop::admin_creates_xdrop`,
             typeArguments: [ type_coin, type_network ],
-            arguments: [],
+            arguments: [
+                tx.pure.string(info_json),
+            ],
         });
     },
 

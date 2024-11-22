@@ -69,7 +69,7 @@ fun admin_creates_xdrop(
     sender: address,
 ): XDrop<DEVCOIN, Ethereum> {
     runner.scen.next_tx(sender);
-    return xdrop::admin_creates_xdrop<DEVCOIN, Ethereum>(runner.scen.ctx())
+    return xdrop::admin_creates_xdrop<DEVCOIN, Ethereum>(runner.scen.ctx(), b"")
 }
 
 fun admin_adds_claims(

@@ -102,6 +102,7 @@ export class XDropClient extends SuiClientBase
     public async adminCreatesAndSharesXDrop(
         typeCoin: string,
         linkNetwork: LinkNetwork,
+        infoJson: string,
     ): Promise<{
         resp: SuiTransactionBlockResponse;
         xdropObjChange: ObjChangeKind<"created">;
@@ -111,7 +112,7 @@ export class XDropClient extends SuiClientBase
         const typeLink = getLinkType(this.suilinkPkgId, linkNetwork, "inner");
 
         const [xdropArg] = XDropModule.admin_creates_xdrop(
-            tx, this.xdropPkgId, typeCoin, typeLink
+            tx, this.xdropPkgId, typeCoin, typeLink, infoJson
         );
 
         TransferModule.public_share_object(
