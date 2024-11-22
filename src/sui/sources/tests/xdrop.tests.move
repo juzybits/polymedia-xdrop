@@ -228,3 +228,70 @@ fun test_end_to_end()
     test_utils::destroy(link);
     test_utils::destroy(coin);
 }
+
+// === tests: admin_adds_claims ===
+
+#[test, expected_failure(abort_code = xdrop::E_NOT_ADMIN)]
+fun test_admin_adds_claims_e_not_admin()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_adds_claims(USER_1, vector[USER_1_ETH], vector[100, 200]);
+    test_utils::destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ENDED)]
+fun test_admin_adds_claims_e_ended()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_ends_xdrop(ADMIN);
+    runner.admin_adds_claims(ADMIN, vector[USER_1_ETH], vector[100, 200]);
+    test_utils::destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ZERO_LENGTH)]
+fun test_admin_adds_claims_e_zero_length()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_adds_claims(ADMIN, vector[], vector[]);
+    test_utils::destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_LENGTH_MISMATCH)]
+fun test_admin_adds_claims_e_length_mismatch()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_adds_claims(ADMIN, vector[USER_1_ETH], vector[100, 200]);
+    test_utils::destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ZERO_AMOUNT)]
+fun test_admin_adds_claims_e_zero_amount()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_adds_claims(ADMIN, vector[USER_1_ETH, USER_2_ETH], vector[0, 200]);
+    test_utils::destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ADDRESS_ALREADY_ADDED)]
+fun test_admin_adds_claims_e_address_already_added()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_adds_claims(ADMIN, vector[USER_1_ETH, USER_2_ETH], vector[100, 200]);
+    runner.admin_adds_claims(ADMIN, vector[USER_1_ETH], vector[300]);
+    test_utils::destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_AMOUNT_MISMATCH)]
+fun test_admin_adds_claims_e_amount_mismatch()
+{
+    let mut runner = begin(ADMIN);
+    let total_amount = 299;
+    let coin_chunk = runner.supply.split(total_amount, runner.scen.ctx());
+    runner.xdrop.admin_adds_claims(
+        coin_chunk,
+        vector[USER_1_ETH, USER_2_ETH],
+        vector[100, 200],
+        runner.scen.ctx(),
+    );
+    test_utils::destroy(runner);
+}
