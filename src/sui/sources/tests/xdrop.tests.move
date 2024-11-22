@@ -381,3 +381,54 @@ fun test_admin_sets_admin_address_e_not_admin()
     runner.admin_sets_admin_address(USER_1, ADMIN_2);
     test_utils::destroy(runner);
 }
+
+// === tests: user_claims ===
+
+#[test, expected_failure(abort_code = xdrop::E_NOT_OPEN)]
+fun test_user_claims_e_not_open()
+{
+    let mut runner = begin(ADMIN);
+    let link = runner.take_link_ethereum(USER_1);
+    runner.user_claims(USER_1, &link);
+    test_utils::destroy(runner);
+    test_utils::destroy(link);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ADDRESS_NOT_FOUND)]
+fun test_user_claims_e_address_not_found()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_adds_claims(ADMIN, vector[USER_1_ETH], vector[100]);
+    runner.admin_opens_xdrop(ADMIN);
+
+    let link = runner.take_link_ethereum(USER_2);
+    runner.user_claims(USER_2, &link);
+
+    test_utils::destroy(runner);
+    test_utils::destroy(link);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ALREADY_CLAIMED)]
+fun test_user_claims_e_already_claimed()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_adds_claims(ADMIN, vector[USER_1_ETH], vector[100]);
+    runner.admin_opens_xdrop(ADMIN);
+
+    let link = runner.take_link_ethereum(USER_1);
+    runner.user_claims(USER_1, &link);
+    runner.user_claims(USER_1, &link);
+
+    test_utils::destroy(runner);
+    test_utils::destroy(link);
+}
+
+// === tests: 100% coverage ===
+
+#[test]
+fun test_init_for_testing()
+{
+    let mut runner = begin(ADMIN);
+    xdrop::init_for_testing(runner.scen.ctx());
+    test_utils::destroy(runner);
+}
