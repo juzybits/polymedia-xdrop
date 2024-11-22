@@ -119,6 +119,14 @@ fun admin_reclaims_remaining_balance(
     return runner.xdrop.admin_reclaims_balance(runner.scen.ctx())
 }
 
+fun admin_reclaims_balance(
+    runner: &mut TestRunner,
+    sender: address,
+): Coin<DEVCOIN> {
+    runner.scen.next_tx(sender);
+    return runner.xdrop.admin_reclaims_balance(runner.scen.ctx())
+}
+
 fun admin_sets_admin_address(
     runner: &mut TestRunner,
     sender: address,
@@ -293,5 +301,83 @@ fun test_admin_adds_claims_e_amount_mismatch()
         vector[100, 200],
         runner.scen.ctx(),
     );
+    test_utils::destroy(runner);
+}
+
+// === tests: admin_opens_xdrop ===
+
+#[test, expected_failure(abort_code = xdrop::E_NOT_ADMIN)]
+fun test_admin_opens_xdrop_e_not_admin()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_opens_xdrop(USER_1);
+    test_utils::destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ENDED)]
+fun test_admin_opens_xdrop_e_ended()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_ends_xdrop(ADMIN);
+    runner.admin_opens_xdrop(ADMIN);
+    test_utils::destroy(runner);
+}
+
+// === tests: admin_pauses_xdrop ===
+
+#[test, expected_failure(abort_code = xdrop::E_NOT_ADMIN)]
+fun test_admin_pauses_xdrop_e_not_admin()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_pauses_xdrop(USER_1);
+    test_utils::destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ENDED)]
+fun test_admin_pauses_xdrop_e_ended()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_ends_xdrop(ADMIN);
+    runner.admin_pauses_xdrop(ADMIN);
+    test_utils::destroy(runner);
+}
+
+// === tests: admin_ends_xdrop ===
+
+#[test, expected_failure(abort_code = xdrop::E_NOT_ADMIN)]
+fun test_admin_ends_xdrop_e_not_admin()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_ends_xdrop(USER_1);
+    test_utils::destroy(runner);
+}
+
+// === tests: admin_reclaims_balance ===
+
+#[test, expected_failure(abort_code = xdrop::E_NOT_ADMIN)]
+fun test_admin_reclaims_balance_e_not_admin()
+{
+    let mut runner = begin(ADMIN);
+    let coin = runner.admin_reclaims_balance(USER_1);
+    test_utils::destroy(runner);
+    test_utils::destroy(coin);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_NOT_ENDED)]
+fun test_admin_reclaims_balance_e_not_ended()
+{
+    let mut runner = begin(ADMIN);
+    let coin = runner.admin_reclaims_balance(ADMIN);
+    test_utils::destroy(runner);
+    test_utils::destroy(coin);
+}
+
+// === tests: admin_sets_admin_address ===
+
+#[test, expected_failure(abort_code = xdrop::E_NOT_ADMIN)]
+fun test_admin_sets_admin_address_e_not_admin()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_sets_admin_address(USER_1, ADMIN_2);
     test_utils::destroy(runner);
 }
