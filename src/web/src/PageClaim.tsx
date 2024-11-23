@@ -1,7 +1,7 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { formatBalance, shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
-import { LinkNetwork, SuiLink } from "@polymedia/xdrop-sdk";
+import { LinkNetwork, LinkWithAmount, SuiLink } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -158,30 +158,47 @@ const ClaimWidget: React.FC<{
     const hasAnyLinks = links.data && links.data.length > 0;
     const hasEligibleLinks = amounts.data && amounts.data.some(a => a !== null);
 
+    const mergedData: LinkWithAmount[] | undefined =
+        !(links.data && amounts.data)
+        ? undefined
+        : links.data.map((link, i) => ({ // merge links and amounts
+            ...link,
+            amount: amounts.data![i]
+        })).sort((a, b) => { // put positive amounts first, and 0/null amounts last
+            const aPositive = a.amount !== null && a.amount > 0n;
+            const bPositive = b.amount !== null && b.amount > 0n;
+            if (aPositive === bPositive) return 0; // keep original order
+            return aPositive ? -1 : 1;
+        });
+
     return <>
         <div className="card-title">Claimable amounts</div>
 
-        <div className="card-description">
         {(() => {
             if (!hasAnyLinks) {
-                return <>You haven't linked any addresses yet.</>;
+                return <div className="card-description">
+                    You haven't linked any addresses yet.
+                </div>;
             }
             if (!hasEligibleLinks) {
-                return <>None of your linked addresses are eligible.</>;
+                return <div className="card-description">
+                    None of your linked addresses are eligible.
+                </div>;
             }
             return <>
-                <div className="card-list tx-list">
-                    {links.data!.map((link, i) => {
-                        const amount = amounts.data![i];
-                        return amount === null ? null : (
-                            <CardClaimableItem
-                                key={link.id}
-                                xCnf={xCnf}
-                                link={link}
-                                amount={amount}
-                            />
-                        );
-                    })}
+                <div className="card-description">
+                    <div className="card-list tx-list">
+                        {mergedData!.map((linkWithAmount) =>
+                            linkWithAmount.amount === null ? null : (
+                                <CardClaimableItem
+                                    key={linkWithAmount.id}
+                                    xCnf={xCnf}
+                                    link={linkWithAmount}
+                                    amount={linkWithAmount.amount}
+                                />
+                            )
+                        )}
+                    </div>
                 </div>
 
                 <div className="center-element">
@@ -189,7 +206,6 @@ const ClaimWidget: React.FC<{
                 </div>
             </>;
         })()}
-        </div>
     </>;
 };
 

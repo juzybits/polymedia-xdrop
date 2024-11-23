@@ -7,6 +7,18 @@ export type SuiLink = {
     timestamp_ms: number;
 };
 
+/**
+ * positive amount = claimable;
+ * 0 amount = already claimed;
+ * null amount = not eligible.
+ */
+export type ClaimableAmount = bigint | null;
+
+export type LinkWithAmount = SuiLink & {
+    amount: ClaimableAmount;
+};
+
+
 /* eslint-disable */
 export function objResToSuiLink(
     resp: SuiObjectResponse,
