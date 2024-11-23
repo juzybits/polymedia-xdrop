@@ -9,8 +9,8 @@ export type XDropConfig = {
     coinDecimals: number;
     coinTicker: string;
     linkNetwork: LinkNetwork;
-    linkedAddrs: string[];
-    claimAmounts: bigint[];
+    devLinkedAddrs: string[];
+    devClaimAmounts: bigint[];
 };
 
 const config: AppConfig = {
@@ -20,11 +20,11 @@ const config: AppConfig = {
         coinDecimals: 9,
         xdropId: "0xce080e4ae26f39b1ebd7335c0518de0a2f8d2319962d8a16b7d19ac3e2ce67c0",
         linkNetwork: "ethereum",
-        linkedAddrs: [
+        devLinkedAddrs: [
             "eth address 1",
             "eth address 2",
         ],
-        claimAmounts: [
+        devClaimAmounts: [
             100n * 1_000_000_000n,
             200n * 1_000_000_000n,
         ],

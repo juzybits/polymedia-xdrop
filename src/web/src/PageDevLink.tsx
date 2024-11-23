@@ -29,14 +29,14 @@ export const PageDevLink: React.FC = () =>
         try {
             setIsWorking(true);
             const tx = new Transaction();
-            for (const ethAddr of xCnf.linkedAddrs) {
+            for (const linkedAddr of xCnf.devLinkedAddrs) {
                 tx.moveCall({
                     package: netCnf.suilinkPkgId,
                     module: xCnf.linkNetwork,
                     function: "dev_link",
                     arguments: [
                         tx.pure.address(currAcct.address),
-                        tx.pure.string(ethAddr),
+                        tx.pure.string(linkedAddr),
                     ],
                 });
             }
@@ -65,7 +65,7 @@ export const PageDevLink: React.FC = () =>
                 </div>
                 <div className="card-description">
                     <p>Link Network: {xCnf.linkNetwork}</p>
-                    <p>Linked Addresses: {xCnf.linkedAddrs.join(", ")}</p>
+                    <p>Linked Addresses: {xCnf.devLinkedAddrs.join(", ")}</p>
                 </div>
                 <div>
                     {currAcct

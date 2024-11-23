@@ -32,8 +32,8 @@ export const PageAddClaims: React.FC = () =>
                 xCnf.coinType,
                 xCnf.linkNetwork,
                 xCnf.xdropId,
-                xCnf.linkedAddrs,
-                xCnf.claimAmounts,
+                xCnf.devLinkedAddrs,
+                xCnf.devClaimAmounts,
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
@@ -61,8 +61,8 @@ export const PageAddClaims: React.FC = () =>
                     <p>Coin Type: {xCnf.coinType}</p>
                     <p>Link Network: {xCnf.linkNetwork}</p>
                     <p>xDrop ID: {xCnf.xdropId}</p>
-                    <p>Linked Addresses: {xCnf.linkedAddrs.join(", ")}</p>
-                    <p>Claim Amounts: {xCnf.claimAmounts.join(", ")}</p>
+                    <p>Linked Addresses: {xCnf.devLinkedAddrs.join(", ")}</p>
+                    <p>Claim Amounts: {xCnf.devClaimAmounts.join(", ")}</p>
                 </div>
                 <div>
                     {currAcct
