@@ -2,7 +2,7 @@ import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { formatBalance, shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
 import { LinkNetwork, LinkWithStatus } from "@polymedia/xdrop-sdk";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { PageNotFound } from "./PageNotFound";
@@ -10,6 +10,7 @@ import { Btn } from "./comps/button";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { BtnConnect } from "./comps/connect";
 import { XDropConfig } from "./lib/app-config";
+import { SubmitRes } from "./lib/misc";
 
 export const PageClaim: React.FC = () =>
 {
@@ -94,6 +95,8 @@ const ClaimWidget: React.FC<{
 
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
 
+    const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
+
     const links = useFetch(
         async () => await xdropClient.fetchOwnedLinks(currAddr, xCnf.linkNetwork),
         [currAddr, xCnf.linkNetwork]
@@ -130,6 +133,7 @@ const ClaimWidget: React.FC<{
 
         try {
             setIsWorking(true);
+            setSubmitRes({ ok: undefined });
             const resp = await xdropClient.userClaims(
                 currAddr,
                 xCnf.coinType,
@@ -138,8 +142,10 @@ const ClaimWidget: React.FC<{
                 eligibleLinksWithStat!.filter(l => !l.status.claimed).map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);
+            setSubmitRes({ ok: true });
         } catch (err) {
             console.warn("[onSubmit] error:", err);
+            setSubmitRes({ ok: false, err: err instanceof Error ? err.message : String(err) });
         } finally {
             setIsWorking(false);
         }
@@ -195,10 +201,18 @@ const ClaimWidget: React.FC<{
             </div>
         </div>
 
-        {hasEligibleLinks &&
-        <div className="center-element">
-            <Btn onClick={onSubmit}>CLAIM ALL</Btn>
-        </div>}
+        {hasEligibleLinks && <>
+            <div className="center-element">
+                <Btn disabled={disableSubmit} onClick={onSubmit}>CLAIM ALL</Btn>
+            </div>
+
+            {submitRes.ok === true &&
+            <div className="success center-element center-text">Success!</div>}
+
+            {submitRes.ok === false && submitRes.err &&
+            <div className="error center-element center-text">{submitRes.err}</div>}
+        </>}
+
     </>;
 };
 
