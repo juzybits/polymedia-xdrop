@@ -135,7 +135,7 @@ const ClaimWidget: React.FC<{
                 xCnf.coinType,
                 xCnf.linkNetwork,
                 xCnf.xdropId,
-                linksWithStatus!.filter(l => l.status.amount > 0n && !l.status.claimed).map(l => l.id)
+                eligibleLinksWithStat!.filter(l => !l.status.claimed).map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
@@ -157,17 +157,19 @@ const ClaimWidget: React.FC<{
     const hasAnyLinks = links.data && links.data.length > 0;
     const hasEligibleLinks = statuses.data && statuses.data.some(s => s.eligible);
 
-    const linksWithStatus: LinkWithStatus[] | undefined =
+    const eligibleLinksWithStat: LinkWithStatus[] | undefined =
         !(links.data && statuses.data)
         ? undefined
-        : links.data.map((link, i) => ({ // merge links and amounts
+        // merge links with their statuses (guaranteed to be in the same order)
+        : links.data.map((link, i) => ({
             ...link,
-            status: statuses.data![i],
-            })
-        ).sort((a, b) => { // put claimable links first
-            const aIsClaimable = a.status.eligible && !a.status.claimed;
-            const bIsClaimable = b.status.eligible && !b.status.claimed;
-            return Number(bIsClaimable) - Number(aIsClaimable);
+            status: statuses.data![i]
+        }))
+        // grab only eligible links
+        .filter(l => l.status.eligible)
+        // put unclaimed links first
+        .sort((a, b) => {
+            return Number(!b.status.claimed) - Number(!a.status.claimed);
         });
 
     return <>
@@ -187,14 +189,8 @@ const ClaimWidget: React.FC<{
             return <>
                 <div className="card-description">
                     <div className="card-list tx-list">
-                        {linksWithStatus!.map(linkWStat =>
-                            !linkWStat.status.eligible ? null : (
-                                <CardClaimableItem
-                                    key={linkWStat.id}
-                                    xCnf={xCnf}
-                                    link={linkWStat}
-                                />
-                            )
+                        {eligibleLinksWithStat!.map(linkWStat =>
+                            <CardClaimableLink key={linkWStat.id} xCnf={xCnf} link={linkWStat} />
                         )}
                     </div>
                 </div>
@@ -207,7 +203,7 @@ const ClaimWidget: React.FC<{
     </>;
 };
 
-const CardClaimableItem: React.FC<{
+const CardClaimableLink: React.FC<{
     xCnf: XDropConfig;
     link: LinkWithStatus;
 }> = ({
