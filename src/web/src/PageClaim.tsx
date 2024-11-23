@@ -155,27 +155,40 @@ const ClaimWidget: React.FC<{
         return <CardSpinner />;
     }
 
+    const hasAnyLinks = links.data && links.data.length > 0;
+    const hasEligibleLinks = amounts.data && amounts.data.some(a => a !== null);
+
     return <>
-            <div className="card-title">Claimable amounts</div>
-            <div className="card-description">
-                {amounts.data && links.data && ( // have the same length
-                    <div className="card-list tx-list">
-                        {links.data.map((link, i) => {
-                            const amount = amounts.data![i];
-                            return amount === null ? null : (
-                                <CardClaimableItem
-                                    key={link.id}
-                                    xCnf={xCnf}
-                                    link={link}
-                                    amount={amount}
-                                />
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
-        <div className="center-element">
-            <Btn onClick={onSubmit}>CLAIM ALL</Btn>
+        <div className="card-title">Claimable amounts</div>
+
+        <div className="card-description">
+        {(() => {
+            if (!hasAnyLinks) {
+                return <>You haven't linked any addresses yet.</>;
+            }
+            if (!hasEligibleLinks) {
+                return <>None of your linked addresses are eligible.</>;
+            }
+            return <>
+                <div className="card-list tx-list">
+                    {links.data!.map((link, i) => {
+                        const amount = amounts.data![i];
+                        return amount === null ? null : (
+                            <CardClaimableItem
+                                key={link.id}
+                                xCnf={xCnf}
+                                link={link}
+                                amount={amount}
+                            />
+                        );
+                    })}
+                </div>
+
+                <div className="center-element">
+                    <Btn onClick={onSubmit}>CLAIM ALL</Btn>
+                </div>
+            </>;
+        })()}
         </div>
     </>;
 };
