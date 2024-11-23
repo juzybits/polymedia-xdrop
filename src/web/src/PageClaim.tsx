@@ -173,33 +173,32 @@ const ClaimWidget: React.FC<{
         });
 
     return <>
-        <div className="card-title">Claimable amounts</div>
-
-        {(() => {
-            if (!hasAnyLinks) {
-                return <div className="card-description">
-                    You haven't linked any addresses yet.
-                </div>;
-            }
-            if (!hasEligibleLinks) {
-                return <div className="card-description">
-                    None of your linked addresses are eligible.
-                </div>;
-            }
-            return <>
-                <div className="card-description">
-                    <div className="card-list tx-list">
+        <div className="card-description">
+            <div className="card-list tx-list">
+                {(() => {
+                    if (!hasAnyLinks) {
+                        return <div className="card tx disabled">
+                            You haven't linked any addresses yet.
+                        </div>;
+                    }
+                    if (!hasEligibleLinks) {
+                        return <div className="card tx disabled">
+                            None of your linked addresses are eligible.
+                        </div>;
+                    }
+                    return <>
                         {eligibleLinksWithStat!.map(linkWStat =>
                             <CardClaimableLink key={linkWStat.id} xCnf={xCnf} link={linkWStat} />
                         )}
-                    </div>
-                </div>
+                    </>;
+                })()}
+            </div>
+        </div>
 
-                <div className="center-element">
-                    <Btn onClick={onSubmit}>CLAIM ALL</Btn>
-                </div>
-            </>;
-        })()}
+        {hasEligibleLinks &&
+        <div className="center-element">
+            <Btn onClick={onSubmit}>CLAIM ALL</Btn>
+        </div>}
     </>;
 };
 
@@ -211,7 +210,7 @@ const CardClaimableLink: React.FC<{
     link,
 }) => {
     const linkedNet = capitalize(xCnf.linkNetwork);
-    return <div className={`card compact ${link.status.claimed ? "disabled" : "claimable"}`}>
+    return <div className={`card tx ${link.status.claimed ? "disabled" : "claimable"}`}>
         <div className="card-header">
             <div className="card-title">
                 {link.status.claimed
