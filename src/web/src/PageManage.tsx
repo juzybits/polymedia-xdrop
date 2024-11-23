@@ -44,7 +44,7 @@ export const PageManage: React.FC = () =>
         <div className="page-content">
 
             <div className="page-title">
-                Create xDrop
+                Manage xDrop
             </div>
 
             <div className="card compact">

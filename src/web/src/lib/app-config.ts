@@ -18,11 +18,11 @@ const config: AppConfig = {
         coinTicker: "DOGCOIN",
         coinType: "0x0016c1038872de4716b20d2090db9ca82f0bb3ae3ca8b022be6549b02261afec::dogcoin::DOGCOIN",
         coinDecimals: 9,
-        xdropId: "0xce080e4ae26f39b1ebd7335c0518de0a2f8d2319962d8a16b7d19ac3e2ce67c0",
+        xdropId: "0x79ce3171baaabc27dde45a4abca7ae4e1772644e5e91e9c9a7d240f277242f3a",
         linkNetwork: "ethereum",
         devLinkedAddrs: [
-            "eth address 1",
-            "eth address 2",
+            "0x0000000000000000000000000000000000000000",
+            "0x1111111111111111111111111111111111111111",
         ],
         devClaimAmounts: [
             100n * 1_000_000_000n,

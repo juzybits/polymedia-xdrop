@@ -1,3 +1,4 @@
+import { bcs } from "@mysten/sui/bcs";
 import { SuiObjectResponse } from "@mysten/sui/client";
 import { objResToFields } from "@polymedia/suitcase-core";
 
@@ -7,17 +8,22 @@ export type SuiLink = {
     timestamp_ms: number;
 };
 
-/**
- * positive amount = claimable;
- * 0 amount = already claimed;
- * null amount = not eligible.
- */
-export type ClaimableAmount = bigint | null;
+export const ClaimStatusBcs = bcs.struct("ClaimStatus", {
+    eligible: bcs.Bool,
+    claimed: bcs.Bool,
+    amount: bcs.U64,
+});
 
-export type LinkWithAmount = SuiLink & {
-    amount: ClaimableAmount;
+// typeof ClaimStatusBcs.$inferType; // doesn't work well: `(property) status: any`
+export type ClaimStatus = {
+    eligible: boolean;
+    claimed: boolean;
+    amount: bigint;
 };
 
+export type LinkWithStatus = SuiLink & {
+    status: ClaimStatus;
+};
 
 /* eslint-disable */
 export function objResToSuiLink(

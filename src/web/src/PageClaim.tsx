@@ -1,7 +1,7 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { formatBalance, shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
-import { LinkNetwork, LinkWithAmount, SuiLink } from "@polymedia/xdrop-sdk";
+import { LinkNetwork, LinkWithStatus } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -99,10 +99,10 @@ const ClaimWidget: React.FC<{
         [currAddr, xCnf.linkNetwork]
     );
 
-    const amounts = useFetch(
+    const statuses = useFetch(
         async () => {
             if (!links.data) { return undefined; }
-            return await xdropClient.fetchClaimableAmounts(
+            return await xdropClient.fetchClaimStatuses(
                 xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId, links.data.map(l => l.network_address)
             );
         },
@@ -118,10 +118,10 @@ const ClaimWidget: React.FC<{
     }, [links]);
 
     useEffect(() => { // dev only
-        if (amounts.data) {
-            console.debug("Claimable amounts:",JSON.stringify(amounts.data, null, 2));
+        if (statuses.data) {
+            console.debug("Claimable amounts:",JSON.stringify(statuses.data, null, 2));
         }
-    }, [amounts]);
+    }, [statuses]);
 
     // == functions ==
 
@@ -135,7 +135,7 @@ const ClaimWidget: React.FC<{
                 xCnf.coinType,
                 xCnf.linkNetwork,
                 xCnf.xdropId,
-                mergedData!.filter(l => l.amount !== null && l.amount > 0n).map(l => l.id)
+                linksWithStatus!.filter(l => l.status.amount > 0n && !l.status.claimed).map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
@@ -147,27 +147,27 @@ const ClaimWidget: React.FC<{
 
     // === html ===
 
-    if (links.error || amounts.error) {
-        return <CardWithMsg className="compact">{links.error ?? amounts.error}</CardWithMsg>;
-    } else if (links.isLoading || amounts.isLoading) {
+    if (links.error || statuses.error) {
+        return <CardWithMsg className="compact">{links.error ?? statuses.error}</CardWithMsg>;
+    } else if (links.isLoading || statuses.isLoading) {
         return <CardSpinner />;
     }
 
-    const disableSubmit = !currAcct || isWorking || !links.data || !amounts.data /*|| !isOpen*/;
+    const disableSubmit = !currAcct || isWorking || !links.data || !statuses.data /*|| !isOpen*/;
     const hasAnyLinks = links.data && links.data.length > 0;
-    const hasEligibleLinks = amounts.data && amounts.data.some(a => a !== null);
+    const hasEligibleLinks = statuses.data && statuses.data.some(s => s.eligible);
 
-    const mergedData: LinkWithAmount[] | undefined =
-        !(links.data && amounts.data)
+    const linksWithStatus: LinkWithStatus[] | undefined =
+        !(links.data && statuses.data)
         ? undefined
         : links.data.map((link, i) => ({ // merge links and amounts
             ...link,
-            amount: amounts.data![i]
-        })).sort((a, b) => { // put positive amounts first, and 0/null amounts last
-            const aPositive = a.amount !== null && a.amount > 0n;
-            const bPositive = b.amount !== null && b.amount > 0n;
-            if (aPositive === bPositive) return 0; // keep original order
-            return aPositive ? -1 : 1;
+            status: statuses.data![i],
+            })
+        ).sort((a, b) => { // put claimable links first
+            const aIsClaimable = a.status.eligible && !a.status.claimed;
+            const bIsClaimable = b.status.eligible && !b.status.claimed;
+            return Number(bIsClaimable) - Number(aIsClaimable);
         });
 
     return <>
@@ -187,13 +187,12 @@ const ClaimWidget: React.FC<{
             return <>
                 <div className="card-description">
                     <div className="card-list tx-list">
-                        {mergedData!.map((linkWithAmount) =>
-                            linkWithAmount.amount === null ? null : (
+                        {linksWithStatus!.map(linkWStat =>
+                            !linkWStat.status.eligible ? null : (
                                 <CardClaimableItem
-                                    key={linkWithAmount.id}
+                                    key={linkWStat.id}
                                     xCnf={xCnf}
-                                    link={linkWithAmount}
-                                    amount={linkWithAmount.amount}
+                                    link={linkWStat}
                                 />
                             )
                         )}
@@ -210,21 +209,18 @@ const ClaimWidget: React.FC<{
 
 const CardClaimableItem: React.FC<{
     xCnf: XDropConfig;
-    link: SuiLink;
-    amount: bigint;
+    link: LinkWithStatus;
 }> = ({
     xCnf,
     link,
-    amount,
 }) => {
     const linkedNet = capitalize(xCnf.linkNetwork);
-    const isClaimed = amount === 0n;
-    return <div className={`card compact ${isClaimed ? "disabled" : "claimable"}`}>
+    return <div className={`card compact ${link.status.claimed ? "disabled" : "claimable"}`}>
         <div className="card-header">
             <div className="card-title">
-                {isClaimed
+                {link.status.claimed
                     ? "Already claimed"
-                    : formatBalance(amount, xCnf.coinDecimals) + " " + xCnf.coinTicker}
+                    : formatBalance(link.status.amount, xCnf.coinDecimals) + " " + xCnf.coinTicker}
             </div>
         </div>
         <div className="card-body">

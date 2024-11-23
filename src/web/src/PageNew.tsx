@@ -26,10 +26,12 @@ export const PageNew: React.FC = () =>
 
         try {
             setIsWorking(true);
-            const resp = await xdropClient.adminCreatesAndSharesXDrop(
+            const { resp, xdropObjChange } = await xdropClient.adminCreatesAndSharesXDrop(
                 xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId
             );
-            console.debug("[onSubmit] okay:", resp);
+            console.debug("[onSubmit] resp:", resp);
+            console.debug("[onSubmit] objChange:", xdropObjChange);
+            console.debug("[onSubmit] obj ID:", xdropObjChange?.objectId);
         } catch (err) {
             console.warn("[onSubmit] error:", err);
         } finally {

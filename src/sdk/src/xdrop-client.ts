@@ -6,15 +6,14 @@ import {
     getCoinOfValue,
     NetworkName,
     ObjChangeKind,
-    objResToFields,
     SignTransaction,
     SuiClientBase,
     TransferModule,
     WaitForTxOptions,
 } from "@polymedia/suitcase-core";
-import { XDropModule } from "./xdrop-functions.js";
 import { getLinkType, LinkNetwork } from "./config.js";
-import { objResToSuiLink, SuiLink } from "./xdrop-structs.js";
+import { XDropModule } from "./xdrop-functions.js";
+import { ClaimStatus, ClaimStatusBcs, objResToSuiLink, SuiLink } from "./xdrop-structs.js";
 
 /**
  * Execute transactions on the XDrop Sui package.
@@ -71,16 +70,16 @@ export class XDropClient extends SuiClientBase
         return links;
     }
 
-    public async fetchClaimableAmounts(
+    public async fetchClaimStatuses(
         typeCoin: string,
         linkNetwork: LinkNetwork,
         xdropId: string,
         addrs: string[],
-    ): Promise<(bigint|null)[]>
+    ): Promise<ClaimStatus[]>
     {
         const tx = new Transaction();
 
-        XDropModule.get_claimable_amounts(
+        XDropModule.get_claim_statuses(
             tx,
             this.xdropPkgId,
             typeCoin,
@@ -90,10 +89,14 @@ export class XDropClient extends SuiClientBase
         );
 
         const blockReturns = await devInspectAndGetReturnValues(
-            this.suiClient, tx, [ [ bcs.vector(bcs.option(bcs.U64)) ] ]
+            this.suiClient, tx, [ [ bcs.vector(ClaimStatusBcs) ] ]
         );
 
-        return blockReturns[0][0].map((amount: string|null) => amount ? BigInt(amount) : null);
+        return blockReturns[0][0].map((status: any) => ({
+            eligible: Boolean(status.eligible),
+            claimed: Boolean(status.claimed),
+            amount: BigInt(status.amount),
+        }));
     }
 
     // === data parsing ===
