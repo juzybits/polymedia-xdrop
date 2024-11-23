@@ -23,6 +23,7 @@ export const PageClaim: React.FC = () =>
 
     const { header, appCnf } = useAppContext();
     const xCnf = appCnf[xdropId];
+    const linkedNetName = xCnf.linkNetwork === "ethereum" ? "Ethereum" : "Solana";
 
     return <>
     {header}
@@ -36,10 +37,10 @@ export const PageClaim: React.FC = () =>
 
             <div className="card compact">
                 <div className="card-title">
-                    <p>Step 1: Link your Ethereum address</p>
+                    <p>Step 1: Link your {linkedNetName} address</p>
                 </div>
                 <div className="card-description">
-                    <p>Prove ownership of your Ethereum address by linking it to your Sui address.</p>
+                    <p>Prove ownership of your {linkedNetName} address by linking it to your Sui address.</p>
                 </div>
                 <div className="card-description">
                     If you hold {xCnf.coinTicker} in multiple wallets, you can link all of them to the same Sui address.
@@ -54,7 +55,7 @@ export const PageClaim: React.FC = () =>
                     <p>Step 2: Claim your {xCnf.coinTicker} on Sui</p>
                 </div>
                 <div className="card-description">
-                    Once your Ethereum address is linked, you can claim the same amount of Sui {xCnf.coinTicker} as you hold on Ethereum.
+                    Once your {linkedNetName} address is linked, you can claim the same amount of Sui {xCnf.coinTicker} as you hold on {linkedNetName}.
                 </div>
                 {!currAcct
                     ? <>
@@ -188,7 +189,8 @@ const CardClaimableItem: React.FC<{
     link,
     amount,
 }) => {
-    const { appCnf, explorer, network } = useAppContext();
+    const { explorer, network } = useAppContext();
+    const linkedNetName = xCnf.linkNetwork === "ethereum" ? "Ethereum" : "Solana";
     return <div className={"card compact"}>
         <div className="card-header">
             <div className="card-title">
@@ -197,7 +199,7 @@ const CardClaimableItem: React.FC<{
         </div>
         <div className="card-body">
             <div>
-                ETH address: {link.network_address}
+                {linkedNetName} address: {link.network_address}
             </div>
                 <div>Sui link: <LinkToExplorer addr={link.id} kind="object" explorer={explorer} network={network}>
                         {shortenDigest(link.id)}
