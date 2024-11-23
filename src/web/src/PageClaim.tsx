@@ -219,7 +219,7 @@ const CardClaimableItem: React.FC<{
 }) => {
     const linkedNet = capitalize(xCnf.linkNetwork);
     const isClaimed = amount === 0n;
-    return <div className={`card compact ${isClaimed ? "disabled" : ""}`}>
+    return <div className={`card compact ${isClaimed ? "disabled" : "claimable"}`}>
         <div className="card-header">
             <div className="card-title">
                 {isClaimed
