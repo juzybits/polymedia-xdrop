@@ -63,6 +63,12 @@ public struct Claim has store {
     claimed: bool,
 }
 
+public struct ClaimStatus has copy, drop, store {
+    eligible: bool,
+    claimed: bool,
+    amount: u64,
+}
+
 // === admin functions ===
 
 public fun admin_creates_xdrop<C, N>(
@@ -184,24 +190,34 @@ public fun user_claims<C, N>(
 
 // === devinspect functions ===
 
-public fun get_claimable_amounts<C, N>(
+public fun get_claim_statuses<C, N>(
     xdrop: &XDrop<C, N>,
     addrs: vector<vector<u8>>,
-): vector<Option<u64>>
+): vector<ClaimStatus>
 {
-    let mut amounts = vector::empty<Option<u64>>();
+    let mut amounts = vector::empty<ClaimStatus>();
     let mut i = 0;
     let len = addrs.length();
     while (i < len)
     {
         let addr = (*addrs.borrow(i)).to_string();
         if (!xdrop.claims.contains(addr)) {
-            vector::push_back(&mut amounts, option::none());
+            vector::push_back(
+                &mut amounts,
+                ClaimStatus {
+                    eligible: false,
+                    amount: 0,
+                    claimed: false,
+            });
         } else {
             let claim = xdrop.claims.borrow(addr);
             vector::push_back(
                 &mut amounts,
-                if (claim.claimed) option::some(0) else option::some(claim.amount),
+                ClaimStatus {
+                    eligible: true,
+                    amount: claim.amount,
+                    claimed: claim.claimed,
+                },
             );
         };
         i = i + 1;
@@ -235,4 +251,13 @@ fun init(otw: XDROP, ctx: &mut TxContext)
 #[test_only]
 public fun init_for_testing(ctx: &mut TxContext) {
     init(XDROP {}, ctx);
+}
+
+#[test_only]
+public fun new_status_for_testing(
+    eligible: bool,
+    claimed: bool,
+    amount: u64,
+): ClaimStatus {
+    ClaimStatus { eligible, claimed, amount }
 }

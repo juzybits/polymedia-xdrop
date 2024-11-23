@@ -12,7 +12,7 @@ use suilink::{
     suilink::{SuiLink},
 };
 
-use xdrop::xdrop::{Self, XDrop};
+use xdrop::xdrop::{Self, XDrop, ClaimStatus};
 use xdrop::devcoin::{Self, DEVCOIN};
 
 // === addresses ===
@@ -159,13 +159,13 @@ fun assert_owns_coin<C>(
     transfer::public_transfer(owned_coin, owner);
 }
 
-fun assert_claimable_amounts(
+fun assert_claim_statuses(
     runner: &TestRunner,
     foreign_addrs: vector<vector<u8>>,
-    expected_amounts: vector<Option<u64>>,
+    expected_statuses: vector<ClaimStatus>,
 ) {
-    let actual_amounts = runner.xdrop.get_claimable_amounts(foreign_addrs);
-    assert_eq( actual_amounts, expected_amounts );
+    let statuses = runner.xdrop.get_claim_statuses(foreign_addrs);
+    assert_eq( statuses, expected_statuses );
 }
 
 // === tests: end to end ===
@@ -187,9 +187,13 @@ fun test_end_to_end()
     assert_eq( runner.xdrop.status(), 0 ); // XDROP_STATUS_PAUSED
     assert_eq( runner.xdrop.value(), 300 );
     assert_eq( runner.xdrop.claims().length(), 2 );
-    runner.assert_claimable_amounts(
+    runner.assert_claim_statuses(
         vector[USER_1_ETH, USER_2_ETH, RANDO_ETH],
-        vector[option::some(100), option::some(200), option::none()],
+        vector[
+            xdrop::new_status_for_testing(true, false, 100),
+            xdrop::new_status_for_testing(true, false, 200),
+            xdrop::new_status_for_testing(false, false, 0),
+        ],
     );
 
     // admin opens xdrop
@@ -204,9 +208,13 @@ fun test_end_to_end()
     runner.user_claims(USER_1, &link);
     runner.assert_owns_coin<DEVCOIN>(USER_1, 100);
     assert_eq( runner.xdrop.value(), 200 );
-    runner.assert_claimable_amounts(
+    runner.assert_claim_statuses(
         vector[USER_1_ETH, USER_2_ETH, RANDO_ETH],
-        vector[option::some(0), option::some(200), option::none()],
+        vector[
+            xdrop::new_status_for_testing(true, true, 100),
+            xdrop::new_status_for_testing(true, false, 200),
+            xdrop::new_status_for_testing(false, false, 0),
+        ],
     );
 
     // admin pauses xdrop
