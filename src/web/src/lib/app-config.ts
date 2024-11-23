@@ -16,9 +16,9 @@ export type XDropConfig = {
 const config: AppConfig = {
     "detf": {
         coinTicker: "DOGCOIN",
-        coinType: "0xe4028d51c08dd03311e52669e29a800791da33e06d4bc5725c8f63165de7275d::dogcoin::DOGCOIN",
+        coinType: "0x0016c1038872de4716b20d2090db9ca82f0bb3ae3ca8b022be6549b02261afec::dogcoin::DOGCOIN",
         coinDecimals: 9,
-        xdropId: "0xb7c734fc0270864904f5377fb4cca3f1441dfe7a3a49a16f9ff0cad9fbf849c8",
+        xdropId: "",
         linkNetwork: "ethereum",
         linkedAddrs: [
             "eth address 1",

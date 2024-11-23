@@ -17,12 +17,12 @@ export const NETWORK_CONFIG: Record<NetworkName, NetworkConfig> = {
         suilinkPkgId: "",
     },
     devnet: {
-        xdropPkgId: "",
-        suilinkPkgId: "",
+        xdropPkgId: "0x0aee77785a7031020fdd8c6231dffe8a6278b7c66bde39d1395e1e6637b01ad9",
+        suilinkPkgId: "0x2e08f9c2768eaff9707809c4f8de581bafcb16d0d213294ef6ede159712ea966",
     },
     localnet: {
-        xdropPkgId: "0x8df131dd352568caf039f4c3f9684177ceab2d9021cb44b6224e017517d4d0b0",
-        suilinkPkgId: "0x39f8f1545bf13baa4c88d5143c4668e4bd481dbe5d0e7f43e156a0b3d8ccaa89",
+        xdropPkgId: "",
+        suilinkPkgId: "",
     },
 };
 
