@@ -110,6 +110,7 @@ module suilink::suilink
     // == juzy's additions ===
 
     /// intentionally not test_only
+    /// allows minting of arbitrary links for development
     public fun dev_link<T0>(
         recipient: address,
         network_address: std::string::String,

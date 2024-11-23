@@ -37,7 +37,7 @@ module suilink::registry_v2
 
     public fun admin_burn<T0>(
         registry: &mut SuiLinkRegistryV2,
-        admin_cap: &suilink::suilink::AdminCap,
+        _admin_cap: &suilink::suilink::AdminCap,
         receiving: sui::transfer::Receiving<suilink::suilink::SuiLink<T0>>
     ) {
         suilink::suilink::destroy<T0>(

@@ -43,7 +43,7 @@ module suilink::utils
         let data = std::vector::empty<vector<u8>>();
         let data_ref = &mut data;
         std::vector::push_back<vector<u8>>(data_ref, sui::bcs::to_bytes<address>(&addr));
-        std::vector::push_back<vector<u8>>(data_ref, *std::string::bytes(&network_addr));
+        std::vector::push_back<vector<u8>>(data_ref, *std::string::as_bytes(&network_addr));
 
         let serialized = sui::bcs::to_bytes<vector<vector<u8>>>(&data);
         sui::hash::blake2b256(&serialized)
@@ -85,7 +85,7 @@ module suilink::utils
 
     public fun hex_to_bytes(hex_str: std::string::String): vector<u8> {
         let hex_chars = b"0123456789abcdef";
-        let hex_bytes = std::string::bytes(&hex_str);
+        let hex_bytes = std::string::as_bytes(&hex_str);
         let result = b"";
         let i = 2;  // Skip "0x" prefix
 
