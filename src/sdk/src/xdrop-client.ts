@@ -93,7 +93,7 @@ export class XDropClient extends SuiClientBase
             this.suiClient, tx, [ [ bcs.vector(bcs.option(bcs.U64)) ] ]
         );
 
-        return blockReturns[0][0] as (bigint|null)[];
+        return blockReturns[0][0].map((amount: string|null) => amount ? BigInt(amount) : null);
     }
 
     // === data parsing ===

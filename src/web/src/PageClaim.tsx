@@ -203,10 +203,13 @@ const CardClaimableItem: React.FC<{
     amount,
 }) => {
     const linkedNet = capitalize(xCnf.linkNetwork);
-    return <div className={"card compact"}>
+    const isClaimed = amount === 0n;
+    return <div className={`card compact ${isClaimed ? "disabled" : ""}`}>
         <div className="card-header">
             <div className="card-title">
-                {formatBalance(amount, xCnf.coinDecimals)} {xCnf.coinTicker}
+                {isClaimed
+                    ? "Already claimed"
+                    : formatBalance(amount, xCnf.coinDecimals) + " " + xCnf.coinTicker}
             </div>
         </div>
         <div className="card-body">
