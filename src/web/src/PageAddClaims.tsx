@@ -1,12 +1,19 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import React from "react";
+import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
+import { PageNotFound } from "./PageNotFound";
 
 export const PageAddClaims: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
+
+    const { xdropId } = useParams();
+    if (xdropId !== "detf") {
+        return <PageNotFound />;
+    }
 
     const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
 

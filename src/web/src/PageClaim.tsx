@@ -7,11 +7,18 @@ import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { SuiLink } from "@polymedia/xdrop-sdk";
+import { useParams } from "react-router-dom";
+import { PageNotFound } from "./PageNotFound";
 
-export const PageClaimDETF: React.FC = () =>
+export const PageClaim: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
     const { mutate: disconnect } = useDisconnectWallet();
+
+    const { xdropId } = useParams();
+    if (xdropId !== "detf") {
+        return <PageNotFound />;
+    }
 
     const { header, appCnf } = useAppContext();
 
@@ -101,13 +108,13 @@ const ClaimWidget: React.FC<{
 
     useEffect(() => { // dev only
         if (links.data) {
-            console.log("Owned links:",JSON.stringify(links.data, null, 2));
+            console.debug("Owned links:",JSON.stringify(links.data, null, 2));
         }
     }, [links]);
 
     useEffect(() => { // dev only
         if (amounts.data) {
-            console.log("Claimable amounts:",JSON.stringify(amounts.data, null, 2));
+            console.debug("Claimable amounts:",JSON.stringify(amounts.data, null, 2));
         }
     }, [amounts]);
 
@@ -127,7 +134,7 @@ const ClaimWidget: React.FC<{
                 appCnf.xdropId,
                 links.data!.map(l => l.id),
             );
-            console.log("[onSubmit] okay:", resp);
+            console.debug("[onSubmit] okay:", resp);
         } catch (err) {
             console.warn("[onSubmit] error:", err);
         } finally {
