@@ -51,7 +51,7 @@ export const PageAddClaims: React.FC = () =>
                 <div className="card-description">
                     <p>Coin Type: {appCnf.coinType}</p>
                     <p>Link Network: {appCnf.linkNetwork}</p>
-                    <p>XDrop ID: {appCnf.xdropId}</p>
+                    <p>xDrop ID: {appCnf.xdropId}</p>
                     <p>Linked Addresses: {appCnf.linkedAddrs.join(", ")}</p>
                     <p>Claim Amounts: {appCnf.claimAmounts.join(", ")}</p>
                 </div>

@@ -1,5 +1,7 @@
+import { LinkExternal } from "@polymedia/suitcase-react";
 import React from "react";
 import { useAppContext } from "./App";
+import { HeroBanner } from "./comps/hero";
 
 export const PageHome: React.FC = () =>
 {
@@ -10,13 +12,15 @@ export const PageHome: React.FC = () =>
 
         <div className="page-content">
 
-            <div className="page-title">
-                Home
-            </div>
-
-            <div className="card compact">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </div>
+            <HeroBanner
+                    title="xDrop"
+                    description={<>
+                        A cross-chain system for coin distributions across different blockchains.
+                        <br /><br />
+                        Prove ownership of your Solana/Ethereum address, then claim coins on Sui.
+                        <br /><br />
+                        Fast, safe, and powered by <LinkExternal href="https://www.suilink.io/">SuiLink</LinkExternal>.
+                    </>} extra={undefined}            />
 
         </div>
     </div>

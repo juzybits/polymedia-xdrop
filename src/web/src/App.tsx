@@ -12,10 +12,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comps/glitch";
-import { IconInfo } from "./comps/icons";
 import { AppConfig, getAppConfig } from "./lib/app-config";
 import { loadNetworkConfig } from "./lib/network";
-import { PageAbout } from "./PageAbout";
 import { PageAddClaims } from "./PageAddClaims";
 import { PageClaimDETF } from "./PageClaimDETF";
 import { PageDevLink } from "./PageDevLink";
@@ -33,7 +31,6 @@ export const AppRouter: React.FC = () => {
         <Routes>
             <Route path="/" element={<AppSuiProviders />} >
                 <Route index element={<PageHome />} />
-                <Route path="/about" element={<PageAbout />} />
                 <Route path="/add-claims" element={<PageAddClaims />} />
                 <Route path="/claim-detf" element={<PageClaimDETF />} />
                 <Route path="/dev-link" element={<PageDevLink />} />
@@ -210,12 +207,9 @@ const Header: React.FC = () =>
     return <header>
         <div className="header-item">
             <Link to="/">
-                <Glitch text="XDROP" />
+                <Glitch text="xDrop" />
                 {network !== "mainnet" && <span className="header-network-label">{network}</span>}
             </Link>
         </div>
-        <Link to="/about" className="header-item" title="About">
-            <IconInfo />
-        </Link>
     </header>;
 };

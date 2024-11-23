@@ -13,3 +13,4 @@ node_modules
 .trace
 build
 Move.lock
+traces

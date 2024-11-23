@@ -19,7 +19,7 @@ export const PageNew: React.FC = () =>
         try {
             setIsWorking(true);
             const resp = await xdropClient.adminCreatesAndSharesXDrop(
-                appCnf.coinType, appCnf.linkNetwork
+                appCnf.coinType, appCnf.linkNetwork, ""
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
@@ -36,7 +36,7 @@ export const PageNew: React.FC = () =>
         <div className="page-content">
 
             <div className="page-title">
-                Create XDrop
+                Create xDrop
             </div>
 
             <div className="card compact">
