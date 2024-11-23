@@ -1,5 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import React from "react";
+import { useParams } from "react-router-dom";
+import { PageNotFound } from "./PageNotFound";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
@@ -8,7 +10,13 @@ export const PageNew: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
 
+    const { xdropId } = useParams();
+    if (xdropId !== "detf") {
+        return <PageNotFound />;
+    }
+
     const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
+    const xCnf = appCnf[xdropId];
 
     const disableSubmit = isWorking || !currAcct;
 
@@ -19,7 +27,7 @@ export const PageNew: React.FC = () =>
         try {
             setIsWorking(true);
             const resp = await xdropClient.adminCreatesAndSharesXDrop(
-                appCnf.coinType, appCnf.linkNetwork, ""
+                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
@@ -44,10 +52,10 @@ export const PageNew: React.FC = () =>
                     <p>Config:</p>
                 </div>
                 <div className="card-description">
-                    <p>Coin Type: {appCnf.coinType}</p>
-                    <p>Coin Decimals: {appCnf.coinDecimals}</p>
-                    <p>Coin Ticker: {appCnf.coinTicker}</p>
-                    <p>Link Network: {appCnf.linkNetwork}</p>
+                    <p>Coin Type: {xCnf.coinType}</p>
+                    <p>Coin Decimals: {xCnf.coinDecimals}</p>
+                    <p>Coin Ticker: {xCnf.coinTicker}</p>
+                    <p>Link Network: {xCnf.linkNetwork}</p>
                 </div>
                 <div>
                     {currAcct

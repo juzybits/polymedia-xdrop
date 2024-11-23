@@ -31,11 +31,11 @@ export const AppRouter: React.FC = () => {
         <Routes>
             <Route path="/" element={<AppSuiProviders />} >
                 <Route index element={<PageHome />} />
-                <Route path="/new" element={<PageNew />} />
+                <Route path="/new/:xdropId" element={<PageNew />} />
                 <Route path="/add-claims/:xdropId" element={<PageAddClaims />} />
                 <Route path="/claim/:xdropId" element={<PageClaim />} />
                 <Route path="/manage/:xdropId" element={<PageManage />} />
-                <Route path="/dev-link" element={<PageDevLink />} />
+                <Route path="/dev-link/:xdropId" element={<PageDevLink />} />
                 <Route path="*" element={<PageNotFound />} />
             </Route>
         </Routes>

@@ -16,6 +16,7 @@ export const PageManage: React.FC = () =>
     }
 
     const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
+    const xCnf = appCnf[xdropId];
 
     const disableSubmit = isWorking || !currAcct;
 
@@ -26,7 +27,7 @@ export const PageManage: React.FC = () =>
         try {
             setIsWorking(true);
             const resp = await xdropClient.adminOpensXDrop(
-                appCnf.coinType, appCnf.linkNetwork, appCnf.xdropId
+                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {

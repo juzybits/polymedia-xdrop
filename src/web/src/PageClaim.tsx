@@ -9,6 +9,7 @@ import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { SuiLink } from "@polymedia/xdrop-sdk";
 import { useParams } from "react-router-dom";
 import { PageNotFound } from "./PageNotFound";
+import { XDropConfig } from "./lib/app-config";
 
 export const PageClaim: React.FC = () =>
 {
@@ -21,6 +22,7 @@ export const PageClaim: React.FC = () =>
     }
 
     const { header, appCnf } = useAppContext();
+    const xCnf = appCnf[xdropId];
 
     return <>
     {header}
@@ -29,7 +31,7 @@ export const PageClaim: React.FC = () =>
         <div className="page-content">
 
             <div className="page-title">
-                Claim Sui {appCnf.coinTicker}
+                Claim Sui {xCnf.coinTicker}
             </div>
 
             <div className="card compact">
@@ -40,7 +42,7 @@ export const PageClaim: React.FC = () =>
                     <p>Prove ownership of your Ethereum address by linking it to your Sui address.</p>
                 </div>
                 <div className="card-description">
-                    If you hold {appCnf.coinTicker} in multiple wallets, you can link all of them to the same Sui address.
+                    If you hold {xCnf.coinTicker} in multiple wallets, you can link all of them to the same Sui address.
                 </div>
                 <div className="center-element">
                     <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
@@ -49,10 +51,10 @@ export const PageClaim: React.FC = () =>
 
             <div className="card compact">
                 <div className="card-title">
-                    <p>Step 2: Claim your {appCnf.coinTicker} on Sui</p>
+                    <p>Step 2: Claim your {xCnf.coinTicker} on Sui</p>
                 </div>
                 <div className="card-description">
-                    Once your Ethereum address is linked, you can claim the same amount of Sui {appCnf.coinTicker} as you hold on Ethereum.
+                    Once your Ethereum address is linked, you can claim the same amount of Sui {xCnf.coinTicker} as you hold on Ethereum.
                 </div>
                 {!currAcct
                     ? <>
@@ -67,7 +69,7 @@ export const PageClaim: React.FC = () =>
                     <div className="card-description">
                         <p>You are connected as {shortenAddress(currAcct.address)} (<a onClick={() => disconnect()}>disconnect</a>).</p>
                     </div>
-                    <ClaimWidget currAddr={currAcct.address} />
+                    <ClaimWidget xCnf={xCnf} currAddr={currAcct.address} />
                 </>}
             </div>
 
@@ -78,8 +80,10 @@ export const PageClaim: React.FC = () =>
 };
 
 const ClaimWidget: React.FC<{
+    xCnf: XDropConfig;
     currAddr: string;
 }> = ({
+    xCnf,
     currAddr,
 }) =>
 {
@@ -87,21 +91,21 @@ const ClaimWidget: React.FC<{
 
     const currAcct = useCurrentAccount();
 
-    const { appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
+    const { xdropClient, isWorking, setIsWorking } = useAppContext();
 
     const links = useFetch(
-        async () => await xdropClient.fetchOwnedLinks(currAddr, appCnf.linkNetwork),
-        [currAddr, appCnf.linkNetwork]
+        async () => await xdropClient.fetchOwnedLinks(currAddr, xCnf.linkNetwork),
+        [currAddr, xCnf.linkNetwork]
     );
 
     const amounts = useFetch(
         async () => {
             if (!links.data) { return undefined; }
             return await xdropClient.getClaimableAmounts(
-                appCnf.coinType, appCnf.linkNetwork, appCnf.xdropId, links.data.map(l => l.network_address)
+                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId, links.data.map(l => l.network_address)
             );
         },
-        [appCnf.coinType, appCnf.linkNetwork, appCnf.xdropId, links.data]
+        [xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId, links.data]
     );
 
     // == effects ==
@@ -129,9 +133,9 @@ const ClaimWidget: React.FC<{
             setIsWorking(true);
             const resp = await xdropClient.userClaims(
                 currAddr,
-                appCnf.coinType,
-                appCnf.linkNetwork,
-                appCnf.xdropId,
+                xCnf.coinType,
+                xCnf.linkNetwork,
+                xCnf.xdropId,
                 links.data!.map(l => l.id),
             );
             console.debug("[onSubmit] okay:", resp);
@@ -160,6 +164,7 @@ const ClaimWidget: React.FC<{
                             return amount === null ? null : (
                                 <CardClaimableItem
                                     key={link.id}
+                                    xCnf={xCnf}
                                     link={link}
                                     amount={amount}
                                 />
@@ -175,9 +180,11 @@ const ClaimWidget: React.FC<{
 };
 
 const CardClaimableItem: React.FC<{
+    xCnf: XDropConfig;
     link: SuiLink;
     amount: bigint;
 }> = ({
+    xCnf,
     link,
     amount,
 }) => {
@@ -185,7 +192,7 @@ const CardClaimableItem: React.FC<{
     return <div className={"card compact"}>
         <div className="card-header">
             <div className="card-title">
-                {formatBalance(amount, appCnf.coinDecimals)} {appCnf.coinTicker}
+                {formatBalance(amount, xCnf.coinDecimals)} {xCnf.coinTicker}
             </div>
         </div>
         <div className="card-body">

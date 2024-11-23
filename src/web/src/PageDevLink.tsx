@@ -5,14 +5,21 @@ import React from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
+import { useParams } from "react-router-dom";
+import { PageNotFound } from "./PageNotFound";
 
 export const PageDevLink: React.FC = () =>
 {
     const currAcct = useCurrentAccount();
 
+    const { xdropId } = useParams();
+    if (xdropId !== "detf") {
+        return <PageNotFound />;
+    }
+
     const { header, appCnf, network, xdropClient, isWorking, setIsWorking } = useAppContext();
     const netCnf = getNetworkConfig(network);
-
+    const xCnf = appCnf[xdropId];
     const disableSubmit = isWorking || !currAcct;
 
     const onSubmit = async () =>
@@ -22,10 +29,10 @@ export const PageDevLink: React.FC = () =>
         try {
             setIsWorking(true);
             const tx = new Transaction();
-            for (const ethAddr of appCnf.linkedAddrs) {
+            for (const ethAddr of xCnf.linkedAddrs) {
                 tx.moveCall({
                     package: netCnf.suilinkPkgId,
-                    module: appCnf.linkNetwork,
+                    module: xCnf.linkNetwork,
                     function: "dev_link",
                     arguments: [
                         tx.pure.address(currAcct.address),
@@ -57,8 +64,8 @@ export const PageDevLink: React.FC = () =>
                     <p>Config:</p>
                 </div>
                 <div className="card-description">
-                    <p>Link Network: {appCnf.linkNetwork}</p>
-                    <p>Linked Addresses: {appCnf.linkedAddrs.join(", ")}</p>
+                    <p>Link Network: {xCnf.linkNetwork}</p>
+                    <p>Linked Addresses: {xCnf.linkedAddrs.join(", ")}</p>
                 </div>
                 <div>
                     {currAcct

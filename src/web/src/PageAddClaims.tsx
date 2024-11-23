@@ -5,6 +5,7 @@ import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
 import { PageNotFound } from "./PageNotFound";
+import { XDropConfig } from "./lib/app-config";
 
 export const PageAddClaims: React.FC = () =>
 {
@@ -16,6 +17,7 @@ export const PageAddClaims: React.FC = () =>
     }
 
     const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
+    const xCnf = appCnf[xdropId];
 
     const disableSubmit = isWorking || !currAcct;
 
@@ -27,11 +29,11 @@ export const PageAddClaims: React.FC = () =>
             setIsWorking(true);
             const resp = await xdropClient.adminAddsClaims(
                 currAcct.address,
-                appCnf.coinType,
-                appCnf.linkNetwork,
-                appCnf.xdropId,
-                appCnf.linkedAddrs,
-                appCnf.claimAmounts,
+                xCnf.coinType,
+                xCnf.linkNetwork,
+                xCnf.xdropId,
+                xCnf.linkedAddrs,
+                xCnf.claimAmounts,
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
@@ -56,11 +58,11 @@ export const PageAddClaims: React.FC = () =>
                     <p>Config:</p>
                 </div>
                 <div className="card-description">
-                    <p>Coin Type: {appCnf.coinType}</p>
-                    <p>Link Network: {appCnf.linkNetwork}</p>
-                    <p>xDrop ID: {appCnf.xdropId}</p>
-                    <p>Linked Addresses: {appCnf.linkedAddrs.join(", ")}</p>
-                    <p>Claim Amounts: {appCnf.claimAmounts.join(", ")}</p>
+                    <p>Coin Type: {xCnf.coinType}</p>
+                    <p>Link Network: {xCnf.linkNetwork}</p>
+                    <p>xDrop ID: {xCnf.xdropId}</p>
+                    <p>Linked Addresses: {xCnf.linkedAddrs.join(", ")}</p>
+                    <p>Claim Amounts: {xCnf.claimAmounts.join(", ")}</p>
                 </div>
                 <div>
                     {currAcct
