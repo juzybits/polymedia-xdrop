@@ -71,12 +71,13 @@ export class XDropClient extends SuiClientBase
         return links;
     }
 
-    public async getClaimableAmounts(
+    public async fetchClaimableAmounts(
         typeCoin: string,
         linkNetwork: LinkNetwork,
         xdropId: string,
         addrs: string[],
-    ): Promise<(bigint|null)[]> {
+    ): Promise<(bigint|null)[]>
+    {
         const tx = new Transaction();
 
         XDropModule.get_claimable_amounts(

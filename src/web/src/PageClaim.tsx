@@ -23,7 +23,7 @@ export const PageClaim: React.FC = () =>
 
     const { header, appCnf } = useAppContext();
     const xCnf = appCnf[xdropId];
-    const linkedNetName = xCnf.linkNetwork === "ethereum" ? "Ethereum" : "Solana";
+    const linkedNet = capitalize(xCnf.linkNetwork);
 
     return <>
     {header}
@@ -37,10 +37,10 @@ export const PageClaim: React.FC = () =>
 
             <div className="card compact">
                 <div className="card-title">
-                    <p>Step 1: Link your {linkedNetName} address</p>
+                    <p>Step 1: Link your {linkedNet} address</p>
                 </div>
                 <div className="card-description">
-                    <p>Prove ownership of your {linkedNetName} address by linking it to your Sui address.</p>
+                    <p>Prove ownership of your {linkedNet} address by linking it to your Sui address.</p>
                 </div>
                 <div className="card-description">
                     If you hold {xCnf.coinTicker} in multiple wallets, you can link all of them to the same Sui address.
@@ -55,7 +55,7 @@ export const PageClaim: React.FC = () =>
                     <p>Step 2: Claim your {xCnf.coinTicker} on Sui</p>
                 </div>
                 <div className="card-description">
-                    Once your {linkedNetName} address is linked, you can claim the same amount of Sui {xCnf.coinTicker} as you hold on {linkedNetName}.
+                    Once your {linkedNet} address is linked, you can claim the same amount of Sui {xCnf.coinTicker} as you hold on {linkedNet}.
                 </div>
                 {!currAcct
                     ? <>
@@ -102,7 +102,7 @@ const ClaimWidget: React.FC<{
     const amounts = useFetch(
         async () => {
             if (!links.data) { return undefined; }
-            return await xdropClient.getClaimableAmounts(
+            return await xdropClient.fetchClaimableAmounts(
                 xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId, links.data.map(l => l.network_address)
             );
         },
@@ -189,8 +189,7 @@ const CardClaimableItem: React.FC<{
     link,
     amount,
 }) => {
-    const { explorer, network } = useAppContext();
-    const linkedNetName = xCnf.linkNetwork === "ethereum" ? "Ethereum" : "Solana";
+    const linkedNet = capitalize(xCnf.linkNetwork);
     return <div className={"card compact"}>
         <div className="card-header">
             <div className="card-title">
@@ -199,13 +198,15 @@ const CardClaimableItem: React.FC<{
         </div>
         <div className="card-body">
             <div>
-                {linkedNetName} address: <LinkExternal href={linkedAddrUrl(xCnf.linkNetwork, link.network_address)}>
+                {linkedNet} address: <LinkExternal href={linkedAddrUrl(xCnf.linkNetwork, link.network_address)}>
                     {shortenLinkedAddr(link.network_address)}
                 </LinkExternal>
             </div>
         </div>
     </div>;
 };
+
+// === helpers ===
 
 function shortenLinkedAddr(addr: string): string {
     return addr.slice(0, addr.startsWith("0x") ? 6 : 4)
@@ -214,4 +215,8 @@ function shortenLinkedAddr(addr: string): string {
 
 function linkedAddrUrl(network: LinkNetwork, addr: string): string {
     return `https://${network === "ethereum" ? "etherscan" : "solscan"}.io/address/${addr}`;
+}
+
+function capitalize(s: string): string {
+    return s.charAt(0).toUpperCase() + s.slice(1);
 }
