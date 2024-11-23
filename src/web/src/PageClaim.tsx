@@ -1,14 +1,14 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
-import { formatBalance, shortenAddress, shortenDigest } from "@polymedia/suitcase-core";
-import { LinkExternal, LinkToExplorer, useFetch } from "@polymedia/suitcase-react";
+import { formatBalance, shortenAddress } from "@polymedia/suitcase-core";
+import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
+import { LinkNetwork, SuiLink } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
-import { useAppContext } from "./App";
-import { Btn } from "./comps/button";
-import { BtnConnect } from "./comps/connect";
-import { CardSpinner, CardWithMsg } from "./comps/cards";
-import { SuiLink } from "@polymedia/xdrop-sdk";
 import { useParams } from "react-router-dom";
+import { useAppContext } from "./App";
 import { PageNotFound } from "./PageNotFound";
+import { Btn } from "./comps/button";
+import { CardSpinner, CardWithMsg } from "./comps/cards";
+import { BtnConnect } from "./comps/connect";
 import { XDropConfig } from "./lib/app-config";
 
 export const PageClaim: React.FC = () =>
@@ -199,12 +199,19 @@ const CardClaimableItem: React.FC<{
         </div>
         <div className="card-body">
             <div>
-                {linkedNetName} address: {link.network_address}
-            </div>
-                <div>Sui link: <LinkToExplorer addr={link.id} kind="object" explorer={explorer} network={network}>
-                        {shortenDigest(link.id)}
-                </LinkToExplorer>
+                {linkedNetName} address: <LinkExternal href={linkedAddrUrl(xCnf.linkNetwork, link.network_address)}>
+                    {shortenLinkedAddr(link.network_address)}
+                </LinkExternal>
             </div>
         </div>
     </div>;
 };
+
+function shortenLinkedAddr(addr: string): string {
+    return addr.slice(0, addr.startsWith("0x") ? 6 : 4)
+        + "…" + addr.slice(-4);
+}
+
+function linkedAddrUrl(network: LinkNetwork, addr: string): string {
+    return `https://${network === "ethereum" ? "etherscan" : "solscan"}.io/address/${addr}`;
+}
