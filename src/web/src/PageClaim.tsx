@@ -125,8 +125,6 @@ const ClaimWidget: React.FC<{
 
     // == functions ==
 
-    const disableSubmit = isWorking || !currAcct || !links.data || !amounts.data;
-
     const onSubmit = async () => {
         if (disableSubmit) { return; }
 
@@ -137,7 +135,7 @@ const ClaimWidget: React.FC<{
                 xCnf.coinType,
                 xCnf.linkNetwork,
                 xCnf.xdropId,
-                links.data!.map(l => l.id),
+                mergedData!.filter(l => l.amount !== null && l.amount > 0n).map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
@@ -155,6 +153,7 @@ const ClaimWidget: React.FC<{
         return <CardSpinner />;
     }
 
+    const disableSubmit = !currAcct || isWorking || !links.data || !amounts.data /*|| !isOpen*/;
     const hasAnyLinks = links.data && links.data.length > 0;
     const hasEligibleLinks = amounts.data && amounts.data.some(a => a !== null);
 
