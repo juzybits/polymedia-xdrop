@@ -66,8 +66,8 @@ public struct Claim has store {
 // === admin functions ===
 
 public fun admin_creates_xdrop<C, N>(
-    ctx: &mut TxContext,
     info_json: vector<u8>,
+    ctx: &mut TxContext,
 ): XDrop<C, N> {
     XDrop {
         id: object::new(ctx),

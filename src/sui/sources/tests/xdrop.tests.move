@@ -42,7 +42,7 @@ fun begin(
     scen.next_tx(sender);
     let supply = scen.take_from_sender<Coin<DEVCOIN>>();
 
-    let xdrop = xdrop::admin_creates_xdrop<DEVCOIN, Ethereum>(scen.ctx(), b"");
+    let xdrop = xdrop::admin_creates_xdrop<DEVCOIN, Ethereum>( b"", scen.ctx());
     let mut runner = TestRunner { scen, supply,xdrop };
 
     runner.dev_link_ethereum(USER_1, USER_1_ETH); // changes next_tx(sender)

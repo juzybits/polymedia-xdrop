@@ -18,7 +18,7 @@ const config: AppConfig = {
         coinTicker: "DOGCOIN",
         coinType: "0x0016c1038872de4716b20d2090db9ca82f0bb3ae3ca8b022be6549b02261afec::dogcoin::DOGCOIN",
         coinDecimals: 9,
-        xdropId: "",
+        xdropId: "0xce080e4ae26f39b1ebd7335c0518de0a2f8d2319962d8a16b7d19ac3e2ce67c0",
         linkNetwork: "ethereum",
         linkedAddrs: [
             "eth address 1",
