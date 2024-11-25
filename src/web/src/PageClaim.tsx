@@ -85,15 +85,17 @@ export const PageClaim: React.FC = () =>
 };
 
 type EligibleLinksWithStatus = {
+    eligibleLinks: LinkWithStatus[];
     hasAnyLinks: boolean;
     hasEligibleLinks: boolean;
-    eligibleLinks: LinkWithStatus[];
+    hasClaimableLinks: boolean;
 };
 
 const EMPTY_LINKS_WITH_STATUS: EligibleLinksWithStatus = {
+    eligibleLinks: [],
     hasAnyLinks: false,
     hasEligibleLinks: false,
-    eligibleLinks: [],
+    hasClaimableLinks: false,
 } as const;
 
 const WidgetClaim: React.FC<{
@@ -137,14 +139,15 @@ const WidgetClaim: React.FC<{
 
         return {
             hasAnyLinks: links.length > 0,
-            hasEligibleLinks: statuses.some(s => s.eligible),
-            eligibleLinks
+            hasEligibleLinks: eligibleLinks.length > 0,
+            hasClaimableLinks: eligibleLinks.some(l => !l.status.claimed),
+            eligibleLinks,
         };
     }, [currAddr, xCnf.linkNetwork, xCnf.coinType, xCnf.xdropId]);
 
     const { error, isLoading, data, refetch } = eligibleLinksWithStatus;
     const { hasAnyLinks, hasEligibleLinks, eligibleLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
-    const disableSubmit = !currAcct || isWorking || !data || !data.hasEligibleLinks;
+    const disableSubmit = !currAcct || isWorking || !data || !data.hasClaimableLinks;
 
     // == effects ==
 
@@ -236,7 +239,7 @@ const CardClaimableLink: React.FC<{
         <div className="card-header">
             <div className="card-title">
                 {link.status.claimed
-                    ? "Already claimed"
+                    ? "Claimed"
                     : formatBalance(link.status.amount, xCnf.coinDecimals) + " " + xCnf.coinTicker}
             </div>
         </div>
