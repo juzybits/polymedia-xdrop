@@ -28,12 +28,15 @@ export const PageClaim: React.FC = () =>
 
     return <>
     {header}
+    {xCnf.bannerUrl && <div className="page-banner">
+        <img src={xCnf.bannerUrl} alt="banner" />
+    </div>}
     <div id="page-claim" className="page-regular">
 
         <div className="page-content">
 
             <div className="page-title">
-                Claim Sui {xCnf.coinTicker}
+                Claim {xCnf.coinTicker}
             </div>
 
             <div className="card compact">

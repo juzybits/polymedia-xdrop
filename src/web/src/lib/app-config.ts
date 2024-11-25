@@ -9,6 +9,7 @@ export type XDropConfig = {
     coinDecimals: number;
     coinTicker: string;
     linkNetwork: LinkNetwork;
+    bannerUrl?: string;
     devLinkedAddrs: string[];
     devClaimAmounts: bigint[];
 };
@@ -20,6 +21,7 @@ const config: AppConfig = {
         coinDecimals: 9,
         xdropId: "0x79ce3171baaabc27dde45a4abca7ae4e1772644e5e91e9c9a7d240f277242f3a",
         linkNetwork: "ethereum",
+        bannerUrl: "/img/banner-detf.webp",
         devLinkedAddrs: [
             "0x0000000000000000000000000000000000000000",
             "0x1111111111111111111111111111111111111111",
