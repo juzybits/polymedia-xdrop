@@ -9,7 +9,7 @@ export type NetworkConfig = {
 
 export const NETWORK_CONFIG: Record<NetworkName, NetworkConfig> = {
     mainnet: {
-        xdropPkgId: "",
+        xdropPkgId: "0x75f50a21aca30dacca617283f61bb5feea2c001cd6e3e79989601443800ef0c8",
         suilinkPkgId: "0xf857fa9df5811e6df2a0240a1029d365db24b5026896776ddd1c3c70803bccd3", // v1
     },
     testnet: {

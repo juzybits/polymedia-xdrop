@@ -5,7 +5,6 @@ import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
 import { PageNotFound } from "./PageNotFound";
-import { XDropConfig } from "./lib/app-config";
 
 export const PageAddClaims: React.FC = () =>
 {
