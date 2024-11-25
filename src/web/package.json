@@ -23,26 +23,26 @@
         "typecheck": "tsc -b"
     },
     "dependencies": {
-        "@mysten/dapp-kit": "^0.14.30",
-        "@mysten/sui": "^1.14.2",
+        "@mysten/dapp-kit": "^0.14.38",
+        "@mysten/sui": "^1.15.0",
         "@polymedia/coinmeta-react": "^0.0.17",
         "@polymedia/suitcase-core": "^0.0.35",
         "@polymedia/suitcase-react": "^0.0.35",
         "@polymedia/xdrop-sdk": "workspace:*",
-        "@tanstack/react-query": "^5.59.20",
+        "@tanstack/react-query": "^5.61.3",
         "normalize.css": "^8.0.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
-        "react-router-dom": "^6.28.0"
+        "react-router-dom": "^7.0.1"
     },
     "devDependencies": {
         "@types/react": "^18.3.12",
         "@types/react-dom": "^18.3.1",
         "@vitejs/plugin-react-swc": "^3.7.1",
         "less": "^4.2.0",
-        "typescript": "^5.6.3",
+        "typescript": "^5.7.2",
         "vite": "^5.4.11",
-        "wrangler": "^3.86.1"
+        "wrangler": "^3.90.0"
     },
     "type": "module",
     "sideEffects": false
