@@ -148,6 +148,7 @@ const ClaimWidget: React.FC<{
             setSubmitRes({ ok: false, err: err instanceof Error ? err.message : String(err) });
         } finally {
             setIsWorking(false);
+            statuses.refetch();
         }
     };
 
