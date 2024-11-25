@@ -32,8 +32,8 @@ const config: AppConfig = {
         devLinkedAddrs: [
             "0x0000000000000000000000000000000000000000",
             "0x1111111111111111111111111111111111111111",
-            "0xcCFBf70E03C97C0137Cd3c0B5009e8AD4942B84d",
-            "0xddBAC1074966Ca45A35455f8710E5bCA39e3f8e6",
+            "0xccfbf70e03c97c0137cd3c0b5009e8ad4942b84d",
+            "0xddbac1074966ca45a35455f8710e5bca39e3f8e6",
         ],
         devClaimAmounts: [
             100n * 1_000_000_000n,
