@@ -15,20 +15,43 @@ export const PageHome: React.FC = () =>
             <HeroBanner
                 title="xDrop"
                 description={<>
-                    A cross-chain system for coin distributions across different blockchains.
-                    <br /><br />
-                    Prove ownership of your Solana/Ethereum address, then claim coins on Sui.
-                    <br /><br />
-                    Fast, safe, and powered by <LinkExternal href="https://www.suilink.io/">SuiLink</LinkExternal>.
+                    Distribute Sui coins to Ethereum and Solana users.
                 </>} />
 
-            {/* <SectionFeatured />
+            <SectionHowItWorks />
 
-            <SectionCreateYours /> */}
+            {/* <SectionFeatured /> */}
+
+            {/* <SectionCreateYours /> */}
 
         </div>
     </div>
     </>;
+};
+
+const SectionHowItWorks: React.FC = () =>
+{
+    return <div>
+        <div className="page-section">
+            <div className="page-title">How it works</div>
+            <div className="card compact">
+                <div className="card-description">
+                    <p>
+                        {/* 1. Admin creates an xDrop by sending coins to a Sui smart contract and specifying which Ethereum or Solana addresses can claim them. */}
+
+                        1. Admin creates an xDrop by sending coins to a Sui smart contract and defining which Ethereum or Solana addresses can claim them.
+                    </p>
+                </div>
+            </div>
+            <div className="card compact">
+                <div className="card-description">
+                    <p>
+                        2. Eligible users prove ownership of their Ethereum or Solana address through SuiLink, then claim their allocated coins on Sui.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>;
 };
 
 // const SectionFeatured: React.FC = () =>
