@@ -71,7 +71,7 @@ export const PageClaim: React.FC = () =>
                     <div className="card-description">
                         <p>You are connected as {shortenAddress(currAcct.address)} (<a onClick={() => disconnect()}>disconnect</a>).</p>
                     </div>
-                    <ClaimWidget xCnf={xCnf} currAddr={currAcct.address} />
+                    <WidgetClaim xCnf={xCnf} currAddr={currAcct.address} />
                 </>}
             </div>
 
@@ -81,7 +81,19 @@ export const PageClaim: React.FC = () =>
     </>;
 };
 
-const ClaimWidget: React.FC<{
+type EligibleLinksWithStatus = {
+    hasAnyLinks: boolean;
+    hasEligibleLinks: boolean;
+    eligibleLinks: LinkWithStatus[];
+};
+
+const EMPTY_LINKS_WITH_STATUS: EligibleLinksWithStatus = {
+    hasAnyLinks: false,
+    hasEligibleLinks: false,
+    eligibleLinks: [],
+} as const;
+
+const WidgetClaim: React.FC<{
     xCnf: XDropConfig;
     currAddr: string;
 }> = ({
@@ -92,39 +104,50 @@ const ClaimWidget: React.FC<{
     // == state ==
 
     const currAcct = useCurrentAccount();
-
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
-
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    const links = useFetch(
-        async () => await xdropClient.fetchOwnedLinks(currAddr, xCnf.linkNetwork),
-        [currAddr, xCnf.linkNetwork]
-    );
+    const eligibleLinksWithStatus = useFetch<EligibleLinksWithStatus>(async () =>
+    {
+        // Fetch SuiLink objects
+        const links = await xdropClient.fetchOwnedLinks(currAddr, xCnf.linkNetwork);
+        if (!links?.length) {
+            return EMPTY_LINKS_WITH_STATUS;
+        }
 
-    const statuses = useFetch(
-        async () => {
-            if (!links.data) { return undefined; }
-            return await xdropClient.fetchClaimStatuses(
-                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId, links.data.map(l => l.network_address)
-            );
-        },
-        [xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId, links.data]
-    );
+        // Fetch claim statuses for those links
+        const statuses = await xdropClient.fetchClaimStatuses(
+            xCnf.coinType,
+            xCnf.linkNetwork,
+            xCnf.xdropId,
+            links.map(l => l.network_address),
+        );
+
+        // Merge links with their statuses, filter eligible links, and sort unclaimed links first
+        const eligibleLinks = links
+            .map((link, i) => ({
+                ...link,
+                status: statuses[i]
+            }))
+            .filter(l => l.status.eligible)
+            .sort((a, b) => Number(!b.status.claimed) - Number(!a.status.claimed));
+
+        return {
+            hasAnyLinks: links.length > 0,
+            hasEligibleLinks: statuses.some(s => s.eligible),
+            eligibleLinks
+        };
+    }, [currAddr, xCnf.linkNetwork, xCnf.coinType, xCnf.xdropId]);
+
+    const { error, isLoading, data, refetch } = eligibleLinksWithStatus;
+    const { hasAnyLinks, hasEligibleLinks, eligibleLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
+    const disableSubmit = !currAcct || isWorking || !data || !data.hasEligibleLinks;
 
     // == effects ==
 
     useEffect(() => { // dev only
-        if (links.data) {
-            console.debug("Owned links:",JSON.stringify(links.data, null, 2));
-        }
-    }, [links]);
-
-    useEffect(() => { // dev only
-        if (statuses.data) {
-            console.debug("Claimable amounts:",JSON.stringify(statuses.data, null, 2));
-        }
-    }, [statuses]);
+        console.debug("[ClaimWidget] eligibleLinksWithStatus.data:", data);
+    }, [data]);
 
     // == functions ==
 
@@ -139,7 +162,7 @@ const ClaimWidget: React.FC<{
                 xCnf.coinType,
                 xCnf.linkNetwork,
                 xCnf.xdropId,
-                eligibleLinksWithStat!.filter(l => !l.status.claimed).map(l => l.id)
+                eligibleLinks.map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);
             setSubmitRes({ ok: true });
@@ -148,36 +171,17 @@ const ClaimWidget: React.FC<{
             setSubmitRes({ ok: false, err: err instanceof Error ? err.message : String(err) });
         } finally {
             setIsWorking(false);
-            statuses.refetch();
+            refetch();
         }
     };
 
     // === html ===
 
-    if (links.error || statuses.error) {
-        return <CardWithMsg className="compact">{links.error ?? statuses.error}</CardWithMsg>;
-    } else if (links.isLoading || statuses.isLoading) {
+    if (error) {
+        return <CardWithMsg className="compact">{error}</CardWithMsg>;
+    } else if (isLoading) {
         return <CardSpinner />;
     }
-
-    const disableSubmit = !currAcct || isWorking || !links.data || !statuses.data /*|| !isOpen*/;
-    const hasAnyLinks = links.data && links.data.length > 0;
-    const hasEligibleLinks = statuses.data && statuses.data.some(s => s.eligible);
-
-    const eligibleLinksWithStat: LinkWithStatus[] | undefined =
-        !(links.data && statuses.data)
-        ? undefined
-        // merge links with their statuses (guaranteed to be in the same order)
-        : links.data.map((link, i) => ({
-            ...link,
-            status: statuses.data![i]
-        }))
-        // grab only eligible links
-        .filter(l => l.status.eligible)
-        // put unclaimed links first
-        .sort((a, b) => {
-            return Number(!b.status.claimed) - Number(!a.status.claimed);
-        });
 
     return <>
         <div className="card-description">
@@ -194,7 +198,7 @@ const ClaimWidget: React.FC<{
                         </div>;
                     }
                     return <>
-                        {eligibleLinksWithStat!.map(linkWStat =>
+                        {eligibleLinks.map(linkWStat =>
                             <CardClaimableLink key={linkWStat.id} xCnf={xCnf} link={linkWStat} />
                         )}
                     </>;
