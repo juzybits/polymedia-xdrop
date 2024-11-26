@@ -41,25 +41,37 @@ export const PageClaim: React.FC = () =>
 
             <div className="card compact">
                 <div className="card-title">
-                    <p>Step 1: Link your {linkedNet} address</p>
+                    <p>Step 1: Create a Sui Wallet</p>
                 </div>
                 <div className="card-description">
-                    <p>Prove ownership of your {linkedNet} address by linking it to your Sui address.</p>
-                </div>
-                <div className="card-description">
-                    If you hold {xCnf.coinTicker} in multiple wallets, you can link all of them to the same Sui address.
+                    <p>You need a Sui wallet to claim your {xCnf.coinTicker} on Sui. We recommend downloading the official Sui wallet app or Chrome extension.</p>
                 </div>
                 <div className="center-element">
-                    <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
+                    <LinkExternal className="btn" href="https://suiwallet.com/">GET SUI WALLET</LinkExternal>
                 </div>
             </div>
 
             <div className="card compact">
                 <div className="card-title">
-                    <p>Step 2: Claim your {xCnf.coinTicker} on Sui</p>
+                    <p>Step 2: Link your {linkedNet} address to your Sui address</p>
                 </div>
                 <div className="card-description">
-                    Once your {linkedNet} address is linked, you can claim the same amount of Sui {xCnf.coinTicker} as you hold on {linkedNet}.
+                    <p>Prove ownership of your {linkedNet} address by linking it to your Sui address. Simply click the button below and follow the steps.</p>
+                </div>
+                <div className="card-description">
+                    NOTE: If you hold {xCnf.coinTicker} in multiple wallets, you can link all of them to the same Sui address.
+                </div>
+                <div className="center-element">
+                    <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESSES</LinkExternal>
+                </div>
+            </div>
+
+            <div className="card compact">
+                <div className="card-title">
+                    <p>Step 3: Claim your {xCnf.coinTicker} on Sui</p>
+                </div>
+                <div className="card-description">
+                    After successfully linking your {linkedNet} address, you can claim the equivalent amount of {xCnf.coinTicker} on Sui that you hold on {linkedNet}.
                 </div>
                 {!currAcct
                     ? <>
