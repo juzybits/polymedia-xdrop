@@ -8,7 +8,7 @@ export const XDropModule =
 {
     // === admin functions ===
 
-    admin_creates_xdrop: (
+    new: (
         tx: Transaction,
         packageId: string,
         type_coin: string,
@@ -17,10 +17,27 @@ export const XDropModule =
     ): TransactionResult =>
     {
         return tx.moveCall({
-            target: `${packageId}::xdrop::admin_creates_xdrop`,
+            target: `${packageId}::xdrop::new`,
             typeArguments: [ type_coin, type_network ],
             arguments: [
                 tx.pure.string(info_json),
+            ],
+        });
+    },
+
+    share: (
+        tx: Transaction,
+        packageId: string,
+        type_coin: string,
+        type_network: string,
+        xdrop: ObjectInput,
+    ): TransactionResult =>
+    {
+        return tx.moveCall({
+            target: `${packageId}::xdrop::share`,
+            typeArguments: [ type_coin, type_network ],
+            arguments: [
+                objectArg(tx, xdrop),
             ],
         });
     },

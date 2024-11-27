@@ -43,7 +43,7 @@ public struct XDROP has drop {}
 ///
 /// C: The type of coin being distributed.
 /// N: The source network where ownership was verified.
-public struct XDrop<phantom C, phantom N> has key, store {
+public struct XDrop<phantom C, phantom N> has key {
     id: UID,
     admin: address,
     /// 0: paused - users cannot claim
@@ -71,7 +71,7 @@ public struct ClaimStatus has copy, drop, store {
 
 // === admin functions ===
 
-public fun admin_creates_xdrop<C, N>(
+public fun new<C, N>(
     info_json: vector<u8>,
     ctx: &mut TxContext,
 ): XDrop<C, N> {
@@ -83,6 +83,12 @@ public fun admin_creates_xdrop<C, N>(
         claims: table::new(ctx),
         info_json: info_json.to_string(),
     }
+}
+
+public fun share<C, N>(
+    xdrop: XDrop<C, N>,
+) {
+    transfer::share_object(xdrop);
 }
 
 public fun admin_adds_claims<C, N>(

@@ -115,14 +115,12 @@ export class XDropClient extends SuiClientBase
 
         const typeLink = getLinkType(this.suilinkPkgId, linkNetwork, "inner");
 
-        const [xdropArg] = XDropModule.admin_creates_xdrop(
+        const [xdropArg] = XDropModule.new(
             tx, this.xdropPkgId, typeCoin, typeLink, infoJson
         );
 
-        TransferModule.public_share_object(
-            tx,
-            `${this.xdropPkgId}::xdrop::XDrop<${typeCoin},${typeLink}>`,
-            xdropArg,
+        XDropModule.share(
+            tx, this.xdropPkgId, typeCoin, typeLink, xdropArg
         );
 
         const resp = await this.signAndExecuteTransaction(tx);
