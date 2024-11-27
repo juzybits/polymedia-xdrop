@@ -13,7 +13,7 @@ import {
 } from "@polymedia/suitcase-core";
 import { getLinkType, LinkNetwork } from "./config.js";
 import { XDropModule } from "./xdrop-functions.js";
-import { ClaimStatus, ClaimStatusBcs, objResToSuiLink, SuiLink } from "./xdrop-structs.js";
+import { ClaimStatus, ClaimStatusBcs, objResToSuiLink, objResToXDrop, SuiLink, XDrop } from "./xdrop-structs.js";
 
 /**
  * Execute transactions on the XDrop Sui package.
@@ -99,6 +99,27 @@ export class XDropClient extends SuiClientBase
         }));
     }
 
+    public async fetchXDrop(
+        xdropId: string,
+    ): Promise<XDrop | null>
+    {
+        const xdrops = await this.fetchXDrops([xdropId]);
+        return xdrops.length > 0 ? xdrops[0] : null;
+    }
+
+    public async fetchXDrops(
+        xdropIds: string[],
+    ): Promise<XDrop[]>
+    {
+        return this.fetchAndParseObjects<XDrop>(
+            xdropIds,
+            (ids) => this.suiClient.multiGetObjects({
+                ids, options: { showContent: true }
+            }),
+            objResToXDrop,
+        );
+    }
+
     // === data parsing ===
 
     // === module interactions ===
@@ -106,7 +127,7 @@ export class XDropClient extends SuiClientBase
     public async adminCreatesAndSharesXDrop(
         typeCoin: string,
         linkNetwork: LinkNetwork,
-        infoJson: string,
+        infoJson?: string,
     ): Promise<{
         resp: SuiTransactionBlockResponse;
         xdropObjChange: ObjChangeKind<"created">;
@@ -116,7 +137,7 @@ export class XDropClient extends SuiClientBase
         const typeLink = getLinkType(this.suilinkPkgId, linkNetwork, "inner");
 
         const [xdropArg] = XDropModule.new(
-            tx, this.xdropPkgId, typeCoin, typeLink, infoJson
+            tx, this.xdropPkgId, typeCoin, typeLink, infoJson ?? ""
         );
 
         XDropModule.share(
