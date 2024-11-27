@@ -15,7 +15,6 @@ export type XDrop = {
     status: XDropStatus;
     balance: bigint;
     claims_length: number;
-    info_json: unknown;
 }
 
 export type XDropStatus = "paused" | "open" | "ended";
@@ -67,10 +66,6 @@ export function objResToXDrop(
     else if (fields.status === 2) { status = "ended"; }
     else { throw new Error(`Unknown status: ${fields.status}`); }
 
-    let info: unknown;
-    try { info = JSON.parse(fields.info_json); }
-    catch (_err) { info = fields.info_json; }
-
     return {
         type_coin: objType.match(/<([^,>]+)/)?.[1] || "",
         type_network: objType.match(/,\s*([^>]+)>/)?.[1] || "",
@@ -79,7 +74,6 @@ export function objResToXDrop(
         status: status,
         balance: BigInt(fields.balance),
         claims_length: Number(fields.claims.fields.size),
-        info_json: info,
     };
 }
 

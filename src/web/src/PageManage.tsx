@@ -1,5 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
@@ -19,6 +19,16 @@ export const PageManage: React.FC = () =>
     const xCnf = appCnf[xdropId];
 
     const disableSubmit = isWorking || !currAcct;
+
+    // === effects ===
+
+    useEffect(() =>
+    {
+        xdropClient.fetchXDrop(xCnf.xdropId).then(xdrop =>
+        {
+            console.debug("[useEffect] xdrop:", JSON.stringify(xdrop, null, 2));
+        });
+    }, [xCnf.xdropId]);
 
     // === functions ===
 
