@@ -37,8 +37,6 @@ const SectionHowItWorks: React.FC = () =>
             <div className="card compact">
                 <div className="card-description">
                     <p>
-                        {/* 1. Admin creates an xDrop by sending coins to a Sui smart contract and specifying which Ethereum or Solana addresses can claim them. */}
-
                         1. Admin creates an xDrop by sending coins to a Sui smart contract and defining which Ethereum or Solana addresses can claim them.
                     </p>
                 </div>
