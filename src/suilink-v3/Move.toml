@@ -2,11 +2,10 @@
 name = "SuiLink"
 version = "3.0.0"
 edition = "legacy"
-published-at = "0x358fb2cf8d041bbcdb46f0782ff23fb88c3fe15d10f481b721344241e6692a9b" # package v3
 
 [dependencies]
 # Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
 Sui = { local = "../../../sui/crates/sui-framework/packages/sui-framework" }
 
 [addresses]
-suilink = "0xf857fa9df5811e6df2a0240a1029d365db24b5026896776ddd1c3c70803bccd3" # package v1
+suilink = "0x0"
