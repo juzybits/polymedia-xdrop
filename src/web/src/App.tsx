@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comps/glitch";
+import { IconGears } from "./comps/icons";
 import { AppConfig, getAppConfig } from "./lib/app-config";
 import { loadNetworkConfig } from "./lib/network";
 import { PageAddClaims } from "./PageAddClaims";
@@ -21,6 +22,7 @@ import { PageHome } from "./PageHome";
 import { PageManage } from "./PageManage";
 import { PageNew } from "./PageNew";
 import { PageNotFound } from "./PageNotFound";
+import { PageSettings } from "./PageSettings";
 import "./styles/App.less";
 
 /* App router */
@@ -35,6 +37,7 @@ export const AppRouter: React.FC = () => {
                 <Route path="/add-claims/:xdropId" element={<PageAddClaims />} />
                 <Route path="/claim/:xdropId" element={<PageClaim />} />
                 <Route path="/manage/:xdropId" element={<PageManage />} />
+                <Route path="/settings" element={<PageSettings />} />
                 <Route path="/dev-link/:xdropId" element={<PageDevLink />} />
                 <Route path="*" element={<PageNotFound />} />
             </Route>
@@ -211,5 +214,8 @@ const Header: React.FC = () =>
                 {network !== "mainnet" && <span className="header-network-label">{network}</span>}
             </Link>
         </div>
+        <Link to="/settings" className="header-item" title="Settings">
+            <IconGears />
+        </Link>
     </header>;
 };

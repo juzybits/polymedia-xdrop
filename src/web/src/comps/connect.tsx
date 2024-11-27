@@ -2,21 +2,35 @@ import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { useAppContext } from "../App";
 
 export const BtnConnect: React.FC = () =>
-    {
-        // === state ===
+{
+    // === state ===
 
-        const currAcct = useCurrentAccount();
-        const { mutate: disconnect } = useDisconnectWallet();
+    const currAcct = useCurrentAccount();
+    const { mutate: disconnect } = useDisconnectWallet();
 
-        const { isWorking, openConnectModal } = useAppContext();
+    const { isWorking, openConnectModal } = useAppContext();
 
-        const connectWallet = () => {
-            currAcct ? disconnect() : openConnectModal();
-        };
-
-        return (
-            <button className="btn" disabled={isWorking} onClick={connectWallet}>
-                CONNECT
-            </button>
-        );
+    const connectWallet = () => {
+        currAcct ? disconnect() : openConnectModal();
     };
+
+    return (
+        <button className="btn" disabled={isWorking} onClick={connectWallet}>
+            CONNECT
+        </button>
+    );
+};
+
+
+
+export const ConnectToGetStarted: React.FC = () =>
+{
+    return (
+        <>
+            <div className="card-description">
+                Connect your Sui wallet to get started.
+            </div>
+            <BtnConnect />
+        </>
+    );
+};
