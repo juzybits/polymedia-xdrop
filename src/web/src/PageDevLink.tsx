@@ -2,25 +2,27 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { getNetworkConfig } from "@polymedia/xdrop-sdk";
 import React from "react";
+import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
-import { useParams } from "react-router-dom";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageDevLink: React.FC = () =>
 {
-    const currAcct = useCurrentAccount();
+    // === state ===
 
     const { xdropId } = useParams();
-    if (xdropId !== "detf") {
-        return <PageNotFound />;
-    }
+    if (xdropId !== "detf") { return <PageNotFound />; }
+
+    const currAcct = useCurrentAccount();
 
     const { header, appCnf, network, xdropClient, isWorking, setIsWorking } = useAppContext();
     const netCnf = getNetworkConfig(network);
     const xCnf = appCnf[xdropId];
     const disableSubmit = isWorking || !currAcct;
+
+    // === functions ===
 
     const onSubmit = async () =>
     {
@@ -48,6 +50,8 @@ export const PageDevLink: React.FC = () =>
             setIsWorking(false);
         }
     };
+
+    // === html ===
 
     return <>
     {header}

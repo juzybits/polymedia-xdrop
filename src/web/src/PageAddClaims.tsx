@@ -9,17 +9,19 @@ import { PageNotFound } from "./PageNotFound";
 
 export const PageAddClaims: React.FC = () =>
 {
-    const currAcct = useCurrentAccount();
+    // === state ===
 
     const { xdropId } = useParams();
-    if (xdropId !== "detf") {
-        return <PageNotFound />;
-    }
+    if (xdropId !== "detf") { return <PageNotFound />; }
+
+    const currAcct = useCurrentAccount();
 
     const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
     const xCnf = appCnf[xdropId];
 
     const disableSubmit = isWorking || !currAcct;
+
+    // === functions ===
 
     const onSubmit = async () =>
     {
@@ -42,6 +44,8 @@ export const PageAddClaims: React.FC = () =>
             setIsWorking(false);
         }
     };
+
+    // === html ===
 
     return <>
     {header}

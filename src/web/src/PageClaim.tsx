@@ -14,17 +14,19 @@ import { SubmitRes } from "./lib/misc";
 
 export const PageClaim: React.FC = () =>
 {
-    const currAcct = useCurrentAccount();
-    const { mutate: disconnect } = useDisconnectWallet();
+    // === state ===
 
     const { xdropId } = useParams();
-    if (xdropId !== "detf") {
-        return <PageNotFound />;
-    }
+    if (xdropId !== "detf") { return <PageNotFound />; }
+
+    const currAcct = useCurrentAccount();
+    const { mutate: disconnect } = useDisconnectWallet();
 
     const { header, appCnf } = useAppContext();
     const xCnf = appCnf[xdropId];
     const linkedNet = capitalize(xCnf.linkNetwork);
+
+    // === html ===
 
     return <>
     {header}
