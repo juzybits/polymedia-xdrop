@@ -1,4 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { getLinkType } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -57,11 +58,11 @@ export const PageAddClaims: React.FC = () =>
                     <p>Config:</p>
                 </div>
                 <div className="card-description">
-                    <p>Coin Type: {xCnf.coinType}</p>
-                    <p>Link Network: {xCnf.linkNetwork}</p>
-                    <p>xDrop ID: {xCnf.xdropId}</p>
-                    <p>Linked Addresses: {xCnf.devLinkedAddrs.join(", ")}</p>
-                    <p>Claim Amounts: {xCnf.devClaimAmounts.join(", ")}</p>
+                    <p>Coin Type:<br/>{xCnf.coinType}</p>
+                    <p>Network Type:<br/>{ getLinkType(xdropClient.suilinkPkgId, xCnf.linkNetwork, "inner") }</p>
+                    <p>xDrop ID:<br/>{xCnf.xdropId}</p>
+                    <p>Linked Addresses:<br/>{xCnf.devLinkedAddrs.join(", ")}</p>
+                    <p>Claim Amounts:<br/>{xCnf.devClaimAmounts.join(", ")}</p>
                 </div>
                 <div>
                     {currAcct
