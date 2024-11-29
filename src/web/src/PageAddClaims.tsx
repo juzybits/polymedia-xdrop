@@ -1,4 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { formatBalance } from "@polymedia/suitcase-core";
+import { useInputString, useTextArea } from "@polymedia/suitcase-react";
 import { getLinkType } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useParams } from "react-router-dom";
@@ -20,6 +22,63 @@ export const PageAddClaims: React.FC = () =>
     const xCnf = appCnf[xdropId];
 
     const disableSubmit = isWorking || !currAcct;
+
+    const textArea = useTextArea<{
+        claims: { addr: string, amount: bigint }[],
+        totalAmount: bigint,
+    }>({
+        label: "Claims (format: address,amount)",
+        msgRequired: "Claims are required.",
+        html: {
+            value: "",
+            required: true,
+            placeholder: "0x1234...5678,1000\n0x8765...4321,2000"
+        },
+        validate: (input) => {
+            if (!input) {
+                return { err: undefined, val: undefined };
+            }
+            let totalAmount = BigInt(0);
+            try {
+                const lines = input
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+
+                const claims: {addr: string, amount: bigint}[] = [];
+
+                for (const line of lines) {
+                    const [addr, amountStr] = line.split(',').map(s => s.trim());
+
+                    // Validate address based on network type
+                    if (xCnf.linkNetwork === "ethereum") {
+                        if (!addr?.match(/^0x[0-9a-fA-F]{40}$/)) {
+                            throw new Error(`Invalid Ethereum address: ${addr}`);
+                        }
+                    } else if (xCnf.linkNetwork === "solana") {
+                        if (!addr?.match(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/)) {
+                            throw new Error(`Invalid Solana address: ${addr}`);
+                        }
+                    }
+
+                    // Validate amount
+                    if (!amountStr.match(/^\d+$/)) {
+                        throw new Error(`Invalid amount: ${amountStr}`);
+                    }
+
+                    claims.push({addr, amount: BigInt(amountStr)});
+                    totalAmount += BigInt(amountStr);
+                }
+
+                return { err: undefined, val: { claims, totalAmount } };
+            } catch (e) {
+                return {
+                    err: e instanceof Error ? e.message : "Invalid input",
+                    val: undefined
+                };
+            }
+        },
+    });
 
     // === functions ===
 
@@ -67,6 +126,16 @@ export const PageAddClaims: React.FC = () =>
                     <p>xDrop ID:<br/>{xCnf.xdropId}</p>
                     <p>Linked Addresses:<br/>{xCnf.devLinkedAddrs.join(", ")}</p>
                     <p>Claim Amounts:<br/>{xCnf.devClaimAmounts.join(", ")}</p>
+                </div>
+            </div>
+
+            <div className="card compact">
+                <div className="card-description">
+                    {textArea.input}
+                    {textArea.val && <div>
+                        Addresses: {textArea.val.claims.length}<br/>
+                        Total amount: {formatBalance(textArea.val.totalAmount, xCnf.coinDecimals, "compact")}
+                    </div>}
                 </div>
                 <div>
                     {currAcct
