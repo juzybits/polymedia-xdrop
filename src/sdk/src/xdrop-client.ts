@@ -1,9 +1,9 @@
 import { bcs } from "@mysten/sui/bcs";
 import { SuiClient, SuiTransactionBlockResponse, SuiTransactionBlockResponseOptions } from "@mysten/sui/client";
-import { Transaction } from "@mysten/sui/transactions";
+import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import {
+    chunkArray,
     devInspectAndGetReturnValues,
-    getCoinOfValue,
     NetworkName,
     ObjChangeKind,
     SignTransaction,
@@ -150,7 +150,7 @@ export class XDropClient extends SuiClientBase
         return { resp, xdropObjChange };
     }
 
-    public async adminAddsClaims( // TODO test limits
+    public async adminAddsClaims(
         sender: string,
         typeCoin: string,
         linkNetwork: LinkNetwork,
@@ -159,19 +159,35 @@ export class XDropClient extends SuiClientBase
         amounts: bigint[],
     ) {
         const tx = new Transaction();
-        const totalAmount = amounts.reduce((a, b) => a + b, 0n);
-        const [payCoinArg] = await getCoinOfValue(this.suiClient, tx, sender, typeCoin, totalAmount);
+        tx.setSender(sender);
 
-        XDropModule.admin_adds_claims(
-            tx,
-            this.xdropPkgId,
-            typeCoin,
-            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
-            xdropId,
-            payCoinArg,
-            addrs.map(addr => addr.toLowerCase()),
-            amounts,
-        );
+        if (addrs.length !== amounts.length) {
+            throw new Error(`Number of addresses and amounts must match: ${addrs.length} !== ${amounts.length}`);
+        }
+        if (addrs.length > 1000) {
+            throw new Error(`Number of claims must be less than 1000 (object_runtime_max_num_store_entries)`);
+        }
+
+        // Keep function call arg size below 16384 bytes due to:
+        // `SizeLimitExceeded { limit: "maximum pure argument size", value: "16384" }`
+        const chunkSize = 380; // breaks above this (devnet, 2024-11-29)
+
+        for (let i = 0; i < addrs.length; i += chunkSize) {
+            const chunkAddrs = addrs.slice(i, i + chunkSize);
+            const chunkAmounts = amounts.slice(i, i + chunkSize);
+            const chunkTotalAmount = chunkAmounts.reduce((sum, amt) => sum + amt, 0n);
+
+            XDropModule.admin_adds_claims(
+                tx,
+                this.xdropPkgId,
+                typeCoin,
+                getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+                xdropId,
+                coinWithBalance({ balance: chunkTotalAmount, type: typeCoin })(tx),
+                chunkAddrs.map(addr => addr.toLowerCase()),
+                chunkAmounts,
+            );
+        }
 
         return await this.signAndExecuteTransaction(tx);
     }

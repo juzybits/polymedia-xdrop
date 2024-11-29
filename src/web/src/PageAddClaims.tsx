@@ -21,8 +21,6 @@ export const PageAddClaims: React.FC = () =>
     const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
     const xCnf = appCnf[xdropId];
 
-    const disableSubmit = isWorking || !currAcct;
-
     const textArea = useTextArea<{
         claims: { addr: string, amount: bigint }[],
         totalAmount: bigint,
@@ -30,7 +28,18 @@ export const PageAddClaims: React.FC = () =>
         label: "Claims (format: address,amount)",
         msgRequired: "Claims are required.",
         html: {
-            value: "",
+            value: (() => {
+                const rows = Array.from({ length: 1000 }, () => {
+                    // Generate random Ethereum address (40 hex chars)
+                    const addr = '0x' + Array.from({ length: 40 }, () =>
+                        Math.floor(Math.random() * 16).toString(16)
+                    ).join('');
+                    // Random amount between 1 and 100
+                    const amount = Math.floor(Math.random() * (100 * 10**xCnf.coinDecimals)) + 1;
+                    return `${addr},${amount}`;
+                });
+                return rows.join('\n');
+            })(),
             required: true,
             placeholder: "0x1234...5678,1000\n0x8765...4321,2000"
         },
@@ -80,6 +89,8 @@ export const PageAddClaims: React.FC = () =>
         },
     });
 
+    const disableSubmit = isWorking || !currAcct || !!textArea.err;
+
     // === functions ===
 
     const onSubmit = async () =>
@@ -93,8 +104,8 @@ export const PageAddClaims: React.FC = () =>
                 xCnf.coinType,
                 xCnf.linkNetwork,
                 xCnf.xdropId,
-                xCnf.devLinkedAddrs,
-                xCnf.devClaimAmounts,
+                textArea.val!.claims.map(c => c.addr),
+                textArea.val!.claims.map(c => c.amount),
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
@@ -139,7 +150,7 @@ export const PageAddClaims: React.FC = () =>
                 </div>
                 <div>
                     {currAcct
-                        ? <Btn onClick={onSubmit}>ADD CLAIMS</Btn>
+                        ? <Btn onClick={onSubmit} disabled={disableSubmit}>ADD CLAIMS</Btn>
                         : <BtnConnect />}
                 </div>
             </div>
