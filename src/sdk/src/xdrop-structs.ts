@@ -15,7 +15,7 @@ export type XDrop = {
     status: XDropStatus;
     balance: bigint;
     claims_length: number;
-}
+};
 
 export type XDropStatus = "paused" | "open" | "ended";
 
@@ -86,6 +86,17 @@ export function objResToSuiLink(
         id: fields.id.id,
         network_address: fields.network_address,
         timestamp_ms: fields.timestamp_ms,
+    };
+}
+
+export function retValToClaimStatus(
+    retVal: any,
+): ClaimStatus
+{
+    return {
+        eligible: retVal.eligible,
+        claimed: retVal.claimed,
+        amount: BigInt(retVal.amount),
     };
 }
 /* eslint-enable */

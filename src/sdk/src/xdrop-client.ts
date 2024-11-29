@@ -13,7 +13,7 @@ import {
 } from "@polymedia/suitcase-core";
 import { getLinkType, LinkNetwork } from "./config.js";
 import { XDropModule } from "./xdrop-functions.js";
-import { ClaimStatus, ClaimStatusBcs, objResToSuiLink, objResToXDrop, SuiLink, XDrop } from "./xdrop-structs.js";
+import { ClaimStatus, ClaimStatusBcs, objResToSuiLink, objResToXDrop, retValToClaimStatus, SuiLink, XDrop } from "./xdrop-structs.js";
 
 /**
  * Execute transactions on the XDrop Sui package.
@@ -92,11 +92,8 @@ export class XDropClient extends SuiClientBase
             this.suiClient, tx, [ [ bcs.vector(ClaimStatusBcs) ] ]
         );
 
-        return blockReturns[0][0].map((status: any) => ({
-            eligible: Boolean(status.eligible),
-            claimed: Boolean(status.claimed),
-            amount: BigInt(status.amount),
-        }));
+        // eslint-disable-next-line
+        return blockReturns[0][0].map(retValToClaimStatus);
     }
 
     public async fetchXDrop(
