@@ -1,7 +1,11 @@
 import React from "react";
 
-export const CardSpinner: React.FC = () => {
-    return <div className="card">
+export const CardSpinner: React.FC<{
+    className?: string;
+}   > = ({
+    className,
+}) => {
+    return <div className={`card ${className ?? ""}`}>
         <FullCardMsg>
             <div className="card-spinner" />
         </FullCardMsg>

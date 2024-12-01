@@ -1,10 +1,13 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import React, { useEffect } from "react";
+import { useFetch } from "@polymedia/suitcase-react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
-import { BtnConnect } from "./comps/connect";
+import { CardSpinner, CardWithMsg } from "./comps/cards";
+import { ConnectToGetStarted } from "./comps/connect";
 import { PageNotFound } from "./PageNotFound";
+import { SuiTransactionBlockResponse } from "@mysten/sui/client";
 
 export const PageManage: React.FC = () =>
 {
@@ -18,85 +21,125 @@ export const PageManage: React.FC = () =>
     const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
     const xCnf = appCnf[xdropId];
 
-    const disableSubmit = isWorking || !currAcct;
-
-    // === effects ===
-
-    useEffect(() =>
-    {
-        xdropClient.fetchXDrop(xCnf.xdropId)
-            .then(xdrop => {
-                console.debug("[PageManage] xdrop:", JSON.stringify(xdrop, null, 2));
-            });
-    }, [xCnf.xdropId]);
-
-    // === functions ===
-
-    const onOpen = async () =>
-    {
-        if (disableSubmit) { return; }
-        try {
-            setIsWorking(true);
-            const resp = await xdropClient.adminOpensXDrop(
-                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId
-            );
-            console.debug("[onOpen] okay:", resp);
-        } catch (err) {
-            console.warn("[onOpen] error:", err);
-        } finally {
-            setIsWorking(false);
-        }
-    };
-
-    const onPause = async () =>
-    {
-        if (disableSubmit) { return; }
-        try {
-            setIsWorking(true);
-            const resp = await xdropClient.adminPausesXDrop(
-                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId
-            );
-            console.debug("[onPause] okay:", resp);
-        } catch (err) {
-            console.warn("[onPause] error:", err);
-        } finally {
-            setIsWorking(false);
-        }
-    };
-
-    const onEnd = async () =>
-    {
-        if (disableSubmit) { return; }
-        try {
-            setIsWorking(true);
-            const resp = await xdropClient.adminEndsXDrop(
-                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId
-            );
-            console.debug("[onEnd] okay:", resp);
-        } catch (err) {
-            console.warn("[onEnd] error:", err);
-        } finally {
-            setIsWorking(false);
-        }
-    };
-
-    const onReclaim = async () =>
-    {
-        if (disableSubmit) { return; }
-        try {
-            setIsWorking(true);
-            const resp = await xdropClient.adminReclaimsBalance(
-                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId, currAcct.address
-            );
-            console.debug("[onReclaim] okay:", resp);
-        } catch (err) {
-            console.warn("[onReclaim] error:", err);
-        } finally {
-            setIsWorking(false);
-        }
-    };
+    const fetched = useFetch(
+        async () => !currAcct ? undefined : await xdropClient.fetchXDrop(xCnf.xdropId),
+        [xCnf.xdropId, currAcct?.address]
+    );
+    const { error, isLoading, refetch, data: xdrop } = fetched;
 
     // === html ===
+
+    const AdminAction: React.FC<{
+        title: string;
+        info: string;
+        btnTxt: string;
+        submit: () => Promise<void>;
+    }> = (p) =>
+    {
+        return (
+            <div className="card compact">
+                <div className="card-title">
+                    <p>{p.title}</p>
+                </div>
+                <div className="card-description">
+                    <p>{p.info}</p>
+                </div>
+                <div className="card-description">
+                    <Btn onClick={p.submit} disabled={isWorking}>{p.btnTxt}</Btn>
+                </div>
+            </div>
+        );
+    };
+
+    const body: React.ReactNode = (() =>
+    {
+        if (error) {
+            return <CardWithMsg className="compact">
+                {error}
+            </CardWithMsg>;
+        }
+        if (!currAcct) {
+            return <div className="card compact center-text">
+                <ConnectToGetStarted />
+            </div>;
+        }
+        if (isLoading || !xdrop) {
+            return <CardSpinner className="compact" />;
+        }
+
+        const adminActions = [
+            {
+                title: "Open xDrop",
+                info: "Allow users to claim their share of the xDrop.",
+                btnTxt: "OPEN",
+                submit: () => xdropClient.adminOpensXDrop(
+                    xCnf.coinType,
+                    xCnf.linkNetwork,
+                    xCnf.xdropId
+                ),
+                showIf: !xdrop.is_ended && xdrop.is_paused,
+            },
+            {
+                title: "Pause xDrop",
+                info: "Stop users from claiming their share of the xDrop.",
+                btnTxt: "PAUSE",
+                submit: () => xdropClient.adminPausesXDrop(
+                    xCnf.coinType,
+                    xCnf.linkNetwork,
+                    xCnf.xdropId
+                ),
+                showIf: !xdrop.is_ended && xdrop.is_open,
+            },
+            {
+                title: "End xDrop",
+                info: "End the xDrop permanently. This cannot be undone.",
+                btnTxt: "END",
+                submit: () => xdropClient.adminEndsXDrop(
+                    xCnf.coinType,
+                    xCnf.linkNetwork,
+                    xCnf.xdropId
+                ),
+                showIf: !xdrop.is_ended,
+            },
+            {
+                title: "Reclaim Balance",
+                info: "Reclaim the remaining balance of the xDrop.",
+                btnTxt: "RECLAIM",
+                submit: () => xdropClient.adminReclaimsBalance(
+                    xCnf.coinType,
+                    xCnf.linkNetwork,
+                    xCnf.xdropId,
+                    currAcct.address
+                ),
+                showIf: xdrop.is_ended,
+            },
+        ].filter(action => action.showIf);
+
+        const onSubmit = async (fn: () => Promise<SuiTransactionBlockResponse>) =>
+        {
+            if (isWorking || !currAcct) return;
+            try {
+                setIsWorking(true);
+                const resp = await fn();
+                console.debug("[onSubmit] okay:", resp);
+            } catch (err) {
+                console.warn("[onSubmit] error:", err);
+            } finally {
+                setIsWorking(false);
+                refetch();
+            }
+        };
+
+        return <>
+            {adminActions.map((action, idx) => (
+                <AdminAction
+                    key={idx}
+                    {...action}
+                    submit={() => onSubmit(action.submit)}
+                />
+            ))}
+        </>;
+    })();
 
     return <>
     {header}
@@ -108,63 +151,7 @@ export const PageManage: React.FC = () =>
                 Manage xDrop
             </div>
 
-            <div className="card compact">
-                <div className="card-title">
-                    <p>Open xDrop</p>
-                </div>
-                <div className="card-description">
-                    <p>Allow users to claim their share of the xDrop.</p>
-                </div>
-                <div className="card-description">
-                    {currAcct
-                    ? <Btn onClick={onOpen}>OPEN</Btn>
-                    : <BtnConnect />}
-                </div>
-            </div>
-
-            <div className="card compact">
-                <div className="card-title">
-                    <p>Close xDrop</p>
-                </div>
-                <div className="card-description">
-                    <p>Stop users from claiming their share of the xDrop.</p>
-                </div>
-                <div className="card-description">
-                    {currAcct
-                    ? <Btn onClick={onPause}>PAUSE</Btn>
-                    : <BtnConnect />}
-                </div>
-            </div>
-
-            <div className="card compact">
-                <div className="card-title">
-                    <p>End xDrop</p>
-                </div>
-                <div className="card-description">
-                    <p>End the xDrop permanently. This cannot be undone.</p>
-                </div>
-                <div className="card-description">
-                    {currAcct
-                    ? <Btn onClick={onEnd}>END</Btn>
-                    : <BtnConnect />}
-                </div>
-            </div>
-
-            <div className="card compact">
-                <div className="card-title">
-                    <p>Reclaim Balance</p>
-                </div>
-                <div className="card-description">
-                    <p>Reclaim the remaining balance of the xDrop.</p>
-                </div>
-                <div className="card-description">
-                    {currAcct
-                    ? <Btn onClick={onReclaim}>RECLAIM</Btn>
-                    : <BtnConnect />}
-                </div>
-            </div>
-
-            {/* admin_sets_admin_address TODO */}
+            {body}
 
         </div>
 

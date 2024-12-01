@@ -16,6 +16,10 @@ export type XDrop = {
     balance: bigint;
     claims_length: number;
     stats: XDropStats;
+    // helpers
+    is_open: boolean;
+    is_paused: boolean;
+    is_ended: boolean;
 };
 
 export type XDropStatus = "paused" | "open" | "ended";
@@ -95,6 +99,10 @@ export function objResToXDrop(
             amount_claimed: BigInt(fields.stats.fields.amount_claimed),
             amount_unclaimed: BigInt(fields.stats.fields.amount_unclaimed),
         },
+        // helpers
+        is_open: status === "open",
+        is_paused: status === "paused",
+        is_ended: status === "ended",
     };
 }
 
