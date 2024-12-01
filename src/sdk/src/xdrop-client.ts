@@ -210,6 +210,64 @@ export class XDropClient extends SuiClientBase
         return await this.signAndExecuteTransaction(tx);
     }
 
+    public async adminPausesXDrop(
+        typeCoin: string,
+        linkNetwork: LinkNetwork,
+        xdropId: string,
+    ) {
+        const tx = new Transaction();
+
+        XDropModule.admin_pauses_xdrop(
+            tx,
+            this.xdropPkgId,
+            typeCoin,
+            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+            xdropId,
+        );
+
+        return await this.signAndExecuteTransaction(tx);
+    }
+
+    public async adminEndsXDrop(
+        typeCoin: string,
+        linkNetwork: LinkNetwork,
+        xdropId: string,
+    ) {
+        const tx = new Transaction();
+
+        XDropModule.admin_ends_xdrop(
+            tx,
+            this.xdropPkgId,
+            typeCoin,
+            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+            xdropId,
+        );
+
+        return await this.signAndExecuteTransaction(tx);
+    }
+
+    public async adminReclaimsBalance(
+        typeCoin: string,
+        linkNetwork: LinkNetwork,
+        xdropId: string,
+        recipient: string,
+    ) {
+        const tx = new Transaction();
+
+        const [coin] = XDropModule.admin_reclaims_balance(
+            tx,
+            this.xdropPkgId,
+            typeCoin,
+            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+            xdropId,
+        );
+        TransferModule.public_transfer(
+            tx, `0x2::coin::Coin<${typeCoin}>`, coin, recipient
+        );
+
+        return await this.signAndExecuteTransaction(tx);
+    }
+
     public async userClaims(
         sender: string,
         typeCoin: string,

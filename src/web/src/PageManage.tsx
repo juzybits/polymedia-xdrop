@@ -35,15 +35,62 @@ export const PageManage: React.FC = () =>
     const onOpen = async () =>
     {
         if (disableSubmit) { return; }
-
         try {
             setIsWorking(true);
             const resp = await xdropClient.adminOpensXDrop(
                 xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId
             );
-            console.debug("[onSubmit] okay:", resp);
+            console.debug("[onOpen] okay:", resp);
         } catch (err) {
-            console.warn("[onSubmit] error:", err);
+            console.warn("[onOpen] error:", err);
+        } finally {
+            setIsWorking(false);
+        }
+    };
+
+    const onPause = async () =>
+    {
+        if (disableSubmit) { return; }
+        try {
+            setIsWorking(true);
+            const resp = await xdropClient.adminPausesXDrop(
+                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId
+            );
+            console.debug("[onPause] okay:", resp);
+        } catch (err) {
+            console.warn("[onPause] error:", err);
+        } finally {
+            setIsWorking(false);
+        }
+    };
+
+    const onEnd = async () =>
+    {
+        if (disableSubmit) { return; }
+        try {
+            setIsWorking(true);
+            const resp = await xdropClient.adminEndsXDrop(
+                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId
+            );
+            console.debug("[onEnd] okay:", resp);
+        } catch (err) {
+            console.warn("[onEnd] error:", err);
+        } finally {
+            setIsWorking(false);
+        }
+    };
+
+    const onReclaim = async () =>
+    {
+        if (disableSubmit) { return; }
+        try {
+            setIsWorking(true);
+            const resp = await xdropClient.adminReclaimsBalance(
+                xCnf.coinType, xCnf.linkNetwork, xCnf.xdropId, currAcct.address
+            );
+            console.debug("[onReclaim] okay:", resp);
+        } catch (err) {
+            console.warn("[onReclaim] error:", err);
         } finally {
             setIsWorking(false);
         }
@@ -62,12 +109,62 @@ export const PageManage: React.FC = () =>
             </div>
 
             <div className="card compact">
-                <div>
+                <div className="card-title">
+                    <p>Open xDrop</p>
+                </div>
+                <div className="card-description">
+                    <p>Allow users to claim their share of the xDrop.</p>
+                </div>
+                <div className="card-description">
                     {currAcct
-                        ? <Btn onClick={onOpen}>Open</Btn>
-                        : <BtnConnect />}
+                    ? <Btn onClick={onOpen}>OPEN</Btn>
+                    : <BtnConnect />}
                 </div>
             </div>
+
+            <div className="card compact">
+                <div className="card-title">
+                    <p>Close xDrop</p>
+                </div>
+                <div className="card-description">
+                    <p>Stop users from claiming their share of the xDrop.</p>
+                </div>
+                <div className="card-description">
+                    {currAcct
+                    ? <Btn onClick={onPause}>PAUSE</Btn>
+                    : <BtnConnect />}
+                </div>
+            </div>
+
+            <div className="card compact">
+                <div className="card-title">
+                    <p>End xDrop</p>
+                </div>
+                <div className="card-description">
+                    <p>End the xDrop permanently. This cannot be undone.</p>
+                </div>
+                <div className="card-description">
+                    {currAcct
+                    ? <Btn onClick={onEnd}>END</Btn>
+                    : <BtnConnect />}
+                </div>
+            </div>
+
+            <div className="card compact">
+                <div className="card-title">
+                    <p>Reclaim Balance</p>
+                </div>
+                <div className="card-description">
+                    <p>Reclaim the remaining balance of the xDrop.</p>
+                </div>
+                <div className="card-description">
+                    {currAcct
+                    ? <Btn onClick={onReclaim}>RECLAIM</Btn>
+                    : <BtnConnect />}
+                </div>
+            </div>
+
+            {/* admin_sets_admin_address TODO */}
 
         </div>
 

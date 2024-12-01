@@ -62,25 +62,6 @@ export const XDropModule =
         });
     },
 
-    admin_sets_admin_address: (
-        tx: Transaction,
-        packageId: string,
-        type_coin: string,
-        type_network: string,
-        xdrop: ObjectInput,
-        new_admin: string,
-    ): TransactionResult =>
-    {
-        return tx.moveCall({
-            target: `${packageId}::xdrop::admin_sets_admin_address`,
-            typeArguments: [ type_coin, type_network ],
-            arguments: [
-                objectArg(tx, xdrop),
-                tx.pure.address(new_admin),
-            ],
-        });
-    },
-
     admin_opens_xdrop: (
         tx: Transaction,
         packageId: string,
@@ -145,6 +126,25 @@ export const XDropModule =
             typeArguments: [ type_coin, type_network ],
             arguments: [
                 objectArg(tx, xdrop),
+            ],
+        });
+    },
+
+    admin_sets_admin_address: (
+        tx: Transaction,
+        packageId: string,
+        type_coin: string,
+        type_network: string,
+        xdrop: ObjectInput,
+        new_admin: string,
+    ): TransactionResult =>
+    {
+        return tx.moveCall({
+            target: `${packageId}::xdrop::admin_sets_admin_address`,
+            typeArguments: [ type_coin, type_network ],
+            arguments: [
+                objectArg(tx, xdrop),
+                tx.pure.address(new_admin),
             ],
         });
     },
