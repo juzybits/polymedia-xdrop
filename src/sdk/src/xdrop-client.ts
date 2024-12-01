@@ -194,7 +194,7 @@ export class XDropClient extends SuiClientBase
 
     public async adminOpensXDrop(
         typeCoin: string,
-        linkNetwork: LinkNetwork,
+        typeNetwork: string,
         xdropId: string,
     ) {
         const tx = new Transaction();
@@ -203,7 +203,7 @@ export class XDropClient extends SuiClientBase
             tx,
             this.xdropPkgId,
             typeCoin,
-            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+            typeNetwork,
             xdropId,
         );
 
@@ -212,7 +212,7 @@ export class XDropClient extends SuiClientBase
 
     public async adminPausesXDrop(
         typeCoin: string,
-        linkNetwork: LinkNetwork,
+        typeNetwork: string,
         xdropId: string,
     ) {
         const tx = new Transaction();
@@ -221,7 +221,7 @@ export class XDropClient extends SuiClientBase
             tx,
             this.xdropPkgId,
             typeCoin,
-            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+            typeNetwork,
             xdropId,
         );
 
@@ -230,7 +230,7 @@ export class XDropClient extends SuiClientBase
 
     public async adminEndsXDrop(
         typeCoin: string,
-        linkNetwork: LinkNetwork,
+        typeNetwork: string,
         xdropId: string,
     ) {
         const tx = new Transaction();
@@ -239,7 +239,7 @@ export class XDropClient extends SuiClientBase
             tx,
             this.xdropPkgId,
             typeCoin,
-            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+            typeNetwork,
             xdropId,
         );
 
@@ -248,7 +248,7 @@ export class XDropClient extends SuiClientBase
 
     public async adminReclaimsBalance(
         typeCoin: string,
-        linkNetwork: LinkNetwork,
+        typeNetwork: string,
         xdropId: string,
         recipient: string,
     ) {
@@ -258,7 +258,7 @@ export class XDropClient extends SuiClientBase
             tx,
             this.xdropPkgId,
             typeCoin,
-            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+            typeNetwork,
             xdropId,
         );
         TransferModule.public_transfer(

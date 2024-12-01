@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { useFetch } from "@polymedia/suitcase-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
@@ -13,19 +13,28 @@ export const PageManage: React.FC = () =>
 {
     // === state ===
 
-    const { xdropId } = useParams();
-    if (xdropId !== "detf") { return <PageNotFound />; }
+    let { xdropId } = useParams();
+    if (!xdropId) { return <PageNotFound />; }
+
+    const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
+
+    if (xdropId === "detf") {
+        xdropId = appCnf["detf"].xdropId;
+    }
 
     const currAcct = useCurrentAccount();
 
-    const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
-    const xCnf = appCnf[xdropId];
-
     const fetched = useFetch(
-        async () => !currAcct ? undefined : await xdropClient.fetchXDrop(xCnf.xdropId),
-        [xCnf.xdropId, currAcct?.address]
+        async () => !currAcct ? undefined : await xdropClient.fetchXDrop(xdropId),
+        [xdropId, currAcct?.address]
     );
     const { error, isLoading, refetch, data: xdrop } = fetched;
+
+    // === effects ===
+
+    useEffect(() => {
+        console.debug("[PageManage] xdrop:", JSON.stringify(xdrop, null, 2));
+    }, [xdrop]);
 
     // === html ===
 
@@ -65,8 +74,13 @@ export const PageManage: React.FC = () =>
                 <ConnectToGetStarted />
             </div>;
         }
-        if (isLoading || !xdrop) {
+        if (isLoading || xdrop === undefined) {
             return <CardSpinner className="compact" />;
+        }
+        if (xdrop === null) {
+            return <CardWithMsg className="compact">
+                xDrop not found.
+            </CardWithMsg>;
         }
 
         const adminActions = [
@@ -75,9 +89,9 @@ export const PageManage: React.FC = () =>
                 info: "Allow users to claim their share of the xDrop.",
                 btnTxt: "OPEN",
                 submit: () => xdropClient.adminOpensXDrop(
-                    xCnf.coinType,
-                    xCnf.linkNetwork,
-                    xCnf.xdropId
+                    xdrop.type_coin,
+                    xdrop.type_network,
+                    xdrop.id,
                 ),
                 showIf: !xdrop.is_ended && xdrop.is_paused,
             },
@@ -86,9 +100,9 @@ export const PageManage: React.FC = () =>
                 info: "Stop users from claiming their share of the xDrop.",
                 btnTxt: "PAUSE",
                 submit: () => xdropClient.adminPausesXDrop(
-                    xCnf.coinType,
-                    xCnf.linkNetwork,
-                    xCnf.xdropId
+                    xdrop.type_coin,
+                    xdrop.type_network,
+                    xdrop.id,
                 ),
                 showIf: !xdrop.is_ended && xdrop.is_open,
             },
@@ -97,9 +111,9 @@ export const PageManage: React.FC = () =>
                 info: "End the xDrop permanently. This cannot be undone.",
                 btnTxt: "END",
                 submit: () => xdropClient.adminEndsXDrop(
-                    xCnf.coinType,
-                    xCnf.linkNetwork,
-                    xCnf.xdropId
+                    xdrop.type_coin,
+                    xdrop.type_network,
+                    xdrop.id,
                 ),
                 showIf: !xdrop.is_ended,
             },
@@ -108,9 +122,9 @@ export const PageManage: React.FC = () =>
                 info: "Reclaim the remaining balance of the xDrop.",
                 btnTxt: "RECLAIM",
                 submit: () => xdropClient.adminReclaimsBalance(
-                    xCnf.coinType,
-                    xCnf.linkNetwork,
-                    xCnf.xdropId,
+                    xdrop.type_coin,
+                    xdrop.type_network,
+                    xdrop.id,
                     currAcct.address
                 ),
                 showIf: xdrop.is_ended,
