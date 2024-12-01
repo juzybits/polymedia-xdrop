@@ -24,10 +24,10 @@ export const PageManage: React.FC = () =>
 
     useEffect(() =>
     {
-        xdropClient.fetchXDrop(xCnf.xdropId).then(xdrop =>
-        {
-            console.debug("[useEffect] xdrop:", JSON.stringify(xdrop, null, 2));
-        });
+        xdropClient.fetchXDrop(xCnf.xdropId)
+            .then(xdrop => {
+                console.debug("[PageManage] xdrop:", JSON.stringify(xdrop, null, 2));
+            });
     }, [xCnf.xdropId]);
 
     // === functions ===

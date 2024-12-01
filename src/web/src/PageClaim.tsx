@@ -166,7 +166,9 @@ const WidgetClaim: React.FC<{
     // == effects ==
 
     useEffect(() => { // dev only
-        console.debug("[ClaimWidget] eligibleLinksWithStatus.data:", data);
+        if (data) {
+            console.debug("[ClaimWidget] eligibleLinksWithStatus.data:", data);
+        }
     }, [data]);
 
     // == functions ==
