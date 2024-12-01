@@ -54,11 +54,19 @@ public struct XDrop<phantom C, phantom N> has key {
     balance: Balance<C>,
     /// keys are addresses in the foreign network
     claims: Table<String, Claim>,
+    stats: Stats,
 }
 
 public struct Claim has store {
     amount: u64,
     claimed: bool,
+}
+
+public struct Stats has store {
+    addrs_claimed: u64,
+    addrs_unclaimed: u64,
+    amount_claimed: u64,
+    amount_unclaimed: u64,
 }
 
 public struct ClaimStatus has copy, drop, store {
@@ -78,6 +86,12 @@ public fun new<C, N>(
         status: XDROP_STATUS_PAUSED,
         balance: balance::zero(),
         claims: table::new(ctx),
+        stats: Stats {
+            addrs_claimed: 0,
+            addrs_unclaimed: 0,
+            amount_claimed: 0,
+            amount_unclaimed: 0,
+        },
     }
 }
 
@@ -99,6 +113,7 @@ public fun admin_adds_claims<C, N>(
     assert!( addrs.length() == amounts.length(), E_LENGTH_MISMATCH );
     assert!( addrs.length() > 0, E_ZERO_LENGTH_VECTOR );
 
+    let addrs_length = addrs.length();
     let mut total_amount = 0;
     while (addrs.length() > 0)
     {
@@ -120,6 +135,9 @@ public fun admin_adds_claims<C, N>(
     assert!( total_amount == coin.value(), E_AMOUNT_MISMATCH );
 
     coin::put(&mut xdrop.balance, coin);
+
+    xdrop.stats.addrs_unclaimed = xdrop.stats.addrs_unclaimed + addrs_length;
+    xdrop.stats.amount_unclaimed = xdrop.stats.amount_unclaimed + total_amount;
 }
 
 public fun admin_opens_xdrop<C, N>(
@@ -187,6 +205,11 @@ public fun user_claims<C, N>(
 
     claim.claimed = true;
 
+    xdrop.stats.addrs_claimed = xdrop.stats.addrs_claimed + 1;
+    xdrop.stats.addrs_unclaimed = xdrop.stats.addrs_unclaimed - 1;
+    xdrop.stats.amount_claimed = xdrop.stats.amount_claimed + claim.amount;
+    xdrop.stats.amount_unclaimed = xdrop.stats.amount_unclaimed - claim.amount;
+
     return coin::take(&mut xdrop.balance, claim.amount, ctx)
 }
 
@@ -239,6 +262,11 @@ public fun admin<C, N>(xdrop: &XDrop<C, N>): address { xdrop.admin }
 public fun status<C, N>(xdrop: &XDrop<C, N>): u8 { xdrop.status }
 public fun value<C, N>(xdrop: &XDrop<C, N>): u64 { xdrop.balance.value() }
 public fun claims<C, N>(xdrop: &XDrop<C, N>): &Table<String, Claim> { &xdrop.claims }
+public fun stats<C, N>(xdrop: &XDrop<C, N>): &Stats { &xdrop.stats }
+public fun addrs_claimed(stats: &Stats): u64 { stats.addrs_claimed }
+public fun addrs_unclaimed(stats: &Stats): u64 { stats.addrs_unclaimed }
+public fun amount_claimed(stats: &Stats): u64 { stats.amount_claimed }
+public fun amount_unclaimed(stats: &Stats): u64 { stats.amount_unclaimed }
 
 // === initialization ===
 

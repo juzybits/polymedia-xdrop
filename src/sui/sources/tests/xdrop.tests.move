@@ -168,6 +168,20 @@ fun assert_claim_statuses(
     assert_eq( statuses, expected_statuses );
 }
 
+fun assert_stats(
+    runner: &TestRunner,
+    expected_addrs_claimed: u64,
+    expected_addrs_unclaimed: u64,
+    expected_amount_claimed: u64,
+    expected_amount_unclaimed: u64,
+) {
+    let stats = runner.xdrop.stats();
+    assert_eq( stats.addrs_claimed(), expected_addrs_claimed );
+    assert_eq( stats.addrs_unclaimed(), expected_addrs_unclaimed );
+    assert_eq( stats.amount_claimed(), expected_amount_claimed );
+    assert_eq( stats.amount_unclaimed(), expected_amount_unclaimed );
+}
+
 // === tests: end to end ===
 
 #[test]
@@ -195,6 +209,7 @@ fun test_end_to_end()
             xdrop::new_status_for_testing(false, false, 0),
         ],
     );
+    runner.assert_stats(0, 2, 0, 300);
 
     // admin opens xdrop
     runner.admin_opens_xdrop(ADMIN);
@@ -216,6 +231,7 @@ fun test_end_to_end()
             xdrop::new_status_for_testing(false, false, 0),
         ],
     );
+    runner.assert_stats(1, 1, 100, 200);
 
     // admin pauses xdrop
     runner.admin_pauses_xdrop(ADMIN);
@@ -239,6 +255,7 @@ fun test_end_to_end()
     let coin = runner.admin_reclaims_remaining_balance(ADMIN_2);
     assert_eq( coin.value(), 200 );
     assert_eq( runner.xdrop.value(), 0 );
+    runner.assert_stats(1, 1, 100, 200); // unchanged
 
     test_utils::destroy(runner);
     test_utils::destroy(link);
