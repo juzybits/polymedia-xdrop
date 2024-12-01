@@ -1,4 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { useFetch } from "@polymedia/suitcase-react";
 import React from "react";
 import { useParams } from "react-router-dom";
@@ -7,7 +8,6 @@ import { Btn } from "./comps/button";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { ConnectToGetStarted } from "./comps/connect";
 import { PageNotFound } from "./PageNotFound";
-import { SuiTransactionBlockResponse } from "@mysten/sui/client";
 
 export const PageManage: React.FC = () =>
 {
@@ -45,7 +45,9 @@ export const PageManage: React.FC = () =>
                     <p>{p.info}</p>
                 </div>
                 <div className="card-description">
-                    <Btn onClick={p.submit} disabled={isWorking}>{p.btnTxt}</Btn>
+                    <Btn onClick={p.submit} disabled={isWorking} className={p.btnTxt === "END" ? "red" : ""}>
+                        {p.btnTxt}
+                    </Btn>
                 </div>
             </div>
         );

@@ -5,11 +5,13 @@ export const Btn: React.FC<{
     children: React.ReactNode;
     disabled?: boolean;
     working?: boolean;
+    className?: string;
 }> = ({
     onClick,
     children,
     disabled = undefined,
     working = undefined,
+    className = undefined,
 }) =>
 {
     const { isWorking } = useAppContext();
@@ -19,7 +21,7 @@ export const Btn: React.FC<{
     return (
         <button
             onClick={onClick}
-            className={`btn ${working ? "working" : ""}`}
+            className={`btn ${working ? "working" : ""} ${className ?? ""}`}
             disabled={disabled}
         >
             {children}
