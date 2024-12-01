@@ -54,6 +54,7 @@ public struct XDrop<phantom C, phantom N> has key {
     balance: Balance<C>,
     /// keys are addresses in the foreign network
     claims: Table<String, Claim>,
+    /// claimed/unclaimed addresses and amounts
     stats: Stats,
 }
 

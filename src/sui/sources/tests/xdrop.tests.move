@@ -4,7 +4,7 @@ module xdrop::xdrop_tests;
 use sui::{
     coin::{Coin},
     test_scenario::{Self as scen, Scenario},
-    test_utils::{Self, assert_eq},
+    test_utils::{assert_eq, destroy},
 };
 
 use suilink::{
@@ -257,9 +257,9 @@ fun test_end_to_end()
     assert_eq( runner.xdrop.value(), 0 );
     runner.assert_stats(1, 1, 100, 200); // unchanged
 
-    test_utils::destroy(runner);
-    test_utils::destroy(link);
-    test_utils::destroy(coin);
+    destroy(runner);
+    destroy(link);
+    destroy(coin);
 }
 
 // === tests: share ===
@@ -274,8 +274,8 @@ fun test_share()
     runner.scen.next_tx(ADMIN);
     let xdrop = runner.scen.take_shared<XDrop<DEVCOIN, Ethereum>>();
 
-    test_utils::destroy(runner);
-    test_utils::destroy(xdrop);
+    destroy(runner);
+    destroy(xdrop);
 }
 
 // === tests: admin_adds_claims ===
@@ -285,7 +285,7 @@ fun test_admin_adds_claims_e_not_admin()
 {
     let mut runner = begin(ADMIN);
     runner.admin_adds_claims(USER_1, vector[USER_1_ETH], vector[100, 200]);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_ENDED)]
@@ -294,7 +294,7 @@ fun test_admin_adds_claims_e_ended()
     let mut runner = begin(ADMIN);
     runner.admin_ends_xdrop(ADMIN);
     runner.admin_adds_claims(ADMIN, vector[USER_1_ETH], vector[100, 200]);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_ZERO_LENGTH_VECTOR)]
@@ -302,7 +302,7 @@ fun test_admin_adds_claims_e_zero_length_vector()
 {
     let mut runner = begin(ADMIN);
     runner.admin_adds_claims(ADMIN, vector[], vector[]);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_LENGTH_MISMATCH)]
@@ -310,7 +310,7 @@ fun test_admin_adds_claims_e_length_mismatch()
 {
     let mut runner = begin(ADMIN);
     runner.admin_adds_claims(ADMIN, vector[USER_1_ETH], vector[100, 200]);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_ZERO_AMOUNT)]
@@ -318,7 +318,7 @@ fun test_admin_adds_claims_e_zero_amount()
 {
     let mut runner = begin(ADMIN);
     runner.admin_adds_claims(ADMIN, vector[USER_1_ETH, USER_2_ETH], vector[0, 200]);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_ADDRESS_ALREADY_ADDED)]
@@ -327,7 +327,7 @@ fun test_admin_adds_claims_e_address_already_added()
     let mut runner = begin(ADMIN);
     runner.admin_adds_claims(ADMIN, vector[USER_1_ETH, USER_2_ETH], vector[100, 200]);
     runner.admin_adds_claims(ADMIN, vector[USER_1_ETH], vector[300]);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_AMOUNT_MISMATCH)]
@@ -342,7 +342,7 @@ fun test_admin_adds_claims_e_amount_mismatch()
         vector[100, 200],
         runner.scen.ctx(),
     );
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_ZERO_LENGTH_ADDRESS)]
@@ -350,7 +350,7 @@ fun test_admin_adds_claims_e_zero_length_address()
 {
     let mut runner = begin(ADMIN);
     runner.admin_adds_claims(ADMIN, vector[b""], vector[100]);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 // === tests: admin_opens_xdrop ===
@@ -360,7 +360,7 @@ fun test_admin_opens_xdrop_e_not_admin()
 {
     let mut runner = begin(ADMIN);
     runner.admin_opens_xdrop(USER_1);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_ENDED)]
@@ -369,7 +369,7 @@ fun test_admin_opens_xdrop_e_ended()
     let mut runner = begin(ADMIN);
     runner.admin_ends_xdrop(ADMIN);
     runner.admin_opens_xdrop(ADMIN);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 // === tests: admin_pauses_xdrop ===
@@ -379,7 +379,7 @@ fun test_admin_pauses_xdrop_e_not_admin()
 {
     let mut runner = begin(ADMIN);
     runner.admin_pauses_xdrop(USER_1);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_ENDED)]
@@ -388,7 +388,7 @@ fun test_admin_pauses_xdrop_e_ended()
     let mut runner = begin(ADMIN);
     runner.admin_ends_xdrop(ADMIN);
     runner.admin_pauses_xdrop(ADMIN);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 // === tests: admin_ends_xdrop ===
@@ -398,7 +398,7 @@ fun test_admin_ends_xdrop_e_not_admin()
 {
     let mut runner = begin(ADMIN);
     runner.admin_ends_xdrop(USER_1);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 // === tests: admin_reclaims_balance ===
@@ -408,8 +408,8 @@ fun test_admin_reclaims_balance_e_not_admin()
 {
     let mut runner = begin(ADMIN);
     let coin = runner.admin_reclaims_balance(USER_1);
-    test_utils::destroy(runner);
-    test_utils::destroy(coin);
+    destroy(runner);
+    destroy(coin);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_NOT_ENDED)]
@@ -417,8 +417,8 @@ fun test_admin_reclaims_balance_e_not_ended()
 {
     let mut runner = begin(ADMIN);
     let coin = runner.admin_reclaims_balance(ADMIN);
-    test_utils::destroy(runner);
-    test_utils::destroy(coin);
+    destroy(runner);
+    destroy(coin);
 }
 
 // === tests: admin_sets_admin_address ===
@@ -428,7 +428,7 @@ fun test_admin_sets_admin_address_e_not_admin()
 {
     let mut runner = begin(ADMIN);
     runner.admin_sets_admin_address(USER_1, ADMIN_2);
-    test_utils::destroy(runner);
+    destroy(runner);
 }
 
 // === tests: user_claims ===
@@ -439,8 +439,8 @@ fun test_user_claims_e_not_open()
     let mut runner = begin(ADMIN);
     let link = runner.take_link_ethereum(USER_1);
     runner.user_claims(USER_1, &link);
-    test_utils::destroy(runner);
-    test_utils::destroy(link);
+    destroy(runner);
+    destroy(link);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_ADDRESS_NOT_FOUND)]
@@ -453,8 +453,8 @@ fun test_user_claims_e_address_not_found()
     let link = runner.take_link_ethereum(USER_2);
     runner.user_claims(USER_2, &link);
 
-    test_utils::destroy(runner);
-    test_utils::destroy(link);
+    destroy(runner);
+    destroy(link);
 }
 
 #[test, expected_failure(abort_code = xdrop::E_ALREADY_CLAIMED)]
@@ -468,8 +468,8 @@ fun test_user_claims_e_already_claimed()
     runner.user_claims(USER_1, &link);
     runner.user_claims(USER_1, &link);
 
-    test_utils::destroy(runner);
-    test_utils::destroy(link);
+    destroy(runner);
+    destroy(link);
 }
 
 // === tests: 100% coverage ===
@@ -479,5 +479,5 @@ fun test_init_for_testing()
 {
     let mut runner = begin(ADMIN);
     xdrop::init_for_testing(runner.scen.ctx());
-    test_utils::destroy(runner);
+    destroy(runner);
 }
