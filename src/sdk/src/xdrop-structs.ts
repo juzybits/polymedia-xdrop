@@ -15,6 +15,7 @@ export type XDrop = {
     status: XDropStatus;
     balance: bigint;
     claims_length: number;
+    stats: XDropStats;
 };
 
 export type XDropStatus = "paused" | "open" | "ended";
@@ -30,6 +31,20 @@ export type ClaimStatus = {
     eligible: boolean;
     claimed: boolean;
     amount: bigint;
+};
+
+export const XDropStatsBcs = bcs.struct("XDropStats", {
+    addrs_claimed: bcs.U64,
+    addrs_unclaimed: bcs.U64,
+    amount_claimed: bcs.U64,
+    amount_unclaimed: bcs.U64,
+});
+
+export type XDropStats = {
+    addrs_claimed: number;
+    addrs_unclaimed: number;
+    amount_claimed: bigint;
+    amount_unclaimed: bigint;
 };
 
 // === suilink structs ===
@@ -74,6 +89,12 @@ export function objResToXDrop(
         status: status,
         balance: BigInt(fields.balance),
         claims_length: Number(fields.claims.fields.size),
+        stats: {
+            addrs_claimed: Number(fields.stats.fields.addrs_claimed),
+            addrs_unclaimed: Number(fields.stats.fields.addrs_unclaimed),
+            amount_claimed: BigInt(fields.stats.fields.amount_claimed),
+            amount_unclaimed: BigInt(fields.stats.fields.amount_unclaimed),
+        },
     };
 }
 
