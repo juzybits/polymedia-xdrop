@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { formatBalance } from "@polymedia/suitcase-core";
-import { useInputString, useTextArea } from "@polymedia/suitcase-react";
-import { getLinkType } from "@polymedia/xdrop-sdk";
+import { useTextArea } from "@polymedia/suitcase-react";
+import { getSuiLinkNetworkType } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -104,7 +104,7 @@ export const PageAddClaims: React.FC = () =>
                 currAcct.address,
                 {
                     type_coin: xCnf.coinType,
-                    type_network: getLinkType(xdropClient.suilinkPkgId, xCnf.linkNetwork, "inner"),
+                    type_network: getSuiLinkNetworkType(xdropClient.suilinkPkgId, xCnf.linkNetwork),
                     id: xCnf.xdropId,
                 },
                 textArea.val!.claims.map(c => c.addr),
@@ -136,7 +136,7 @@ export const PageAddClaims: React.FC = () =>
                 </div>
                 <div className="card-description">
                     <p>Coin Type:<br/>{xCnf.coinType}</p>
-                    <p>Network Type:<br/>{ getLinkType(xdropClient.suilinkPkgId, xCnf.linkNetwork, "inner") }</p>
+                    <p>Network Type:<br/>{ getSuiLinkNetworkType(xdropClient.suilinkPkgId, xCnf.linkNetwork) }</p>
                     <p>xDrop ID:<br/>{xCnf.xdropId}</p>
                     <p>Linked Addresses:<br/>{xCnf.devLinkedAddrs.join(", ")}</p>
                     <p>Claim Amounts:<br/>{xCnf.devClaimAmounts.join(", ")}</p>

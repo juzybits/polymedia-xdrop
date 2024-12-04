@@ -1,7 +1,7 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { formatBalance, shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
-import { getLinkType, LinkNetwork, LinkWithStatus } from "@polymedia/xdrop-sdk";
+import { getSuiLinkNetworkType, LinkNetwork, LinkWithStatus } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -183,7 +183,7 @@ const WidgetClaim: React.FC<{
                 currAddr,
                 {
                     type_coin: xCnf.coinType,
-                    type_network: getLinkType(xdropClient.suilinkPkgId, xCnf.linkNetwork, "inner"),
+                    type_network: getSuiLinkNetworkType(xdropClient.suilinkPkgId, xCnf.linkNetwork),
                     id: xCnf.xdropId,
                 },
                 eligibleLinks.map(l => l.id)

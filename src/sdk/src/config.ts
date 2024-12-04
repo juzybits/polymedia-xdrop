@@ -30,21 +30,6 @@ export function getNetworkConfig(network: NetworkName): NetworkConfig {
     return NETWORK_CONFIG[network];
 }
 
-// === SuiLink package ===
-
-export type LinkNetwork = "ethereum" | "solana";
-
-export function getLinkType(
-    pkgId: string,
-    network: LinkNetwork,
-    level: "outer" | "inner",
-): string
-{
-     const moduleAndStruct = network === "ethereum" ? "ethereum::Ethereum" : "solana::Solana";
-     const innerType = `${pkgId}::${moduleAndStruct}`;
-     return level === "inner" ? innerType : `${pkgId}::suilink::SuiLink<${innerType}>`;
- }
-
 // === auction package ===
 
 export const ERRORS_CODES: Record<number, string> = {

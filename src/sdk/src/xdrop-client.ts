@@ -14,7 +14,6 @@ import {
     TransferModule,
     WaitForTxOptions,
 } from "@polymedia/suitcase-core";
-import { getLinkType, LinkNetwork } from "./config.js";
 import { XDropModule } from "./xdrop-functions.js";
 import {
     ClaimStatus,
@@ -64,6 +63,7 @@ export class XDropClient extends SuiClientBase
     ): Promise<SuiLink[]>
     {
         const links: SuiLink[] = [];
+        const linkType = getSuiLinkType(this.suilinkPkgId, linkNetwork);
         let cursor: string|null|undefined = null;
         let hasNextPage = true;
         while (hasNextPage) {
@@ -71,7 +71,7 @@ export class XDropClient extends SuiClientBase
                 owner,
                 cursor,
                 options: { showContent: true },
-                filter: { StructType: getLinkType(this.suilinkPkgId, linkNetwork, "outer") },
+                filter: { StructType: linkType },
             });
             for (const objRes of resp.data) {
                 links.push(objResToSuiLink(objRes));
@@ -95,7 +95,7 @@ export class XDropClient extends SuiClientBase
             tx,
             this.xdropPkgId,
             typeCoin,
-            getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
+            getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork),
             xdropId,
             addrs.map(addr => addr.toLowerCase()),
         );
@@ -133,6 +133,9 @@ export class XDropClient extends SuiClientBase
 
     // === module interactions ===
 
+    /**
+     * Create a new XDrop, share it, and return the created object as a `SuiObjectChange`.
+     */
     public async adminCreatesAndSharesXDrop(
         typeCoin: string,
         linkNetwork: LinkNetwork,
@@ -142,14 +145,14 @@ export class XDropClient extends SuiClientBase
     }> {
         const tx = new Transaction();
 
-        const typeLink = getLinkType(this.suilinkPkgId, linkNetwork, "inner");
+        const networkType = getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork);
 
         const [xdropArg] = XDropModule.new(
-            tx, this.xdropPkgId, typeCoin, typeLink
+            tx, this.xdropPkgId, typeCoin, networkType
         );
 
         XDropModule.share(
-            tx, this.xdropPkgId, typeCoin, typeLink, xdropArg
+            tx, this.xdropPkgId, typeCoin, networkType, xdropArg
         );
 
         const resp = await this.signAndExecuteTransaction(tx);
@@ -255,4 +258,32 @@ export class XDropClient extends SuiClientBase
         }
         return resp;
     }
+}
+
+// === SuiLink ===
+
+export type LinkNetwork = "ethereum" | "solana";
+
+/**
+ * Get the type of a SuiLink object. E.g. `0x123::suilink::SuiLink<0x123::solana::Solana>`
+ */
+export function getSuiLinkType(
+    pkgId: string,
+    network: LinkNetwork,
+): string
+{
+    const networkType = getSuiLinkNetworkType(pkgId, network);
+    return `${pkgId}::suilink::SuiLink<${networkType}>`;
+}
+
+/**
+ * Get the network type of a SuiLink object. E.g. `0x123::solana::Solana`
+ */
+export function getSuiLinkNetworkType(
+    pkgId: string,
+    network: LinkNetwork,
+): string
+{
+    const moduleAndStruct = network === "ethereum" ? "ethereum::Ethereum" : "solana::Solana";
+    return `${pkgId}::${moduleAndStruct}`;
 }
