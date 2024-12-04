@@ -22,7 +22,7 @@ export const PageAddClaims: React.FC = () =>
     const xCnf = appCnf[xdropId];
 
     const textArea = useTextArea<{
-        claims: { addr: string, amount: bigint }[],
+        claims: { foreignAddr: string, amount: bigint }[],
         totalAmount: bigint,
     }>({
         label: "Claims (format: address,amount)",
@@ -54,13 +54,14 @@ export const PageAddClaims: React.FC = () =>
                     .map(line => line.trim())
                     .filter(line => line.length > 0);
 
-                const claims: {addr: string, amount: bigint}[] = [];
+                const claims: {foreignAddr: string, amount: bigint}[] = [];
 
                 for (const line of lines) {
-                    const [addr, amountStr] = line.split(',').map(s => s.trim());
+                    let [addr, amountStr] = line.split(',').map(s => s.trim());
 
                     // Validate address based on network type
                     if (xCnf.linkNetwork === "ethereum") {
+                        addr = addr.toLowerCase(); // IMPORTANT: SuiLink uses lowercase Ethereum addresses
                         if (!addr?.match(/^0x[0-9a-fA-F]{40}$/)) {
                             throw new Error(`Invalid Ethereum address: ${addr}`);
                         }
@@ -75,7 +76,7 @@ export const PageAddClaims: React.FC = () =>
                         throw new Error(`Invalid amount: ${amountStr}`);
                     }
 
-                    claims.push({addr, amount: BigInt(amountStr)});
+                    claims.push({foreignAddr: addr, amount: BigInt(amountStr)});
                     totalAmount += BigInt(amountStr);
                 }
 
@@ -107,8 +108,7 @@ export const PageAddClaims: React.FC = () =>
                     type_network: getSuiLinkNetworkType(xdropClient.suilinkPkgId, xCnf.linkNetwork),
                     id: xCnf.xdropId,
                 },
-                textArea.val!.claims.map(c => c.addr),
-                textArea.val!.claims.map(c => c.amount),
+                textArea.val!.claims,
             );
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {

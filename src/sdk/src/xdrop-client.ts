@@ -6,6 +6,7 @@ import {
 } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import {
+    chunkArray,
     devInspectAndGetReturnValues,
     NetworkName,
     ObjChangeKind,
@@ -165,41 +166,61 @@ export class XDropClient extends SuiClientBase
         return { resp, xdropObjChange };
     }
 
+    /**
+     * Add claims to an XDrop. Does multiple transactions if needed.
+     * IMPORTANT: Ethereum addresses must be lowercase.
+     */
     public async adminAddsClaims(
         sender: string,
         xdrop: XDropIdentifier,
-        addrs: string[],
-        amounts: bigint[],
+        claims: { foreignAddr: string, amount: bigint }[],
     ) {
-        const tx = new Transaction();
-        tx.setSender(sender);
+        const result: {
+            resps: SuiTransactionBlockResponse[];
+            addedAddrs: string[];
+        } = { resps: [], addedAddrs: [] };
 
-        if (addrs.length > 1000) { // TODO do multiple tx blocks
-            throw new Error(`Number of claims must be less than 1000 (object_runtime_max_num_store_entries)`);
+        // Create up to 1000 dynamic object fields in 1 tx (`object_runtime_max_num_store_entries`);
+        const maxClaimsPerTx = 1000;
+        // Function args size must be under 16384 bytes (`SizeLimitExceeded`/ `maximum pure argument size`)
+        const maxClaimsPerFnCall = 350; // breaks above 380 (devnet, 2024-11-29)
+
+        const claimsByTx = chunkArray(claims, maxClaimsPerTx);
+        for (const [txNum, txClaims] of claimsByTx.entries())
+        {
+            console.debug(`[adminAddsClaims] starting tx ${txNum + 1} of ${claimsByTx.length}`);
+            const tx = new Transaction();
+            tx.setSender(sender);
+
+            const claimsByFnCall = chunkArray(txClaims, maxClaimsPerFnCall);
+            for (const [callNum, callClaims] of claimsByFnCall.entries())
+            {
+                console.debug(`[adminAddsClaims] adding fn call ${callNum + 1} of ${claimsByFnCall.length}`);
+                const chunkTotalAmount = callClaims.reduce((sum, c) => sum + c.amount, 0n);
+
+                XDropModule.admin_adds_claims(
+                    tx,
+                    this.xdropPkgId,
+                    xdrop.type_coin,
+                    xdrop.type_network,
+                    xdrop.id,
+                    coinWithBalance({ balance: chunkTotalAmount, type: xdrop.type_coin })(tx),
+                    callClaims.map(c => c.foreignAddr),
+                    callClaims.map(c => c.amount),
+                );
+            }
+
+            try {
+                const resp = await this.signAndExecuteTransaction(tx);
+                result.resps.push(resp);
+                result.addedAddrs.push(...txClaims.map(c => c.foreignAddr));
+            } catch (err) {
+                console.warn(`[adminAddsClaims] tx ${txNum + 1} failed:`, err);
+                break;
+            }
         }
 
-        // Keep function call arg size below 16384 bytes due to:
-        // `SizeLimitExceeded { limit: "maximum pure argument size", value: "16384" }`
-        const claimsPerFnCall = 350; // breaks above 380 (devnet, 2024-11-29)
-
-        for (let i = 0; i < addrs.length; i += claimsPerFnCall) {
-            const chunkAddrs = addrs.slice(i, i + claimsPerFnCall);
-            const chunkAmounts = amounts.slice(i, i + claimsPerFnCall);
-            const chunkTotalAmount = chunkAmounts.reduce((sum, amt) => sum + amt, 0n);
-
-            XDropModule.admin_adds_claims(
-                tx,
-                this.xdropPkgId,
-                xdrop.type_coin,
-                xdrop.type_network,
-                xdrop.id,
-                coinWithBalance({ balance: chunkTotalAmount, type: xdrop.type_coin })(tx),
-                chunkAddrs.map(addr => addr.toLowerCase()),
-                chunkAmounts,
-            );
-        }
-
-        return await this.signAndExecuteTransaction(tx);
+        return result;
     }
 
     public async userClaims(
