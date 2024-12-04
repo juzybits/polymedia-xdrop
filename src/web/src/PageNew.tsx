@@ -10,13 +10,13 @@ export const PageNew: React.FC = () =>
 {
     // === state ===
 
-    const { xdropId } = useParams();
-    if (xdropId !== "detf") { return <PageNotFound />; }
+    const { alias } = useParams();
+    if (alias !== "detf") { return <PageNotFound />; }
 
     const currAcct = useCurrentAccount();
 
     const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
-    const xCnf = appCnf[xdropId];
+    const xCnf = appCnf[alias];
 
     const disableSubmit = isWorking || !currAcct;
 

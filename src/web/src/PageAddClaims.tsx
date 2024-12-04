@@ -138,8 +138,6 @@ export const PageAddClaims: React.FC = () =>
                     <p>Coin Type:<br/>{xCnf.coinType}</p>
                     <p>Network Type:<br/>{ getSuiLinkNetworkType(xdropClient.suilinkPkgId, xCnf.linkNetwork) }</p>
                     <p>xDrop ID:<br/>{xCnf.xdropId}</p>
-                    <p>Linked Addresses:<br/>{xCnf.devLinkedAddrs.join(", ")}</p>
-                    <p>Claim Amounts:<br/>{xCnf.devClaimAmounts.join(", ")}</p>
                 </div>
             </div>
 

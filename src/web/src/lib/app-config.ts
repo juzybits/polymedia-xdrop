@@ -10,8 +10,6 @@ export type XDropConfig = {
     coinTicker: string;
     linkNetwork: LinkNetwork;
     bannerUrl?: string;
-    devLinkedAddrs: string[];
-    devClaimAmounts: bigint[];
 };
 
 const config: AppConfig = {
@@ -22,27 +20,13 @@ const config: AppConfig = {
 
         // devnet
         coinType: "0x3b20a647705f2089fa25f571e33f43aeaf5d07cd3cda873dd5fb2e449db8a674::dogcoin::DOGCOIN",
-        xdropId: "0xb571062ae9f62c9fa475a416a825795daea91d56241ecb815bf7b2471fdb6758",
+        xdropId: "",
 
         coinTicker: "DOGCOIN",
         coinDecimals: 9,
         linkNetwork: "ethereum",
-        // bannerUrl: "/img/banner-detf.webp",
         bannerUrl: "https://dummyimage.com/1500x500/011346/eee/",
-        devLinkedAddrs: [
-            "0x0000000000000000000000000000000000000000",
-            "0x1111111111111111111111111111111111111111",
-            "0xccfbf70e03c97c0137cd3c0b5009e8ad4942b84d",
-            "0xddbac1074966ca45a35455f8710e5bca39e3f8e6",
-            "0xe0180ffc8ecea5744cdf28161760cc61c003c08f",
-        ],
-        devClaimAmounts: [
-            100n * 1_000_000_000n,
-            200n * 1_000_000_000n,
-            5000n * 1_000_000_000n,
-            5000n * 1_000_000_000n,
-            5000n * 1_000_000_000n,
-        ],
+        // bannerUrl: "/img/banner-detf.webp",
     },
 };
 

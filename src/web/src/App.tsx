@@ -33,7 +33,7 @@ export const AppRouter: React.FC = () => {
         <Routes>
             <Route path="/" element={<AppSuiProviders />} >
                 <Route index element={<PageHome />} />
-                <Route path="/new/:xdropId" element={<PageNew />} />
+                <Route path="/new/:alias?" element={<PageNew />} />
                 <Route path="/add-claims/:xdropId" element={<PageAddClaims />} />
                 <Route path="/claim/:xdropId" element={<PageClaim />} />
                 <Route path="/manage/:xdropId" element={<PageManage />} />
