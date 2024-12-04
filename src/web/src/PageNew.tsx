@@ -1,24 +1,34 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import React from "react";
-import { useParams } from "react-router-dom";
+import { useDropdown, useInputString } from "@polymedia/suitcase-react";
+import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
+import React, { useState } from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
-import { BtnConnect } from "./comps/connect";
-import { PageNotFound } from "./PageNotFound";
+import { SubmitRes } from "./lib/misc";
 
 export const PageNew: React.FC = () =>
 {
     // === state ===
 
-    const { alias } = useParams();
-    if (alias !== "detf") { return <PageNotFound />; }
-
     const currAcct = useCurrentAccount();
+    const { header, xdropClient, isWorking, setIsWorking } = useAppContext();
 
-    const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
-    const xCnf = appCnf[alias];
+    // === form state ===
 
-    const disableSubmit = isWorking || !currAcct;
+    const coinType = useInputString({
+        label: "Coin Type",
+        html: { required: true },
+    });
+    const linkNetwork = useDropdown<LinkNetwork>({
+        label: "Network",
+        html: { required: true },
+        options: LINK_NETWORKS.map(network => ({
+            value: network, label: network.charAt(0).toUpperCase() + network.slice(1)
+        })),
+    });
+    const hasErrors = [coinType, linkNetwork].some(input => input.err !== undefined);
+    const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
+    const disableSubmit = hasErrors || isWorking || !currAcct;
 
     // === functions ===
 
@@ -28,14 +38,18 @@ export const PageNew: React.FC = () =>
 
         try {
             setIsWorking(true);
+            setSubmitRes({ ok: undefined });
             const { resp, xdropObjChange } = await xdropClient.adminCreatesAndSharesXDrop(
-                xCnf.coinType, xCnf.linkNetwork
+                coinType.val!, linkNetwork.val!
             );
             console.debug("[onSubmit] resp:", resp);
             console.debug("[onSubmit] objChange:", xdropObjChange);
             console.debug("[onSubmit] obj ID:", xdropObjChange?.objectId);
+            setSubmitRes({ ok: true });
         } catch (err) {
+            // const errMsg = xdropClient.errCodeToStr(err, "Failed to create xDrop"); // TODO
             console.warn("[onSubmit] error:", err);
+            setSubmitRes({ ok: false, err: "Failed to create xDrop" });
         } finally {
             setIsWorking(false);
         }
@@ -52,21 +66,22 @@ export const PageNew: React.FC = () =>
             <div className="page-title">
                 Create xDrop
             </div>
-
             <div className="card compact">
-                <div className="card-title">
-                    <p>Config:</p>
+                <div className="card-title center-element center-text">
+                    Settings
                 </div>
-                <div className="card-description">
-                    <p>Coin Type: {xCnf.coinType}</p>
-                    <p>Coin Decimals: {xCnf.coinDecimals}</p>
-                    <p>Coin Ticker: {xCnf.coinTicker}</p>
-                    <p>Link Network: {xCnf.linkNetwork}</p>
-                </div>
-                <div>
-                    {currAcct
-                        ? <Btn onClick={onSubmit}>Create</Btn>
-                        : <BtnConnect />}
+                <div className="form">
+                    <div className="form-section">
+                        {linkNetwork.input}
+                        {coinType.input}
+                    </div>
+
+                    <Btn onClick={onSubmit} disabled={disableSubmit}>
+                        CREATE
+                    </Btn>
+
+                    {submitRes.ok === false && submitRes.err &&
+                    <div className="error">{submitRes.err}</div>}
                 </div>
             </div>
 

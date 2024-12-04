@@ -8,7 +8,7 @@ import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
 import { PageNotFound } from "./PageNotFound";
 
-const devClaims = [
+export const devClaims = [
     { foreignAddr: "0x0000000000000000000000000000000000000000", amount: 100n * 1_000_000_000n },
     { foreignAddr: "0x1111111111111111111111111111111111111111", amount: 200n * 1_000_000_000n },
     { foreignAddr: "0xccfbf70e03c97c0137cd3c0b5009e8ad4942b84d", amount: 5000n * 1_000_000_000n },

@@ -283,7 +283,9 @@ export class XDropClient extends SuiClientBase
 
 // === SuiLink ===
 
-export type LinkNetwork = "ethereum" | "solana";
+export const LINK_NETWORKS = ["ethereum", "solana"] as const;
+
+export type LinkNetwork = (typeof LINK_NETWORKS)[number];
 
 /**
  * Get the type of a SuiLink object. E.g. `0x123::suilink::SuiLink<0x123::solana::Solana>`

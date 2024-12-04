@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
+import { devClaims } from "./PageDevLink";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageAddClaims: React.FC = () =>
@@ -29,15 +30,16 @@ export const PageAddClaims: React.FC = () =>
         msgRequired: "Claims are required.",
         html: {
             value: (() => {
-                const rows = Array.from({ length: 1000 }, () => {
-                    // Generate random Ethereum address (40 hex chars)
-                    const addr = '0x' + Array.from({ length: 40 }, () =>
-                        Math.floor(Math.random() * 16).toString(16)
-                    ).join('');
-                    // Random amount between 1 and 100
-                    const amount = Math.floor(Math.random() * (100 * 10**xCnf.coinDecimals)) + 1;
-                    return `${addr},${amount}`;
-                });
+                // const rows = Array.from({ length: 1000 }, () => {
+                //     // Generate random Ethereum address (40 hex chars)
+                //     const addr = '0x' + Array.from({ length: 40 }, () =>
+                //         Math.floor(Math.random() * 16).toString(16)
+                //     ).join('');
+                //     // Random amount between 1 and 100
+                //     const amount = Math.floor(Math.random() * (100 * 10**xCnf.coinDecimals)) + 1;
+                //     return `${addr},${amount}`;
+                // });
+                const rows = devClaims.map(claim => `${claim.foreignAddr},${claim.amount}`);
                 return rows.join('\n');
             })(),
             required: true,
