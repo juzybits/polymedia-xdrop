@@ -41,7 +41,7 @@ export const PageAddClaims: React.FC = () =>
                 return rows.join('\n');
             })(),
             required: true,
-            placeholder: "0x1234...5678,1000\n0x8765...4321,2000"
+            placeholder: "0x1234...5678,1000\n0x8765...4321,2000",
         },
         validate: (input) => {
             if (!input) {
@@ -87,6 +87,7 @@ export const PageAddClaims: React.FC = () =>
                 };
             }
         },
+        deps: [],
     });
 
     const disableSubmit = isWorking || !currAcct || !!textArea.err;

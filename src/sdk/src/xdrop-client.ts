@@ -1,8 +1,11 @@
 import { bcs } from "@mysten/sui/bcs";
-import { SuiClient, SuiTransactionBlockResponse, SuiTransactionBlockResponseOptions } from "@mysten/sui/client";
+import {
+    SuiClient,
+    SuiTransactionBlockResponse,
+    SuiTransactionBlockResponseOptions,
+} from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import {
-    chunkArray,
     devInspectAndGetReturnValues,
     NetworkName,
     ObjChangeKind,
@@ -13,7 +16,15 @@ import {
 } from "@polymedia/suitcase-core";
 import { getLinkType, LinkNetwork } from "./config.js";
 import { XDropModule } from "./xdrop-functions.js";
-import { ClaimStatus, ClaimStatusBcs, objResToSuiLink, objResToXDrop, retValToClaimStatus, SuiLink, XDrop } from "./xdrop-structs.js";
+import {
+    ClaimStatus,
+    ClaimStatusBcs,
+    objResToSuiLink,
+    objResToXDrop,
+    retValToClaimStatus,
+    SuiLink,
+    XDrop,
+} from "./xdrop-structs.js";
 
 /**
  * Execute transactions on the XDrop Sui package.
@@ -188,82 +199,6 @@ export class XDropClient extends SuiClientBase
                 chunkAmounts,
             );
         }
-
-        return await this.signAndExecuteTransaction(tx);
-    }
-
-    public async adminOpensXDrop(
-        typeCoin: string,
-        typeNetwork: string,
-        xdropId: string,
-    ) {
-        const tx = new Transaction();
-
-        XDropModule.admin_opens_xdrop(
-            tx,
-            this.xdropPkgId,
-            typeCoin,
-            typeNetwork,
-            xdropId,
-        );
-
-        return await this.signAndExecuteTransaction(tx);
-    }
-
-    public async adminPausesXDrop(
-        typeCoin: string,
-        typeNetwork: string,
-        xdropId: string,
-    ) {
-        const tx = new Transaction();
-
-        XDropModule.admin_pauses_xdrop(
-            tx,
-            this.xdropPkgId,
-            typeCoin,
-            typeNetwork,
-            xdropId,
-        );
-
-        return await this.signAndExecuteTransaction(tx);
-    }
-
-    public async adminEndsXDrop(
-        typeCoin: string,
-        typeNetwork: string,
-        xdropId: string,
-    ) {
-        const tx = new Transaction();
-
-        XDropModule.admin_ends_xdrop(
-            tx,
-            this.xdropPkgId,
-            typeCoin,
-            typeNetwork,
-            xdropId,
-        );
-
-        return await this.signAndExecuteTransaction(tx);
-    }
-
-    public async adminReclaimsBalance(
-        typeCoin: string,
-        typeNetwork: string,
-        xdropId: string,
-        recipient: string,
-    ) {
-        const tx = new Transaction();
-
-        const [coin] = XDropModule.admin_reclaims_balance(
-            tx,
-            this.xdropPkgId,
-            typeCoin,
-            typeNetwork,
-            xdropId,
-        );
-        TransferModule.public_transfer(
-            tx, `0x2::coin::Coin<${typeCoin}>`, coin, recipient
-        );
 
         return await this.signAndExecuteTransaction(tx);
     }

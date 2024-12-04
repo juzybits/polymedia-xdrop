@@ -1,6 +1,8 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { SuiTransactionBlockResponse } from "@mysten/sui/client";
+import { Transaction, TransactionResult } from "@mysten/sui/transactions";
+import { TransferModule } from "@polymedia/suitcase-core";
 import { useFetch } from "@polymedia/suitcase-react";
+import { XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -88,10 +90,12 @@ export const PageManage: React.FC = () =>
                 title: "Open xDrop",
                 info: "Allow users to claim their share of the xDrop.",
                 btnTxt: "OPEN",
-                submit: () => xdropClient.adminOpensXDrop(
+                submit: (tx: Transaction) => XDropModule.admin_opens_xdrop(
+                    tx,
+                    xdropClient.xdropPkgId,
                     xdrop.type_coin,
                     xdrop.type_network,
-                    xdrop.id,
+                    xdropId,
                 ),
                 showIf: !xdrop.is_ended && xdrop.is_paused,
             },
@@ -99,10 +103,12 @@ export const PageManage: React.FC = () =>
                 title: "Pause xDrop",
                 info: "Stop users from claiming their share of the xDrop.",
                 btnTxt: "PAUSE",
-                submit: () => xdropClient.adminPausesXDrop(
+                submit: (tx: Transaction) => XDropModule.admin_pauses_xdrop(
+                    tx,
+                    xdropClient.xdropPkgId,
                     xdrop.type_coin,
                     xdrop.type_network,
-                    xdrop.id,
+                    xdropId,
                 ),
                 showIf: !xdrop.is_ended && xdrop.is_open,
             },
@@ -110,10 +116,12 @@ export const PageManage: React.FC = () =>
                 title: "End xDrop",
                 info: "End the xDrop permanently. This cannot be undone.",
                 btnTxt: "END",
-                submit: () => xdropClient.adminEndsXDrop(
+                submit: (tx: Transaction) => XDropModule.admin_ends_xdrop(
+                    tx,
+                    xdropClient.xdropPkgId,
                     xdrop.type_coin,
                     xdrop.type_network,
-                    xdrop.id,
+                    xdropId,
                 ),
                 showIf: !xdrop.is_ended,
             },
@@ -121,22 +129,30 @@ export const PageManage: React.FC = () =>
                 title: "Reclaim Balance",
                 info: "Reclaim the remaining balance of the xDrop.",
                 btnTxt: "RECLAIM",
-                submit: () => xdropClient.adminReclaimsBalance(
-                    xdrop.type_coin,
-                    xdrop.type_network,
-                    xdrop.id,
-                    currAcct.address
-                ),
+                submit: (tx: Transaction) => {
+                    const [coin] = XDropModule.admin_reclaims_balance(
+                        tx,
+                        xdropClient.xdropPkgId,
+                        xdrop.type_coin,
+                        xdrop.type_network,
+                        xdropId,
+                    );
+                    return TransferModule.public_transfer(
+                        tx, `0x2::coin::Coin<${xdrop.type_coin}>`, coin, currAcct.address
+                    )
+                },
                 showIf: xdrop.is_ended,
             },
         ].filter(action => action.showIf);
 
-        const onSubmit = async (fn: () => Promise<SuiTransactionBlockResponse>) =>
+        const onSubmit = async (submit: (tx: Transaction) => TransactionResult) =>
         {
             if (isWorking || !currAcct) return;
             try {
                 setIsWorking(true);
-                const resp = await fn();
+                const tx = new Transaction();
+                submit(tx);
+                const resp = await xdropClient.signAndExecuteTransaction(tx);
                 console.debug("[onSubmit] okay:", resp);
             } catch (err) {
                 console.warn("[onSubmit] error:", err);
