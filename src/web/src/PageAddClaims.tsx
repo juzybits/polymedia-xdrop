@@ -102,9 +102,11 @@ export const PageAddClaims: React.FC = () =>
             setIsWorking(true);
             const resp = await xdropClient.adminAddsClaims(
                 currAcct.address,
-                xCnf.coinType,
-                xCnf.linkNetwork,
-                xCnf.xdropId,
+                {
+                    type_coin: xCnf.coinType,
+                    type_network: getLinkType(xdropClient.suilinkPkgId, xCnf.linkNetwork, "inner"),
+                    id: xCnf.xdropId,
+                },
                 textArea.val!.claims.map(c => c.addr),
                 textArea.val!.claims.map(c => c.amount),
             );

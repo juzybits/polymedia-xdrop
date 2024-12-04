@@ -1,7 +1,7 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { formatBalance, shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
-import { LinkNetwork, LinkWithStatus } from "@polymedia/xdrop-sdk";
+import { getLinkType, LinkNetwork, LinkWithStatus } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -181,9 +181,11 @@ const WidgetClaim: React.FC<{
             setSubmitRes({ ok: undefined });
             const resp = await xdropClient.userClaims(
                 currAddr,
-                xCnf.coinType,
-                xCnf.linkNetwork,
-                xCnf.xdropId,
+                {
+                    type_coin: xCnf.coinType,
+                    type_network: getLinkType(xdropClient.suilinkPkgId, xCnf.linkNetwork, "inner"),
+                    id: xCnf.xdropId,
+                },
                 eligibleLinks.map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);

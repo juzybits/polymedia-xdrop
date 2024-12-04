@@ -22,6 +22,11 @@ export type XDrop = {
     is_ended: boolean;
 };
 
+/**
+ * A subset of `XDrop` with only the fields needed for function calls.
+ */
+export type XDropIdentifier = Pick<XDrop, "type_coin" | "type_network" | "id">;
+
 export type XDropStatus = "paused" | "open" | "ended";
 
 export const ClaimStatusBcs = bcs.struct("ClaimStatus", {

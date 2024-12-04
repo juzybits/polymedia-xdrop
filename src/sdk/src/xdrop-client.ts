@@ -24,6 +24,7 @@ import {
     retValToClaimStatus,
     SuiLink,
     XDrop,
+    XDropIdentifier,
 } from "./xdrop-structs.js";
 
 /**
@@ -163,38 +164,33 @@ export class XDropClient extends SuiClientBase
 
     public async adminAddsClaims(
         sender: string,
-        typeCoin: string,
-        linkNetwork: LinkNetwork,
-        xdropId: string,
+        xdrop: XDropIdentifier,
         addrs: string[],
         amounts: bigint[],
     ) {
         const tx = new Transaction();
         tx.setSender(sender);
 
-        if (addrs.length !== amounts.length) {
-            throw new Error(`Number of addresses and amounts must match: ${addrs.length} !== ${amounts.length}`);
-        }
-        if (addrs.length > 1000) {
+        if (addrs.length > 1000) { // TODO do multiple tx blocks
             throw new Error(`Number of claims must be less than 1000 (object_runtime_max_num_store_entries)`);
         }
 
         // Keep function call arg size below 16384 bytes due to:
         // `SizeLimitExceeded { limit: "maximum pure argument size", value: "16384" }`
-        const chunkSize = 380; // breaks above this (devnet, 2024-11-29)
+        const claimsPerFnCall = 350; // breaks above 380 (devnet, 2024-11-29)
 
-        for (let i = 0; i < addrs.length; i += chunkSize) {
-            const chunkAddrs = addrs.slice(i, i + chunkSize);
-            const chunkAmounts = amounts.slice(i, i + chunkSize);
+        for (let i = 0; i < addrs.length; i += claimsPerFnCall) {
+            const chunkAddrs = addrs.slice(i, i + claimsPerFnCall);
+            const chunkAmounts = amounts.slice(i, i + claimsPerFnCall);
             const chunkTotalAmount = chunkAmounts.reduce((sum, amt) => sum + amt, 0n);
 
             XDropModule.admin_adds_claims(
                 tx,
                 this.xdropPkgId,
-                typeCoin,
-                getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
-                xdropId,
-                coinWithBalance({ balance: chunkTotalAmount, type: typeCoin })(tx),
+                xdrop.type_coin,
+                xdrop.type_network,
+                xdrop.id,
+                coinWithBalance({ balance: chunkTotalAmount, type: xdrop.type_coin })(tx),
                 chunkAddrs.map(addr => addr.toLowerCase()),
                 chunkAmounts,
             );
@@ -205,9 +201,7 @@ export class XDropClient extends SuiClientBase
 
     public async userClaims(
         sender: string,
-        typeCoin: string,
-        linkNetwork: LinkNetwork,
-        xdropId: string,
+        xdrop: XDropIdentifier,
         linkIds: string[],
     ) {
         const tx = new Transaction();
@@ -216,14 +210,14 @@ export class XDropClient extends SuiClientBase
             const [claimed_coin] = XDropModule.user_claims(
                 tx,
                 this.xdropPkgId,
-                typeCoin,
-                getLinkType(this.suilinkPkgId, linkNetwork, "inner"),
-                xdropId,
+                xdrop.type_coin,
+                xdrop.type_network,
+                xdrop.id,
                 linkId,
             );
             TransferModule.public_transfer(
                 tx,
-                `0x2::coin::Coin<${typeCoin}>`,
+                `0x2::coin::Coin<${xdrop.type_coin}>`,
                 claimed_coin,
                 sender,
             );
