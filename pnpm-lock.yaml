@@ -57,6 +57,9 @@ importers:
       '@mysten/sui':
         specifier: ^1.15.1
         version: 1.15.1(typescript@5.7.2)
+      '@polymedia/coinmeta':
+        specifier: ^0.0.18
+        version: link:../../../polymedia-coinmeta/src/sdk
       '@polymedia/suitcase-core':
         specifier: ^0.0.36
         version: link:../../../polymedia-suitcase/src/core
