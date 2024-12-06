@@ -1,7 +1,8 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { CoinMetadata } from "@mysten/sui/client";
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC } from "@polymedia/suitcase-core";
-import { useDropdown, useFetch, useInputString } from "@polymedia/suitcase-react";
+import { useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "./App";
@@ -24,31 +25,36 @@ export const PageNew: React.FC = () =>
             value: network, label: network.charAt(0).toUpperCase() + network.slice(1)
         })),
     });
+    const [coinMeta, setCoinMeta] = useState<CoinMetadata | null | undefined>();
     const coinType = useInputString({
         label: "Coin Type",
         html: { required: true },
-        validate: (input: string) => {
+        validate: async (input: string) => {
             const trimmed = input.trim();
             const match = trimmed.match(REGEX_TYPE_BASIC);
-            if (!match) { return { err: "Invalid coin type", val: undefined }; }
+            if (!match) {
+                setCoinMeta(undefined);
+                return { err: "Invalid coin type", val: undefined };
+            }
+
+            const meta = await getCoinMeta(xdropClient.suiClient, trimmed);
+            setCoinMeta(meta);
+            if (!meta) {
+                return { err: "CoinMetadata not found", val: undefined };
+            }
+
             return { err: null, val: trimmed };
         },
     });
-    const coinMeta = useFetch(async () => {
-        if (!coinType.val) { return undefined; }
-        return await getCoinMeta(xdropClient.suiClient, coinType.val!);
-    }, [xdropClient, coinType.val]);
 
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    const hasErrors = [coinType, linkNetwork].some(input => !!input.err) || !!coinMeta.error;
-    const disableSubmit = !currAcct || isWorking || hasErrors || !coinMeta.data;
+    const hasErrors = [coinType, linkNetwork].some(input => !!input.err);
+    const disableSubmit = !currAcct || isWorking || hasErrors || !coinMeta;
 
     useEffect(() => {
-        if (coinMeta.data) {
-            console.log("[PageNew] coinMeta:", coinMeta.data);
-        }
-    }, [coinMeta.data]);
+        console.log("[PageNew] coinMeta:", coinMeta);
+    }, [coinMeta]);
 
     // === functions ===
 
@@ -99,8 +105,6 @@ export const PageNew: React.FC = () =>
                     <Btn onClick={onSubmit} disabled={disableSubmit}>
                         CREATE
                     </Btn>
-
-                    {coinMeta.error && <div className="error">{coinMeta.error}</div>}
 
                     {submitRes.ok === false && submitRes.err &&
                     <div className="error">{submitRes.err}</div>}
