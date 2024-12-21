@@ -19,15 +19,15 @@
         "typecheck": "turbo run typecheck"
     },
     "devDependencies": {
-        "@eslint/compat": "^1.2.3",
-        "@eslint/js": "^9.15.0",
-        "@stylistic/eslint-plugin": "^2.11.0",
-        "eslint": "^9.15.0",
+        "@eslint/compat": "^1.2.4",
+        "@eslint/js": "^9.17.0",
+        "@stylistic/eslint-plugin": "^2.12.1",
+        "eslint": "^9.17.0",
         "eslint-plugin-import": "^2.31.0",
         "eslint-plugin-react": "^7.37.2",
         "turbo": "^2.3.3",
         "typescript": "^5.7.2",
-        "typescript-eslint": "^8.16.0"
+        "typescript-eslint": "^8.18.1"
     },
     "engines": {
         "node": ">=18"
