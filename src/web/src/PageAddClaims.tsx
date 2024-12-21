@@ -45,9 +45,9 @@ export const PageAddClaims: React.FC = () =>
             required: true,
             placeholder: "0x1234...5678,1000\n0x8765...4321,2000",
         },
-        validate: (input) => {
+        validate: async (input) => {
             if (!input) {
-                return { err: undefined, val: undefined };
+                return { err: null, val: undefined };
             }
             let totalAmount = BigInt(0);
             try {
@@ -82,7 +82,7 @@ export const PageAddClaims: React.FC = () =>
                     totalAmount += BigInt(amountStr);
                 }
 
-                return { err: undefined, val: { claims, totalAmount } };
+                return { err: null, val: { claims, totalAmount } };
             } catch (e) {
                 return {
                     err: e instanceof Error ? e.message : "Invalid input",
