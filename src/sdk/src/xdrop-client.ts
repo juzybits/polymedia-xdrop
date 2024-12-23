@@ -41,13 +41,13 @@ export class XDropClient extends SuiClientBase
         xdropPkgId: string;
         suilinkPkgId: string;
         suiClient: SuiClient;
-        signTransaction: SignTransaction;
+        signTx: SignTransaction;
         waitForTxOptions?: WaitForTxOptions;
         txResponseOptions?: SuiTransactionBlockResponseOptions;
     }) {
         super({
             suiClient: args.suiClient,
-            signTransaction: args.signTransaction,
+            signTx: args.signTx,
             waitForTxOptions: args.waitForTxOptions,
             txResponseOptions: args.txResponseOptions,
         });
@@ -121,7 +121,7 @@ export class XDropClient extends SuiClientBase
         xdropIds: string[],
     ): Promise<XDrop[]>
     {
-        return this.fetchAndParseObjects<XDrop>(
+        return this.fetchAndParseObjs<XDrop>(
             xdropIds,
             (ids) => this.suiClient.multiGetObjects({
                 ids, options: { showContent: true }
@@ -156,7 +156,7 @@ export class XDropClient extends SuiClientBase
             tx, this.xdropPkgId, typeCoin, networkType, xdropArg
         );
 
-        const resp = await this.signAndExecuteTransaction(tx);
+        const resp = await this.signAndExecuteTx(tx);
 
         const xdropObjChange = this.extractXDropObjCreated(resp);
         if (!xdropObjChange) {
@@ -211,7 +211,7 @@ export class XDropClient extends SuiClientBase
             }
 
             try {
-                const resp = await this.signAndExecuteTransaction(tx);
+                const resp = await this.signAndExecuteTx(tx);
                 result.resps.push(resp);
                 result.addedAddrs.push(...txClaims.map(c => c.foreignAddr));
             } catch (err) {
@@ -247,7 +247,7 @@ export class XDropClient extends SuiClientBase
             );
         }
 
-        return await this.signAndExecuteTransaction(tx);
+        return await this.signAndExecuteTx(tx);
     }
 
     // === object extractors ===
