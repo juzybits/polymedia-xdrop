@@ -217,7 +217,6 @@ const ActionAddClaims: React.FC<{
         claims: { foreignAddr: string, amount: bigint }[],
         totalAmount: bigint,
     }>({
-        label: "Claims (format: address,amount)",
         msgRequired: "Claims are required.",
         html: {
             value: (() => {
@@ -315,7 +314,12 @@ const ActionAddClaims: React.FC<{
             <p>Add Claims</p>
         </div>
         <div className="card-description">
-            <p>Add claims to the xDrop.</p>
+            <p>Enter 1 claim per line in this format:<br/>FOREIGN_ADDRESS,RAW_AMOUNT
+            <br/><br/>
+            FOREIGN_ADDRESS is the user's {xdrop.type_network.split("::")[2]} address.
+            <br/><br/>
+            RAW_AMOUNT is the amount claimable by the user, in raw units (e.g. 1 SUI = 1000000000).
+            </p>
         </div>
         <div className="card-description">
             {textArea.input}
