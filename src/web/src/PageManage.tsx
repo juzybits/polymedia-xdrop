@@ -40,30 +40,6 @@ export const PageManage: React.FC = () =>
 
     // === html ===
 
-    const AdminAction: React.FC<{
-        title: string;
-        info: string;
-        btnTxt: string;
-        submit: () => Promise<void>;
-    }> = (p) =>
-    {
-        return (
-            <div className="card compact">
-                <div className="card-title">
-                    <p>{p.title}</p>
-                </div>
-                <div className="card-description">
-                    <p>{p.info}</p>
-                </div>
-                <div className="card-description">
-                    <Btn onClick={p.submit} disabled={isWorking} className={p.btnTxt === "END" ? "red" : ""}>
-                        {p.btnTxt}
-                    </Btn>
-                </div>
-            </div>
-        );
-    };
-
     const body: React.ReactNode = (() =>
     {
         if (error) {
@@ -97,7 +73,7 @@ export const PageManage: React.FC = () =>
                     xdrop.type_network,
                     xdropId,
                 ),
-                showIf: !xdrop.is_ended && xdrop.is_paused,
+                show: !xdrop.is_ended && xdrop.is_paused,
             },
             {
                 title: "Pause xDrop",
@@ -110,7 +86,7 @@ export const PageManage: React.FC = () =>
                     xdrop.type_network,
                     xdropId,
                 ),
-                showIf: !xdrop.is_ended && xdrop.is_open,
+                show: !xdrop.is_ended && xdrop.is_open,
             },
             {
                 title: "End xDrop",
@@ -123,7 +99,7 @@ export const PageManage: React.FC = () =>
                     xdrop.type_network,
                     xdropId,
                 ),
-                showIf: !xdrop.is_ended,
+                show: !xdrop.is_ended,
             },
             {
                 title: "Reclaim Balance",
@@ -141,17 +117,17 @@ export const PageManage: React.FC = () =>
                         tx, `0x2::coin::Coin<${xdrop.type_coin}>`, coin, currAcct.address
                     )
                 },
-                showIf: xdrop.is_ended,
+                show: xdrop.is_ended,
             },
-        ].filter(action => action.showIf);
+        ];
 
-        const onSubmit = async (submit: (tx: Transaction) => TransactionResult) =>
+        const onSubmitAction = async (action: (tx: Transaction) => TransactionResult) =>
         {
             if (isWorking || !currAcct) return;
             try {
                 setIsWorking(true);
                 const tx = new Transaction();
-                submit(tx);
+                action(tx);
                 const resp = await xdropClient.signAndExecuteTx(tx);
                 console.debug("[onSubmit] okay:", resp);
             } catch (err) {
@@ -167,7 +143,7 @@ export const PageManage: React.FC = () =>
                 <AdminAction
                     key={idx}
                     {...action}
-                    submit={() => onSubmit(action.submit)}
+                    submit={() => onSubmitAction(action.submit)}
                 />
             ))}
         </>;
@@ -189,4 +165,35 @@ export const PageManage: React.FC = () =>
 
     </div>
     </>;
+};
+
+const AdminAction: React.FC<{
+    title: string;
+    info: string;
+    btnTxt: string;
+    submit: () => Promise<void>;
+    show: boolean;
+    disabled?: boolean;
+}> = (a) =>
+{
+    if (!a.show) return null;
+
+    const { isWorking } = useAppContext();
+    const disabled = a.disabled || isWorking;
+
+    return (
+        <div className="card compact">
+            <div className="card-title">
+                <p>{a.title}</p>
+            </div>
+            <div className="card-description">
+                <p>{a.info}</p>
+            </div>
+            <div className="card-description">
+                <Btn onClick={a.submit} disabled={disabled} className={a.btnTxt === "END" ? "red" : ""}>
+                    {a.btnTxt}
+                </Btn>
+            </div>
+        </div>
+    );
 };
