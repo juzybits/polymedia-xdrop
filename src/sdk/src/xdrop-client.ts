@@ -28,6 +28,12 @@ import {
 } from "./xdrop-structs.js";
 
 /**
+ * How many claims can be added to an xDrop in a single transaction.
+ * @see XDropClient.adminAddsClaims
+ */
+export const MAX_CLAIMS_ADDED_PER_TX = 1000;
+
+/**
  * Execute transactions on the XDrop Sui package.
  */
 export class XDropClient extends SuiClientBase
@@ -181,7 +187,7 @@ export class XDropClient extends SuiClientBase
         } = { resps: [], addedAddrs: [] };
 
         // Create up to 1000 dynamic object fields in 1 tx (`object_runtime_max_num_store_entries`);
-        const maxClaimsPerTx = 1000;
+        const maxClaimsPerTx = MAX_CLAIMS_ADDED_PER_TX;
         // Function args size must be under 16384 bytes (`SizeLimitExceeded`/ `maximum pure argument size`)
         const maxClaimsPerFnCall = 350; // breaks above 380 (devnet, 2024-11-29)
 

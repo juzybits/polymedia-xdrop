@@ -2,7 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, formatNumber, TransferModule } from "@polymedia/suitcase-core";
 import { useFetch, useTextArea } from "@polymedia/suitcase-react";
-import { LinkNetwork, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import { LinkNetwork, MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -118,7 +118,7 @@ export const PageManage: React.FC = () =>
                         tx, `0x2::coin::Coin<${xdrop.type_coin}>`, coin, currAcct.address
                     )
                 },
-                show: xdrop.is_ended,
+                show: xdrop.is_ended && xdrop.balance > 0n,
             },
         ];
 
@@ -208,6 +208,8 @@ const ActionAddClaims: React.FC<{
     currAddr,
 }) =>
 {
+    if (xdrop.is_ended) return null;
+
     // === state ===
 
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
@@ -230,7 +232,7 @@ const ActionAddClaims: React.FC<{
         msgRequired: "Claims are required.",
         html: {
             value: (() => {
-                const rows = Array.from({ length: 2500 }, () => {
+                const rows = Array.from({ length: 1001 }, () => {
                     // Generate random Ethereum address (40 hex chars)
                     const addr = '0x' + Array.from({ length: 40 }, () =>
                         Math.floor(Math.random() * 16).toString(16)
@@ -320,6 +322,8 @@ const ActionAddClaims: React.FC<{
 
     // === html ===
 
+    const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_CLAIMS_ADDED_PER_TX);
+
     return <>
     <div className="card compact">
         <div className="card-title">
@@ -335,12 +339,15 @@ const ActionAddClaims: React.FC<{
         </div>
         <div className="card-description">
             {textArea.input}
-            {textArea.val && <div>
-                Addresses: {formatNumber(textArea.val.claims.length)}<br/>
-                Total amount: {formatBalance(textArea.val.totalAmount, coinDecimals, "compact")} TODO<br/>
-                Required txs: TODO
-            </div>}
         </div>
+        {textArea.val && <>
+        <div className="card-description">
+        <div className="card-title">Summary:</div>
+            <p>Addresses: {textArea.val.claims.length}</p>
+            <p>Amount: {formatBalance(textArea.val.totalAmount, coinDecimals, "compact")} TODO</p>
+            {requiredTxs > 1 && <p>⚠️ Requires {requiredTxs} transactions</p>}
+        </div>
+        </>}
         <div className="card-description">
             <Btn onClick={onSubmit} disabled={disableSubmit}>ADD CLAIMS</Btn>
         </div>
