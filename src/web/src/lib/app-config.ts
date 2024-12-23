@@ -20,7 +20,7 @@ const config: AppConfig = {
 
         // devnet
         coinType: "0xcb5543f99fa6ab4b99aa3027d48c624764f42c16456ce286bbf005fc0cdf38d5::dogcoin::DOGCOIN",
-        xdropId: "0xb8bd4b2e4b23f3887631f216e05c6508316931a8337f7141299f956f73d5509b",
+        xdropId: "0xd6d10f97d031bd3d81aa06757404b860ad74bc365b1352c4935b624f034de80e",
 
         coinTicker: "DOGCOIN",
         coinDecimals: 9,

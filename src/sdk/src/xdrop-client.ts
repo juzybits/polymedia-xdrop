@@ -263,22 +263,6 @@ export class XDropClient extends SuiClientBase
             o.type === "created" && o.objectType.startsWith(`${this.xdropPkgId}::xdrop::XDrop<`)
         ) as ObjChangeKind<"created"> | undefined;
     }
-
-    // === helpers ===
-
-    public async signAndExecuteTransaction(
-        tx: Transaction,
-        waitForTxOptions: WaitForTxOptions | false = this.waitForTxOptions,
-        txResponseOptions: SuiTransactionBlockResponseOptions = this.txResponseOptions,
-    ): Promise<SuiTransactionBlockResponse> {
-        const resp = await super.signAndExecuteTransaction(
-            tx, waitForTxOptions, txResponseOptions
-        );
-        if (!resp.effects?.status.status) {
-            throw new Error(`Transaction failed: ${JSON.stringify(resp, null, 2)}`);
-        }
-        return resp;
-    }
 }
 
 // === SuiLink ===

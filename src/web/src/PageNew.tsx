@@ -4,7 +4,7 @@ import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC } from "@polymedia/suitcase-core";
 import { useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { SubmitRes } from "./lib/misc";
@@ -51,10 +51,6 @@ export const PageNew: React.FC = () =>
 
     const hasErrors = [coinType, linkNetwork].some(input => !!input.err);
     const disableSubmit = !currAcct || isWorking || hasErrors || !coinMeta;
-
-    useEffect(() => {
-        console.log("[PageNew] coinMeta:", coinMeta);
-    }, [coinMeta]);
 
     // === functions ===
 
