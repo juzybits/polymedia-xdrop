@@ -1,8 +1,8 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { TransferModule } from "@polymedia/suitcase-core";
-import { useFetch } from "@polymedia/suitcase-react";
-import { XDropModule } from "@polymedia/xdrop-sdk";
+import { formatBalance, TransferModule } from "@polymedia/suitcase-core";
+import { useFetch, useTextArea } from "@polymedia/suitcase-react";
+import { XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -139,6 +139,7 @@ export const PageManage: React.FC = () =>
         };
 
         return <>
+            <ActionAddClaims xdrop={xdrop} currAddr={currAcct.address} />
             {adminActions.map((action, idx) => (
                 <AdminAction
                     key={idx}
@@ -196,4 +197,136 @@ const AdminAction: React.FC<{
             </div>
         </div>
     );
+};
+
+const ActionAddClaims: React.FC<{
+    xdrop: XDrop;
+    currAddr: string;
+}> = ({
+    xdrop,
+    currAddr,
+}) =>
+{
+    // === state ===
+
+    const { xdropClient, isWorking, setIsWorking } = useAppContext();
+
+    const coinDecimals = 9; // TODO
+
+    const textArea = useTextArea<{
+        claims: { foreignAddr: string, amount: bigint }[],
+        totalAmount: bigint,
+    }>({
+        label: "Claims (format: address,amount)",
+        msgRequired: "Claims are required.",
+        html: {
+            value: (() => {
+                const rows = Array.from({ length: 2500 }, () => {
+                    // Generate random Ethereum address (40 hex chars)
+                    const addr = '0x' + Array.from({ length: 40 }, () =>
+                        Math.floor(Math.random() * 16).toString(16)
+                    ).join('');
+                    // Random amount between 1 and 100
+                    const amount = Math.floor(Math.random() * (100 * 10**coinDecimals)) + 1;
+                    return `${addr},${amount}`;
+                });
+                // const rows = devClaims.map(claim => `${claim.foreignAddr},${claim.amount}`);
+                return rows.join('\n');
+            })(),
+            required: true,
+            placeholder: "0x1234...5678,1000\n0x8765...4321,2000",
+        },
+        validate: async (input) => {
+            if (!input) {
+                return { err: null, val: undefined };
+            }
+            let totalAmount = BigInt(0);
+            try {
+                const lines = input
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+
+                const claims: {foreignAddr: string, amount: bigint}[] = [];
+
+                for (const line of lines) {
+                    let [addr, amountStr] = line.split(',').map(s => s.trim());
+
+                    // Validate address based on network type
+                    if (xdrop.type_network.endsWith("::Ethereum")) {
+                        addr = addr.toLowerCase(); // IMPORTANT: SuiLink uses lowercase Ethereum addresses
+                        if (!addr?.match(/^0x[0-9a-fA-F]{40}$/)) {
+                            throw new Error(`Invalid Ethereum address: ${addr}`);
+                        }
+                    } else if (xdrop.type_network.endsWith("::Solana")) {
+                        if (!addr?.match(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/)) {
+                            throw new Error(`Invalid Solana address: ${addr}`);
+                        }
+                    }
+
+                    // Validate amount
+                    if (!amountStr.match(/^\d+$/)) {
+                        throw new Error(`Invalid amount: ${amountStr}`);
+                    }
+
+                    claims.push({foreignAddr: addr, amount: BigInt(amountStr)});
+                    totalAmount += BigInt(amountStr);
+                }
+
+                return { err: null, val: { claims, totalAmount } };
+            } catch (e) {
+                return {
+                    err: e instanceof Error ? e.message : "Invalid input",
+                    val: undefined
+                };
+            }
+        },
+        deps: [],
+    });
+
+    const disableSubmit = isWorking || !!textArea.err;
+
+    // === functions ===
+
+    const onSubmit = async () =>
+    {
+        if (disableSubmit) { return; }
+
+        try {
+            setIsWorking(true);
+            const resp = await xdropClient.adminAddsClaims(
+                currAddr,
+                xdrop,
+                textArea.val!.claims,
+            );
+            console.debug("[onSubmit] okay:", resp);
+        } catch (err) {
+            console.warn("[onSubmit] error:", err);
+        } finally {
+            setIsWorking(false);
+        }
+    };
+
+    // === html ===
+
+    return <>
+    <div className="card compact">
+        <div className="card-title">
+            <p>Add Claims</p>
+        </div>
+        <div className="card-description">
+            <p>Add claims to the xDrop.</p>
+        </div>
+        <div className="card-description">
+            {textArea.input}
+            {textArea.val && <div>
+                Addresses: {textArea.val.claims.length}<br/>
+                Total amount: {formatBalance(textArea.val.totalAmount, coinDecimals, "compact")}
+            </div>}
+        </div>
+        <div>
+            <Btn onClick={onSubmit} disabled={disableSubmit}>ADD CLAIMS</Btn>
+        </div>
+    </div>
+    </>;
 };

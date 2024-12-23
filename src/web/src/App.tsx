@@ -15,7 +15,6 @@ import { Glitch } from "./comps/glitch";
 import { IconGears } from "./comps/icons";
 import { AppConfig, getAppConfig } from "./lib/app-config";
 import { loadNetworkConfig } from "./lib/network";
-import { PageAddClaims } from "./PageAddClaims";
 import { PageClaim } from "./PageClaim";
 import { PageDevLink } from "./PageDevLink";
 import { PageHome } from "./PageHome";
@@ -34,7 +33,6 @@ export const AppRouter: React.FC = () => {
             <Route path="/" element={<AppSuiProviders />} >
                 <Route index element={<PageHome />} />
                 <Route path="/new" element={<PageNew />} />
-                <Route path="/add-claims/:xdropId" element={<PageAddClaims />} />
                 <Route path="/claim/:xdropId" element={<PageClaim />} />
                 <Route path="/manage/:xdropId" element={<PageManage />} />
                 <Route path="/settings" element={<PageSettings />} />
