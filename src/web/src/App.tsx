@@ -38,7 +38,7 @@ export const AppRouter: React.FC = () => {
                 <Route path="/claim/:xdropId" element={<PageClaim />} />
                 <Route path="/manage/:xdropId" element={<PageManage />} />
                 <Route path="/settings" element={<PageSettings />} />
-                <Route path="/dev-link/:xdropId" element={<PageDevLink />} />
+                <Route path="/dev-link" element={<PageDevLink />} />
                 <Route path="*" element={<PageNotFound />} />
             </Route>
         </Routes>

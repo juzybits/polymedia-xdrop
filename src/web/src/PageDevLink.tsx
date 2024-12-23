@@ -2,32 +2,26 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { getNetworkConfig } from "@polymedia/xdrop-sdk";
 import React from "react";
-import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { BtnConnect } from "./comps/connect";
-import { PageNotFound } from "./PageNotFound";
 
 export const devClaims = [
     { foreignAddr: "0x0000000000000000000000000000000000000000", amount: 100n * 1_000_000_000n },
     { foreignAddr: "0x1111111111111111111111111111111111111111", amount: 200n * 1_000_000_000n },
-    { foreignAddr: "0xccfbf70e03c97c0137cd3c0b5009e8ad4942b84d", amount: 5000n * 1_000_000_000n },
-    { foreignAddr: "0xddbac1074966ca45a35455f8710e5bca39e3f8e6", amount: 5000n * 1_000_000_000n },
-    { foreignAddr: "0xe0180ffc8ecea5744cdf28161760cc61c003c08f", amount: 5000n * 1_000_000_000n },
+    // { foreignAddr: "0xccfbf70e03c97c0137cd3c0b5009e8ad4942b84d", amount: 5000n * 1_000_000_000n },
+    // { foreignAddr: "0xddbac1074966ca45a35455f8710e5bca39e3f8e6", amount: 5000n * 1_000_000_000n },
+    // { foreignAddr: "0xe0180ffc8ecea5744cdf28161760cc61c003c08f", amount: 5000n * 1_000_000_000n },
 ];
 
 export const PageDevLink: React.FC = () =>
 {
     // === state ===
 
-    const { xdropId } = useParams();
-    if (xdropId !== "detf") { return <PageNotFound />; }
-
     const currAcct = useCurrentAccount();
 
     const { header, appCnf, network, xdropClient, isWorking, setIsWorking } = useAppContext();
     const netCnf = getNetworkConfig(network);
-    const xCnf = appCnf[xdropId];
     const disableSubmit = isWorking || !currAcct;
 
     // === functions ===
@@ -42,7 +36,7 @@ export const PageDevLink: React.FC = () =>
             for (const foreignAddr of devClaims.map(c => c.foreignAddr)) {
                 tx.moveCall({
                     package: netCnf.suilinkPkgId,
-                    module: xCnf.linkNetwork,
+                    module: "ethereum",
                     function: "dev_link",
                     arguments: [
                         tx.pure.address(currAcct.address),
@@ -76,7 +70,7 @@ export const PageDevLink: React.FC = () =>
                     <p>Config:</p>
                 </div>
                 <div className="card-description">
-                    <p>Link Network: {xCnf.linkNetwork}</p>
+                    <p>Link Network: Ethereum</p>
                     <p>Linked Addresses: {devClaims.map(c => c.foreignAddr).join(", ")}</p>
                 </div>
                 <div>
