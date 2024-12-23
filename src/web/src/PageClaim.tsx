@@ -10,7 +10,7 @@ import { Btn } from "./comps/button";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { BtnConnect } from "./comps/connect";
 import { XDropConfig } from "./lib/app-config";
-import { SubmitRes } from "./lib/misc";
+import { capitalize, SubmitRes } from "./lib/misc";
 
 export const PageClaim: React.FC = () =>
 {
@@ -280,8 +280,4 @@ function shortenLinkedAddr(addr: string): string {
 
 function linkedAddrUrl(network: LinkNetwork, addr: string): string {
     return `https://${network === "ethereum" ? "etherscan" : "solscan"}.io/address/${addr}`;
-}
-
-function capitalize(s: string): string {
-    return s.charAt(0).toUpperCase() + s.slice(1);
 }

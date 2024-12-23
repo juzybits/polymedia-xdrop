@@ -1,14 +1,15 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, TransferModule } from "@polymedia/suitcase-core";
+import { formatBalance, formatNumber, TransferModule } from "@polymedia/suitcase-core";
 import { useFetch, useTextArea } from "@polymedia/suitcase-react";
-import { XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import { LinkNetwork, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { ConnectToGetStarted } from "./comps/connect";
+import { capitalize } from "./lib/misc";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageManage: React.FC = () =>
@@ -211,6 +212,15 @@ const ActionAddClaims: React.FC<{
 
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
 
+    let networkName: LinkNetwork;
+    if (xdrop.type_network.endsWith("::Ethereum")) {
+        networkName = "ethereum";
+    } else if (xdrop.type_network.endsWith("::Solana")) {
+        networkName = "solana";
+    } else {
+        throw new Error("Unsupported network");
+    }
+
     const coinDecimals = 9; // TODO
 
     const textArea = useTextArea<{
@@ -233,7 +243,9 @@ const ActionAddClaims: React.FC<{
                 return rows.join('\n');
             })(),
             required: true,
-            placeholder: "0x1234...5678,1000\n0x8765...4321,2000",
+            placeholder: networkName === "solana"
+                ? "AaAaAa,1000\nBbBbBb,2000"
+                : "0xAAAAA,1000\n0xBBBBB,2000",
         },
         validate: async (input) => {
             if (!input) {
@@ -252,12 +264,12 @@ const ActionAddClaims: React.FC<{
                     let [addr, amountStr] = line.split(',').map(s => s.trim());
 
                     // Validate address based on network type
-                    if (xdrop.type_network.endsWith("::Ethereum")) {
+                    if (networkName === "ethereum") {
                         addr = addr.toLowerCase(); // IMPORTANT: SuiLink uses lowercase Ethereum addresses
                         if (!addr?.match(/^0x[0-9a-fA-F]{40}$/)) {
                             throw new Error(`Invalid Ethereum address: ${addr}`);
                         }
-                    } else if (xdrop.type_network.endsWith("::Solana")) {
+                    } else if (networkName === "solana") {
                         if (!addr?.match(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/)) {
                             throw new Error(`Invalid Solana address: ${addr}`);
                         }
@@ -316,7 +328,7 @@ const ActionAddClaims: React.FC<{
         <div className="card-description">
             <p>Enter 1 claim per line in this format:<br/>FOREIGN_ADDRESS,RAW_AMOUNT
             <br/><br/>
-            FOREIGN_ADDRESS is the user's {xdrop.type_network.split("::")[2]} address.
+            FOREIGN_ADDRESS is the user's {capitalize(networkName)} address.
             <br/><br/>
             RAW_AMOUNT is the amount claimable by the user, in raw units (e.g. 1 SUI = 1000000000).
             </p>
@@ -324,11 +336,12 @@ const ActionAddClaims: React.FC<{
         <div className="card-description">
             {textArea.input}
             {textArea.val && <div>
-                Addresses: {textArea.val.claims.length}<br/>
-                Total amount: {formatBalance(textArea.val.totalAmount, coinDecimals, "compact")}
+                Addresses: {formatNumber(textArea.val.claims.length)}<br/>
+                Total amount: {formatBalance(textArea.val.totalAmount, coinDecimals, "compact")} TODO<br/>
+                Required txs: TODO
             </div>}
         </div>
-        <div>
+        <div className="card-description">
             <Btn onClick={onSubmit} disabled={disableSubmit}>ADD CLAIMS</Btn>
         </div>
     </div>
