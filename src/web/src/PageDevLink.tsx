@@ -44,7 +44,7 @@ export const PageDevLink: React.FC = () =>
                     ],
                 });
             }
-            const resp = await xdropClient.signAndExecuteTransaction(tx);
+            const resp = await xdropClient.signAndExecuteTx(tx);
             console.debug("[onSubmit] okay:", resp);
         } catch (err) {
             console.warn("[onSubmit] error:", err);

@@ -152,7 +152,7 @@ export const PageManage: React.FC = () =>
                 setIsWorking(true);
                 const tx = new Transaction();
                 submit(tx);
-                const resp = await xdropClient.signAndExecuteTransaction(tx);
+                const resp = await xdropClient.signAndExecuteTx(tx);
                 console.debug("[onSubmit] okay:", resp);
             } catch (err) {
                 console.warn("[onSubmit] error:", err);

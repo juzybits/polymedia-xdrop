@@ -5,6 +5,7 @@ import { REGEX_TYPE_BASIC } from "@polymedia/suitcase-core";
 import { useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { SubmitRes } from "./lib/misc";
@@ -13,6 +14,7 @@ export const PageNew: React.FC = () =>
 {
     // === state ===
 
+    const navigate = useNavigate();
     const currAcct = useCurrentAccount();
     const { header, xdropClient, isWorking, setIsWorking } = useAppContext();
 
@@ -66,8 +68,11 @@ export const PageNew: React.FC = () =>
             );
             console.debug("[onSubmit] resp:", resp);
             console.debug("[onSubmit] objChange:", xdropObjChange);
-            console.debug("[onSubmit] obj ID:", xdropObjChange?.objectId);
+            console.debug("[onSubmit] obj ID:", xdropObjChange.objectId);
             setSubmitRes({ ok: true });
+            navigate(`/manage/${xdropObjChange.objectId}`, {
+                state: { justCreated: true },
+            });
         } catch (err) {
             // const errMsg = xdropClient.errCodeToStr(err, "Failed to create xDrop"); // TODO
             console.warn("[onSubmit] error:", err);

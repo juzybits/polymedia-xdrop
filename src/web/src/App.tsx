@@ -145,7 +145,7 @@ const App: React.FC<{
             xdropPkgId: netCnf.xdropPkgId,
             suilinkPkgId: netCnf.suilinkPkgId,
             suiClient,
-            signTransaction: (tx) => walletSignTx({ transaction: tx }),
+            signTx: (tx) => walletSignTx({ transaction: tx }),
         });
     }, [suiClient, walletSignTx]);
 
