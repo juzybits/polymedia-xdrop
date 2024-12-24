@@ -1,8 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { CoinMetadata } from "@mysten/sui/client";
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC } from "@polymedia/suitcase-core";
-import { useDropdown, useInputString } from "@polymedia/suitcase-react";
+import { useDropdown, useFetch, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -27,32 +26,30 @@ export const PageNew: React.FC = () =>
             value: network, label: network.charAt(0).toUpperCase() + network.slice(1)
         })),
     });
-    const [coinMeta, setCoinMeta] = useState<CoinMetadata | null | undefined>();
+
     const coinType = useInputString({
         label: "Coin Type",
         html: { required: true },
-        validate: async (input: string) => {
+        validate: (input: string) => {
             const trimmed = input.trim();
             const match = trimmed.match(REGEX_TYPE_BASIC);
             if (!match) {
-                setCoinMeta(undefined);
                 return { err: "Invalid coin type", val: undefined };
             }
-
-            const meta = await getCoinMeta(xdropClient.suiClient, trimmed);
-            setCoinMeta(meta);
-            if (!meta) {
-                return { err: "CoinMetadata not found", val: undefined };
-            }
-
             return { err: null, val: trimmed };
         },
     });
 
+    const coinMeta = useFetch(
+        async () => (!coinType.val) ? undefined
+            : await getCoinMeta(xdropClient.suiClient, coinType.str),
+        [coinType.val]
+    );
+
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    const hasErrors = [coinType, linkNetwork].some(input => !!input.err);
-    const disableSubmit = !currAcct || isWorking || hasErrors || !coinMeta;
+    const hasErrors = [coinType, linkNetwork].some(input => !!input.err) || !!coinMeta.err;
+    const disableSubmit = !currAcct || isWorking || hasErrors || coinMeta.isLoading;
 
     // === functions ===
 

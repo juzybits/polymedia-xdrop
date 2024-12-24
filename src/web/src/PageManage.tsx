@@ -249,7 +249,7 @@ const ActionAddClaims: React.FC<{
                 ? "AaAaAa,1000\nBbBbBb,2000"
                 : "0xAAAAA,1000\n0xBBBBB,2000",
         },
-        validate: async (input) => {
+        validate: (input) => {
             if (!input) {
                 return { err: null, val: undefined };
             }
