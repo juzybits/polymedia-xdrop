@@ -12,7 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comps/glitch";
-import { IconGears } from "./comps/icons";
+import { IconGears, IconNew } from "./comps/icons";
 import { AppConfig, getAppConfig } from "./lib/app-config";
 import { loadNetworkConfig } from "./lib/network";
 import { PageClaim } from "./PageClaim";
@@ -46,11 +46,12 @@ export const AppRouter: React.FC = () => {
 
 /* Sui providers + network config */
 
+const isLocalDomain = isLocalhost();
 const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname;
 const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
 
 const [ defaultNetwork, supportedNetworks ] =
-    isLocalhost()  ? ["localnet" as const, ["mainnet", "testnet", "devnet", "localnet"] as const]
+    isLocalDomain  ? ["localnet" as const, ["mainnet", "testnet", "devnet", "localnet"] as const]
     : isDevDomain  ? ["devnet"   as const, ["devnet"] as const]
     : isTestDomain ? ["testnet"  as const, ["testnet"] as const]
     : /* prod */     ["mainnet"  as const, ["mainnet"] as const];
@@ -205,6 +206,7 @@ const App: React.FC<{
 const Header: React.FC = () =>
 {
     const { network } = useAppContext();
+    // const currAcct = useCurrentAccount();
     return <header>
         <div className="header-item">
             <Link to="/">
@@ -212,6 +214,14 @@ const Header: React.FC = () =>
                 {network !== "mainnet" && <span className="header-network-label">{network}</span>}
             </Link>
         </div>
+        {isLocalDomain &&
+        <Link to="/new" className="header-item" title="Create Auction">
+            <IconNew />
+        </Link>
+        }
+        {/* {currAcct && <Link to={`/user/${currAcct.address}/bids`} className="header-item" title="Your History">
+            <IconHistory />
+        </Link>} */}
         <Link to="/settings" className="header-item" title="Settings">
             <IconGears />
         </Link>
