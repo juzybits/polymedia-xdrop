@@ -1,7 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC } from "@polymedia/suitcase-core";
-import { useDropdown, useFetch, useInputString } from "@polymedia/suitcase-react";
+import { useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -40,16 +39,10 @@ export const PageNew: React.FC = () =>
         },
     });
 
-    const coinMeta = useFetch(
-        async () => (!coinType.val) ? undefined
-            : await getCoinMeta(xdropClient.suiClient, coinType.str),
-        [coinType.val]
-    );
-
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    const hasErrors = [coinType, linkNetwork].some(input => !!input.err) || !!coinMeta.err;
-    const disableSubmit = !currAcct || isWorking || hasErrors || coinMeta.isLoading;
+    const hasErrors = [coinType, linkNetwork].some(input => !!input.err);
+    const disableSubmit = !currAcct || isWorking || hasErrors;
 
     // === functions ===
 
@@ -73,7 +66,7 @@ export const PageNew: React.FC = () =>
         } catch (err) {
             // const errMsg = xdropClient.errCodeToStr(err, "Failed to create xDrop"); // TODO
             console.warn("[onSubmit] error:", err);
-            setSubmitRes({ ok: false, err: "Failed to create xDrop" });
+            setSubmitRes({ ok: false, err: "Failed to create xDrop (see console for details)" });
         } finally {
             setIsWorking(false);
         }
