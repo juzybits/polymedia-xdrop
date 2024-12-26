@@ -20,11 +20,7 @@ export const PageManage: React.FC = () =>
     let { xdropId } = useParams();
     if (!xdropId) { return <PageNotFound />; }
 
-    const { header, appCnf, xdropClient, isWorking, setIsWorking } = useAppContext();
-
-    if (xdropId === "detf") {
-        xdropId = appCnf["detf"].xdropId;
-    }
+    const { header, xdropClient, isWorking, setIsWorking } = useAppContext();
 
     const currAcct = useCurrentAccount();
 

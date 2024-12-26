@@ -13,7 +13,6 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comp/glitch";
 import { IconGears, IconNew } from "./comp/icons";
-import { AppConfig, getAppConfig } from "./lib/app-config";
 import { loadNetworkConfig } from "./lib/network";
 import { PageClaim } from "./PageClaim";
 import { PageDevLink } from "./PageDevLink";
@@ -112,7 +111,6 @@ export type AppContext = {
     setModalContent: ReactSetter<React.ReactNode>;
     header: React.ReactNode;
     xdropClient: XDropClient;
-    appCnf: AppConfig;
 };
 
 const App: React.FC<{
@@ -157,7 +155,6 @@ const App: React.FC<{
         setModalContent,
         header: <Header />,
         xdropClient,
-        appCnf: getAppConfig(network),
     };
 
     // === effects ===

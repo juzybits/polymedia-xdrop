@@ -1,5 +1,5 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
-import { formatBalance, shortenAddress } from "@polymedia/suitcase-core";
+import { formatBalance, NetworkName, shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
 import { getSuiLinkNetworkType, LinkNetwork, LinkWithStatus } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
@@ -10,7 +10,6 @@ import { Btn } from "./comp/button";
 import { CardSpinner, CardWithMsg } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 import { ResultMsg, SubmitRes } from "./comp/submits";
-import { XDropConfig } from "./lib/app-config";
 import { capitalize } from "./lib/misc";
 
 export const PageClaim: React.FC = () =>
@@ -23,8 +22,8 @@ export const PageClaim: React.FC = () =>
     const currAcct = useCurrentAccount();
     const { mutate: disconnect } = useDisconnectWallet();
 
-    const { header, appCnf } = useAppContext();
-    const xCnf = appCnf[xdropId];
+    const { header, network } = useAppContext();
+    const xCnf = XDropConfigs[network][xdropId];
     const linkedNet = capitalize(xCnf.linkNetwork);
 
     // === html ===
@@ -277,3 +276,35 @@ function shortenLinkedAddr(addr: string): string {
 function linkedAddrUrl(network: LinkNetwork, addr: string): string {
     return `https://${network === "ethereum" ? "etherscan" : "solscan"}.io/address/${addr}`;
 }
+
+// === config ===
+
+export type XDropConfig = {
+    xdropId: string;
+    coinType: string;
+    coinDecimals: number;
+    coinTicker: string;
+    linkNetwork: LinkNetwork;
+    bannerUrl?: string;
+};
+
+export const XDropConfigs: Record<
+    NetworkName,
+    Record<string, XDropConfig>
+> = {
+    "mainnet": {},
+    "testnet": {},
+    "devnet": {
+        "detf": {
+            coinType: "0xf70b9867d65a875ab1a6c5558976594f078b32dfbd87acf61f10912b8bf12aba::dogcoin::DOGCOIN",
+            xdropId: "0x411cdfccd6a8fbc23d10a247f8477e2d123f60bc2cb62cab1f080c1cafe07ca1",
+
+            coinTicker: "DOGCOIN",
+            coinDecimals: 9,
+            linkNetwork: "ethereum",
+            bannerUrl: "https://dummyimage.com/1500x500/011346/eee/",
+            // bannerUrl: "/img/banner-detf.webp",
+        },
+    },
+    "localnet": {},
+};
