@@ -10,7 +10,8 @@ import { Btn } from "./comps/button";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { BtnConnect } from "./comps/connect";
 import { XDropConfig } from "./lib/app-config";
-import { capitalize, SubmitRes } from "./lib/misc";
+import { capitalize } from "./lib/misc";
+import { ResultMsg, SubmitRes } from "./comps/submits";
 
 export const PageClaim: React.FC = () =>
 {
@@ -234,12 +235,7 @@ const WidgetClaim: React.FC<{
             <div className="center-element">
                 <Btn disabled={disableSubmit} onClick={onSubmit}>CLAIM ALL</Btn>
             </div>
-
-            {submitRes.ok === true &&
-            <div className="success center-element center-text">Success!</div>}
-
-            {submitRes.ok === false && submitRes.err &&
-            <div className="error center-element center-text">{submitRes.err}</div>}
+            <ResultMsg res={submitRes} />
         </>}
 
     </>;

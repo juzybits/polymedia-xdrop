@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
-import { SubmitRes } from "./lib/misc";
+import { ResultMsg, SubmitRes } from "./comps/submits";
 
 export const PageNew: React.FC = () =>
 {
@@ -102,9 +102,7 @@ export const PageNew: React.FC = () =>
                     <Btn onClick={onSubmit} disabled={disableSubmit}>
                         CREATE
                     </Btn>
-
-                    {submitRes.ok === false && submitRes.err &&
-                    <div className="error">{submitRes.err}</div>}
+                    <ResultMsg res={submitRes} />
                 </div>
             </div>
 

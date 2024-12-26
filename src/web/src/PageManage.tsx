@@ -9,8 +9,9 @@ import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { ConnectToGetStarted } from "./comps/connect";
-import { capitalize, SubmitRes } from "./lib/misc";
+import { capitalize } from "./lib/misc";
 import { PageNotFound } from "./PageNotFound";
+import { ResultMsg, SubmitRes } from "./comps/submits";
 
 export const PageManage: React.FC = () =>
 {
@@ -360,8 +361,7 @@ const ActionAddClaims: React.FC<{
         <div className="card-description">
             <Btn onClick={onSubmit} disabled={disableSubmit}>ADD CLAIMS</Btn>
         </div>
-        {submitRes.ok === true && <div className="success">Success!</div>}
-        {submitRes.ok === false && submitRes.err && <div className="error">{submitRes.err}</div>}
+        <ResultMsg res={submitRes} />
     </div>
     </>;
 };
