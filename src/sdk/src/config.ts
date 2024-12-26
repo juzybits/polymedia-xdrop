@@ -1,5 +1,3 @@
-// === network ===
-
 import { NetworkName } from "@polymedia/suitcase-core";
 
 export type NetworkConfig = {
@@ -30,8 +28,6 @@ export function getNetworkConfig(network: NetworkName): NetworkConfig {
     return NETWORK_CONFIG[network];
 }
 
-// === auction package ===
-
 export const ERRORS_CODES: Record<number, string> = {
     3000: "E_ADDRESS_NOT_FOUND",
     3001: "E_ALREADY_CLAIMED",
@@ -39,8 +35,10 @@ export const ERRORS_CODES: Record<number, string> = {
     3003: "E_LENGTH_MISMATCH",
     3004: "E_ADDRESS_ALREADY_ADDED",
     3005: "E_ZERO_AMOUNT",
-    3006: "E_AMOUNT_MISMATCH",
-    3007: "E_ENDED",
-    3008: "E_NOT_ENDED",
-    3009: "E_NOT_OPEN",
+    3006: "E_ZERO_LENGTH_VECTOR",
+    3007: "E_AMOUNT_MISMATCH",
+    3008: "E_ENDED",
+    3009: "E_NOT_ENDED",
+    3010: "E_NOT_OPEN",
+    3011: "E_ZERO_LENGTH_ADDRESS",
 };

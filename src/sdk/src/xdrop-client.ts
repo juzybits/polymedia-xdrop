@@ -13,8 +13,10 @@ import {
     SignTransaction,
     SuiClientBase,
     TransferModule,
+    TxErrorParser,
     WaitForTxOptions,
 } from "@polymedia/suitcase-core";
+import { ERRORS_CODES } from "./config.js";
 import { XDropModule } from "./xdrop-functions.js";
 import {
     ClaimStatus,
@@ -41,6 +43,7 @@ export class XDropClient extends SuiClientBase
     public readonly network: NetworkName;
     public readonly xdropPkgId: string;
     public readonly suilinkPkgId: string;
+    public readonly errParser: TxErrorParser;
 
     constructor(args: {
         network: NetworkName;
@@ -60,6 +63,7 @@ export class XDropClient extends SuiClientBase
         this.network = args.network;
         this.xdropPkgId = args.xdropPkgId;
         this.suilinkPkgId = args.suilinkPkgId;
+        this.errParser = new TxErrorParser(args.xdropPkgId, ERRORS_CODES);
     }
 
     // === data fetching ===
@@ -135,8 +139,6 @@ export class XDropClient extends SuiClientBase
             objResToXDrop,
         );
     }
-
-    // === data parsing ===
 
     // === module interactions ===
 

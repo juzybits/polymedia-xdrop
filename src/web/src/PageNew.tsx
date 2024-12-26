@@ -64,9 +64,9 @@ export const PageNew: React.FC = () =>
                 state: { justCreated: true },
             });
         } catch (err) {
-            // const errMsg = xdropClient.errCodeToStr(err, "Failed to create xDrop"); // TODO
+            const errMsg = xdropClient.errParser.errToStr(err, "Failed to create xDrop");
             console.warn("[onSubmit] error:", err);
-            setSubmitRes({ ok: false, err: "Failed to create xDrop (see console for details)" });
+            setSubmitRes({ ok: false, err: errMsg });
         } finally {
             setIsWorking(false);
         }
