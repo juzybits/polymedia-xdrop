@@ -27,7 +27,9 @@ export const PageNew: React.FC = () =>
 
     const coinType = useInputString({
         label: "Coin Type",
-        html: { required: true },
+        html: { required: true,
+            // value: "0xf70b9867d65a875ab1a6c5558976594f078b32dfbd87acf61f10912b8bf12aba::dogcoin::DOGCOIN", // devonly
+        },
         validate: (input: string) => {
             const trimmed = input.trim();
             const match = trimmed.match(REGEX_TYPE_BASIC);

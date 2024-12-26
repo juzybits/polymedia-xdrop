@@ -374,7 +374,7 @@ const CardDetails: React.FC<{
             <div className="card-title">Details</div>
             <div className="card-details">
                 <Detail label="xDrop ID:" val={<LinkToExplorer addr={xdrop.id} kind="object" explorer={explorer} network={network} />} />
-                <Detail label="Network type:" val={shortenAddress(xdrop.type_network)} />
+                <Detail label="Network type:" val={xdrop.network_name} />
                 <Detail label="Coin type:" val={<LinkToExplorer addr={xdrop.type_coin} kind="coin" explorer={explorer} network={network} />} />
                 <Detail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} />
                 <Detail label="Status:" val={<StatusLabel status={xdrop.status} />} />

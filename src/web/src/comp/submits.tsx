@@ -31,6 +31,6 @@ export const ErrorMsg: React.FC<{
 }> = ({
     res,
 }) => {
-    if (res.ok !== false || res.err !== null) return null;
+    if (res.ok !== false || res.err === null) return null;
     return <div className="error center-element center-text">{res.err}</div>;
 };
