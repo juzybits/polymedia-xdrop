@@ -213,15 +213,6 @@ const CardAddClaims: React.FC<{
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    let networkName: LinkNetwork;
-    if (xdrop.type_network.endsWith("::Ethereum")) {
-        networkName = "ethereum";
-    } else if (xdrop.type_network.endsWith("::Solana")) {
-        networkName = "solana";
-    } else {
-        throw new Error("Unsupported network");
-    }
-
     const coinDecimals = 9; // TODO
 
     const textArea = useTextArea<{
@@ -244,7 +235,7 @@ const CardAddClaims: React.FC<{
                 return rows.join('\n');
             })(),
             required: true,
-            placeholder: networkName === "solana"
+            placeholder: xdrop.network_name === "solana"
                 ? "AaAaAa,1000\nBbBbBb,2000"
                 : "0xAAAAA,1000\n0xBBBBB,2000",
         },
@@ -265,12 +256,12 @@ const CardAddClaims: React.FC<{
                     let [addr, amountStr] = line.split(',').map(s => s.trim());
 
                     // Validate address based on network type
-                    if (networkName === "ethereum") {
+                    if (xdrop.network_name === "ethereum") {
                         addr = addr.toLowerCase(); // IMPORTANT: SuiLink uses lowercase Ethereum addresses
                         if (!addr?.match(/^0x[0-9a-fA-F]{40}$/)) {
                             throw new Error(`Invalid Ethereum address: ${addr}`);
                         }
-                    } else if (networkName === "solana") {
+                    } else if (xdrop.network_name === "solana") {
                         if (!addr?.match(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/)) {
                             throw new Error(`Invalid Solana address: ${addr}`);
                         }
@@ -336,7 +327,7 @@ const CardAddClaims: React.FC<{
         <div className="card-description">
             <p>Enter 1 claim per line in this format:<br/>FOREIGN_ADDRESS,RAW_AMOUNT
             <br/><br/>
-            FOREIGN_ADDRESS is the user's {capitalize(networkName)} address.
+            FOREIGN_ADDRESS is the user's {capitalize(xdrop.network_name)} address.
             <br/><br/>
             RAW_AMOUNT is the amount claimable by the user, in raw units (e.g. 1 SUI = 1000000000).
             </p>

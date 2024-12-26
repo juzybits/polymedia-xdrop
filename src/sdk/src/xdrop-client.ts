@@ -17,6 +17,7 @@ import {
     WaitForTxOptions,
 } from "@polymedia/suitcase-core";
 import { ERRORS_CODES } from "./config.js";
+import { getSuiLinkNetworkType, getSuiLinkType, LinkNetwork } from "./suilink.js";
 import { XDropModule } from "./xdrop-functions.js";
 import {
     ClaimStatus,
@@ -261,34 +262,4 @@ export class XDropClient extends SuiClientBase
             o.type === "created" && o.objectType.startsWith(`${this.xdropPkgId}::xdrop::XDrop<`)
         ) as ObjChangeKind<"created"> | undefined;
     }
-}
-
-// === SuiLink ===
-
-export const LINK_NETWORKS = ["ethereum", "solana"] as const;
-
-export type LinkNetwork = (typeof LINK_NETWORKS)[number];
-
-/**
- * Get the type of a SuiLink object. E.g. `0x123::suilink::SuiLink<0x123::solana::Solana>`
- */
-export function getSuiLinkType(
-    pkgId: string,
-    network: LinkNetwork,
-): string
-{
-    const networkType = getSuiLinkNetworkType(pkgId, network);
-    return `${pkgId}::suilink::SuiLink<${networkType}>`;
-}
-
-/**
- * Get the network type of a SuiLink object. E.g. `0x123::solana::Solana`
- */
-export function getSuiLinkNetworkType(
-    pkgId: string,
-    network: LinkNetwork,
-): string
-{
-    const moduleAndStruct = network === "ethereum" ? "ethereum::Ethereum" : "solana::Solana";
-    return `${pkgId}::${moduleAndStruct}`;
 }

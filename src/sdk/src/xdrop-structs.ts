@@ -1,6 +1,7 @@
 import { bcs } from "@mysten/sui/bcs";
 import { SuiObjectResponse } from "@mysten/sui/client";
 import { objResToFields, objResToType } from "@polymedia/suitcase-core";
+import { LinkNetwork, suiLinkNetworkTypeToName } from "./suilink";
 
 // === xdrop structs ===
 
@@ -20,6 +21,7 @@ export type XDrop = {
     is_open: boolean;
     is_paused: boolean;
     is_ended: boolean;
+    network_name: LinkNetwork;
 };
 
 /**
@@ -90,9 +92,11 @@ export function objResToXDrop(
     else if (fields.status === 2) { status = "ended"; }
     else { throw new Error(`Unknown status: ${fields.status}`); }
 
+    const type_coin = objType.match(/<([^,>]+)/)?.[1] || "";
+    const type_network = objType.match(/,\s*([^>]+)>/)?.[1] || "";
     return {
-        type_coin: objType.match(/<([^,>]+)/)?.[1] || "",
-        type_network: objType.match(/,\s*([^>]+)>/)?.[1] || "",
+        type_coin,
+        type_network,
         id: fields.id.id,
         admin: fields.admin,
         status: status,
@@ -108,6 +112,7 @@ export function objResToXDrop(
         is_open: status === "open",
         is_paused: status === "paused",
         is_ended: status === "ended",
+        network_name: suiLinkNetworkTypeToName(type_network),
     };
 }
 
