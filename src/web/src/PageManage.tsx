@@ -1,8 +1,8 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { balanceToString, formatBalance, shortenAddress, TransferModule } from "@polymedia/suitcase-core";
+import { formatBalance, shortenAddress, TransferModule } from "@polymedia/suitcase-core";
 import { LinkToExplorer, useFetch, useTextArea } from "@polymedia/suitcase-react";
-import { LinkNetwork, MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -10,7 +10,6 @@ import { Btn } from "./comp/button";
 import { CardSpinner, CardWithMsg } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 import { ResultMsg, SubmitRes } from "./comp/submits";
-import { capitalize } from "./lib/misc";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageManage: React.FC = () =>
@@ -235,7 +234,7 @@ const CardAddClaims: React.FC<{
                 return rows.join('\n');
             })(),
             required: true,
-            placeholder: xdrop.network_name === "solana"
+            placeholder: xdrop.network_name === "Solana"
                 ? "AaAaAa,1000\nBbBbBb,2000"
                 : "0xAAAAA,1000\n0xBBBBB,2000",
         },
@@ -256,15 +255,17 @@ const CardAddClaims: React.FC<{
                     let [addr, amountStr] = line.split(',').map(s => s.trim());
 
                     // Validate address based on network type
-                    if (xdrop.network_name === "ethereum") {
+                    if (xdrop.network_name === "Ethereum") {
                         addr = addr.toLowerCase(); // IMPORTANT: SuiLink uses lowercase Ethereum addresses
                         if (!addr?.match(/^0x[0-9a-fA-F]{40}$/)) {
                             throw new Error(`Invalid Ethereum address: ${addr}`);
                         }
-                    } else if (xdrop.network_name === "solana") {
+                    } else if (xdrop.network_name === "Solana") {
                         if (!addr?.match(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/)) {
                             throw new Error(`Invalid Solana address: ${addr}`);
                         }
+                    } else {
+                        throw new Error(`Unsupported network: ${xdrop.network_name}`);
                     }
 
                     // Validate amount
@@ -327,7 +328,7 @@ const CardAddClaims: React.FC<{
         <div className="card-description">
             <p>Enter 1 claim per line in this format:<br/>FOREIGN_ADDRESS,RAW_AMOUNT
             <br/><br/>
-            FOREIGN_ADDRESS is the user's {capitalize(xdrop.network_name)} address.
+            FOREIGN_ADDRESS is the user's {xdrop.network_name} address.
             <br/><br/>
             RAW_AMOUNT is the amount claimable by the user, in raw units (e.g. 1 SUI = 1000000000).
             </p>

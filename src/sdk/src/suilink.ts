@@ -1,6 +1,6 @@
 // === SuiLink ===
 
-export const LINK_NETWORKS = ["ethereum", "solana"] as const;
+export const LINK_NETWORKS = ["Ethereum", "Solana"] as const;
 
 export type LinkNetwork = (typeof LINK_NETWORKS)[number];
 
@@ -24,15 +24,16 @@ export function getSuiLinkNetworkType(
     network: LinkNetwork,
 ): string
 {
-    const moduleAndStruct = network === "ethereum" ? "ethereum::Ethereum" : "solana::Solana";
-    return `${pkgId}::${moduleAndStruct}`;
+    if (network === "Ethereum") return `${pkgId}::ethereum::Ethereum`;
+    if (network === "Solana") return `${pkgId}::solana::Solana`;
+    throw new Error(`Unsupported network: ${network}`);
 }
 
 export function suiLinkNetworkTypeToName(
     networkType: string,
 ): LinkNetwork
 {
-    if (networkType.endsWith("::Ethereum")) return "ethereum";
-    if (networkType.endsWith("::Solana")) return "solana";
-    throw new Error("Unsupported network");
+    if (networkType.endsWith("::Ethereum")) return "Ethereum";
+    if (networkType.endsWith("::Solana")) return "Solana";
+    throw new Error(`Unsupported network: ${networkType}`);
 }

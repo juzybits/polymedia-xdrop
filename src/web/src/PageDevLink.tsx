@@ -20,7 +20,7 @@ export const PageDevLink: React.FC = () =>
 
     const currAcct = useCurrentAccount();
 
-    const { header, appCnf, network, xdropClient, isWorking, setIsWorking } = useAppContext();
+    const { header, network, xdropClient, isWorking, setIsWorking } = useAppContext();
     const netCnf = getNetworkConfig(network);
     const disableSubmit = isWorking || !currAcct;
 

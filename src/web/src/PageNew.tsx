@@ -22,9 +22,7 @@ export const PageNew: React.FC = () =>
     const linkNetwork = useDropdown<LinkNetwork>({
         label: "Network",
         html: { required: true },
-        options: LINK_NETWORKS.map(network => ({
-            value: network, label: network.charAt(0).toUpperCase() + network.slice(1)
-        })),
+        options: LINK_NETWORKS.map(network => ({ value: network, label: network })),
     });
 
     const coinType = useInputString({

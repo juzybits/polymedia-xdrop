@@ -1,7 +1,7 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { formatBalance, NetworkName, shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
-import { getSuiLinkNetworkType, LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
+import { LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -10,7 +10,6 @@ import { Btn } from "./comp/button";
 import { CardSpinner, CardWithMsg } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 import { ResultMsg, SubmitRes } from "./comp/submits";
-import { capitalize } from "./lib/misc";
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { CoinMetadata } from "@mysten/sui/client";
 
@@ -298,7 +297,6 @@ const CardClaimableLink: React.FC<{
     coinMeta,
     link,
 }) => {
-    const linkedNet = capitalize(xdrop.network_name);
     return <div className={`card tx ${link.status.claimed ? "disabled" : "claimable"}`}>
         <div className="card-header">
             <div className="card-title">
@@ -309,7 +307,7 @@ const CardClaimableLink: React.FC<{
         </div>
         <div className="card-body">
             <div>
-                {linkedNet} address: <LinkExternal href={linkedAddrUrl(xdrop.network_name, link.network_address)}>
+                {xdrop.network_name} address: <LinkExternal href={linkedAddrUrl(xdrop.network_name, link.network_address)}>
                     {shortenLinkedAddr(link.network_address)}
                 </LinkExternal>
             </div>
@@ -325,7 +323,9 @@ function shortenLinkedAddr(addr: string): string {
 }
 
 function linkedAddrUrl(network: LinkNetwork, addr: string): string {
-    return `https://${network === "ethereum" ? "etherscan" : "solscan"}.io/address/${addr}`;
+    if (network === "Ethereum") return `https://etherscan.io/address/${addr}`;
+    if (network === "Solana") return `https://solscan.io/address/${addr}`;
+    throw new Error(`Unsupported network: ${network}`);
 }
 
 // === config ===
