@@ -2,7 +2,7 @@ import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { ExplorerRadioSelector, LinkExternal, NetworkRadioSelector, RpcRadioSelector } from "@polymedia/suitcase-react";
 import React from "react";
 import { supportedNetworks, useAppContext } from "./App";
-import { ConnectToGetStarted } from "./comps/connect";
+import { ConnectToGetStarted } from "./comp/connect";
 import { RPC_ENDPOINTS } from "./lib/network";
 
 export const PageSettings: React.FC = () =>

@@ -6,8 +6,8 @@ import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "./App";
-import { Btn } from "./comps/button";
-import { ResultMsg, SubmitRes } from "./comps/submits";
+import { Btn } from "./comp/button";
+import { ResultMsg, SubmitRes } from "./comp/submits";
 
 export const PageNew: React.FC = () =>
 {

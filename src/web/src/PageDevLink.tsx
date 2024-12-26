@@ -3,8 +3,8 @@ import { Transaction } from "@mysten/sui/transactions";
 import { getNetworkConfig } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useAppContext } from "./App";
-import { Btn } from "./comps/button";
-import { BtnConnect } from "./comps/connect";
+import { Btn } from "./comp/button";
+import { BtnConnect } from "./comp/connect";
 
 export const devClaims = [
     { foreignAddr: "0x0000000000000000000000000000000000000000", amount: 100n * 1_000_000_000n },

@@ -6,12 +6,12 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { PageNotFound } from "./PageNotFound";
-import { Btn } from "./comps/button";
-import { CardSpinner, CardWithMsg } from "./comps/cards";
-import { BtnConnect } from "./comps/connect";
+import { Btn } from "./comp/button";
+import { CardSpinner, CardWithMsg } from "./comp/cards";
+import { BtnConnect } from "./comp/connect";
+import { ResultMsg, SubmitRes } from "./comp/submits";
 import { XDropConfig } from "./lib/app-config";
 import { capitalize } from "./lib/misc";
-import { ResultMsg, SubmitRes } from "./comps/submits";
 
 export const PageClaim: React.FC = () =>
 {

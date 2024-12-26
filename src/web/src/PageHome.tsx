@@ -1,7 +1,6 @@
-import { LinkExternal } from "@polymedia/suitcase-react";
 import React from "react";
 import { useAppContext } from "./App";
-import { HeroBanner } from "./comps/hero";
+import { HeroBanner } from "./comp/hero";
 
 export const PageHome: React.FC = () =>
 {

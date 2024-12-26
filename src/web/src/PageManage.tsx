@@ -1,17 +1,17 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, formatNumber, TransferModule } from "@polymedia/suitcase-core";
+import { formatBalance, TransferModule } from "@polymedia/suitcase-core";
 import { useFetch, useTextArea } from "@polymedia/suitcase-react";
 import { LinkNetwork, MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
-import { Btn } from "./comps/button";
-import { CardSpinner, CardWithMsg } from "./comps/cards";
-import { ConnectToGetStarted } from "./comps/connect";
+import { Btn } from "./comp/button";
+import { CardSpinner, CardWithMsg } from "./comp/cards";
+import { ConnectToGetStarted } from "./comp/connect";
+import { ResultMsg, SubmitRes } from "./comp/submits";
 import { capitalize } from "./lib/misc";
 import { PageNotFound } from "./PageNotFound";
-import { ResultMsg, SubmitRes } from "./comps/submits";
 
 export const PageManage: React.FC = () =>
 {
