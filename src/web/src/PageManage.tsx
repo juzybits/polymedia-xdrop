@@ -1,6 +1,8 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, shortenAddress, TransferModule } from "@polymedia/suitcase-core";
+import { getCoinMeta } from "@polymedia/coinmeta";
+import { formatBalance, TransferModule } from "@polymedia/suitcase-core";
 import { LinkToExplorer, useFetch, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule, XDropStatus } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
@@ -23,25 +25,49 @@ export const PageManage: React.FC = () =>
 
     const currAcct = useCurrentAccount();
 
-    const fetched = useFetch(
+    const xdrop = useFetch(
         async () => !currAcct ? undefined : await xdropClient.fetchXDrop(xdropId),
         [xdropId, currAcct?.address]
     );
-    const { err, isLoading, refetch, data: xdrop } = fetched;
+
+    const coinMeta = useFetch(
+        async () => !xdrop.data ? undefined : await getCoinMeta(xdropClient.suiClient, xdrop.data.type_coin),
+        [xdrop.data?.type_coin]
+    );
 
     // === effects ===
 
     useEffect(() => {
-        console.debug("[PageManage] xdrop:", xdrop);
-    }, [xdrop]);
+        xdrop.data && console.debug("[PageManage] xdrop:", xdrop.data);
+    }, [xdrop.data]);
+
+    useEffect(() => {
+        coinMeta.data && console.debug("[PageManage] coinMeta:", coinMeta.data);
+    }, [coinMeta.data]);
 
     // === html ===
 
-    const body: React.ReactNode = (() =>
+    const content: React.ReactNode = (() =>
     {
-        if (err) {
+        if (xdrop.err || coinMeta.err) {
             return <CardWithMsg className="compact">
-                {err}
+                {xdrop.err || coinMeta.err}
+            </CardWithMsg>;
+        }
+        if (xdrop.isLoading || xdrop.data === undefined) {
+            return <CardSpinner className="compact" />;
+        }
+        if (xdrop.data === null) {
+            return <CardWithMsg className="compact">
+                xDrop not found.
+            </CardWithMsg>;
+        }
+        if (coinMeta.isLoading || coinMeta.data === undefined) {
+            return <CardSpinner className="compact" />;
+        }
+        if (coinMeta.data === null) {
+            return <CardWithMsg className="compact">
+                Coin metadata not found.
             </CardWithMsg>;
         }
         if (!currAcct) {
@@ -49,14 +75,8 @@ export const PageManage: React.FC = () =>
                 <ConnectToGetStarted />
             </div>;
         }
-        if (isLoading || xdrop === undefined) {
-            return <CardSpinner className="compact" />;
-        }
-        if (xdrop === null) {
-            return <CardWithMsg className="compact">
-                xDrop not found.
-            </CardWithMsg>;
-        }
+
+        const xDropData = xdrop.data; // TypeScript is dumb
 
         const adminActions = [
             {
@@ -66,11 +86,11 @@ export const PageManage: React.FC = () =>
                 submit: (tx: Transaction) => XDropModule.admin_opens_xdrop(
                     tx,
                     xdropClient.xdropPkgId,
-                    xdrop.type_coin,
-                    xdrop.type_network,
+                    xDropData.type_coin,
+                    xDropData.type_network,
                     xdropId,
                 ),
-                show: !xdrop.is_ended && xdrop.is_paused,
+                show: !xDropData.is_ended && xDropData.is_paused,
             },
             {
                 title: "Pause xDrop",
@@ -79,11 +99,11 @@ export const PageManage: React.FC = () =>
                 submit: (tx: Transaction) => XDropModule.admin_pauses_xdrop(
                     tx,
                     xdropClient.xdropPkgId,
-                    xdrop.type_coin,
-                    xdrop.type_network,
+                    xDropData.type_coin,
+                    xDropData.type_network,
                     xdropId,
                 ),
-                show: !xdrop.is_ended && xdrop.is_open,
+                show: !xDropData.is_ended && xDropData.is_open,
             },
             {
                 title: "End xDrop",
@@ -92,11 +112,11 @@ export const PageManage: React.FC = () =>
                 submit: (tx: Transaction) => XDropModule.admin_ends_xdrop(
                     tx,
                     xdropClient.xdropPkgId,
-                    xdrop.type_coin,
-                    xdrop.type_network,
+                    xDropData.type_coin,
+                    xDropData.type_network,
                     xdropId,
                 ),
-                show: !xdrop.is_ended,
+                show: !xDropData.is_ended,
             },
             {
                 title: "Reclaim Balance",
@@ -106,15 +126,15 @@ export const PageManage: React.FC = () =>
                     const [coin] = XDropModule.admin_reclaims_balance(
                         tx,
                         xdropClient.xdropPkgId,
-                        xdrop.type_coin,
-                        xdrop.type_network,
+                        xDropData.type_coin,
+                        xDropData.type_network,
                         xdropId,
                     );
                     return TransferModule.public_transfer(
-                        tx, `0x2::coin::Coin<${xdrop.type_coin}>`, coin, currAcct.address
+                        tx, `0x2::coin::Coin<${xDropData.type_coin}>`, coin, currAcct.address
                     )
                 },
-                show: xdrop.is_ended && xdrop.balance > 0n,
+                show: xDropData.is_ended && xDropData.balance > 0n,
             },
         ];
 
@@ -131,13 +151,13 @@ export const PageManage: React.FC = () =>
                 console.warn("[onSubmit] error:", err);
             } finally {
                 setIsWorking(false);
-                refetch();
+                xdrop.refetch();
             }
         };
 
         return <>
-            <CardDetails xdrop={xdrop} />
-            <CardAddClaims xdrop={xdrop} currAddr={currAcct.address} />
+            <CardDetails xdrop={xDropData} coinMeta={coinMeta.data} />
+            <CardAddClaims xdrop={xDropData} coinMeta={coinMeta.data} currAddr={currAcct.address} />
             {adminActions.map((action, idx) => (
                 <CardAction
                     key={idx}
@@ -158,7 +178,7 @@ export const PageManage: React.FC = () =>
                 Manage xDrop
             </div>
 
-            {body}
+            {content}
 
         </div>
 
@@ -199,9 +219,11 @@ const CardAction: React.FC<{
 
 const CardAddClaims: React.FC<{
     xdrop: XDrop;
+    coinMeta: CoinMetadata;
     currAddr: string;
 }> = ({
     xdrop,
+    coinMeta,
     currAddr,
 }) =>
 {
@@ -211,8 +233,6 @@ const CardAddClaims: React.FC<{
 
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
-
-    const coinDecimals = 9; // TODO
 
     const textArea = useTextArea<{
         claims: { foreignAddr: string, amount: bigint }[],
@@ -227,7 +247,7 @@ const CardAddClaims: React.FC<{
                         Math.floor(Math.random() * 16).toString(16)
                     ).join('');
                     // Random amount between 1 and 100
-                    const amount = Math.floor(Math.random() * (100 * 10**coinDecimals)) + 1;
+                    const amount = Math.floor(Math.random() * (100 * 10**coinMeta.decimals)) + 1;
                     return `${addr},${amount}`;
                 });
                 // const rows = devClaims.map(claim => `${claim.foreignAddr},${claim.amount}`);
@@ -342,7 +362,7 @@ const CardAddClaims: React.FC<{
         <div className="card-description">
         <div className="card-title">Summary:</div>
             <p>Addresses: {textArea.val.claims.length}</p>
-            <p>Amount: {formatBalance(textArea.val.totalAmount, coinDecimals, "compact")} TODO</p>
+            <p>Amount: {formatBalance(textArea.val.totalAmount, coinMeta.decimals, "compact")}</p>
             {requiredTxs > 1 && <p>⚠️ Requires {requiredTxs} transactions</p>}
         </div>
         </>}
@@ -364,11 +384,12 @@ const StatusLabel: React.FC<{ status: XDropStatus }> = ({ status }) => {
 
 const CardDetails: React.FC<{
     xdrop: XDrop;
+    coinMeta: CoinMetadata;
 }> = ({
     xdrop,
+    coinMeta,
 }) => {
     const { explorer, network } = useAppContext();
-    const coinDecimals = 9; // TODO
     return (
         <div className="card compact">
             <div className="card-title">Details</div>
@@ -378,7 +399,7 @@ const CardDetails: React.FC<{
                 <Detail label="Coin type:" val={<LinkToExplorer addr={xdrop.type_coin} kind="coin" explorer={explorer} network={network} />} />
                 <Detail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} />
                 <Detail label="Status:" val={<StatusLabel status={xdrop.status} />} />
-                <Detail label="Balance claimed/unclaimed:" val={`${formatBalance(xdrop.stats.amount_claimed, coinDecimals, "compact")} / ${formatBalance(xdrop.stats.amount_unclaimed, coinDecimals, "compact")}`} />
+                <Detail label="Balance claimed/unclaimed:" val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / ${formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")}`} />
                 <Detail label="Addresses claimed/unclaimed:" val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
             </div>
         </div>
