@@ -182,11 +182,9 @@ export class XDropClient extends SuiClientBase
         sender: string,
         xdrop: XDropIdentifier,
         claims: { foreignAddr: string, amount: bigint }[],
-    ) {
-        const result: {
-            resps: SuiTransactionBlockResponse[];
-            addedAddrs: string[];
-        } = { resps: [], addedAddrs: [] };
+    ): Promise<SuiTransactionBlockResponse[]>
+    {
+        const resps: SuiTransactionBlockResponse[] = [];
 
         // Create up to 1000 dynamic object fields in 1 tx (`object_runtime_max_num_store_entries`);
         const maxClaimsPerTx = MAX_CLAIMS_ADDED_PER_TX;
@@ -203,9 +201,7 @@ export class XDropClient extends SuiClientBase
             const claimsByFnCall = chunkArray(txClaims, maxClaimsPerFnCall);
             for (const [callNum, callClaims] of claimsByFnCall.entries())
             {
-                console.debug(`[adminAddsClaims] adding fn call ${callNum + 1} of ${claimsByFnCall.length}`);
                 const chunkTotalAmount = callClaims.reduce((sum, c) => sum + c.amount, 0n);
-
                 XDropModule.admin_adds_claims(
                     tx,
                     this.xdropPkgId,
@@ -217,25 +213,19 @@ export class XDropClient extends SuiClientBase
                     callClaims.map(c => c.amount),
                 );
             }
-
-            try {
-                const resp = await this.signAndExecuteTx(tx);
-                result.resps.push(resp);
-                result.addedAddrs.push(...txClaims.map(c => c.foreignAddr));
-            } catch (err) {
-                console.warn(`[adminAddsClaims] tx ${txNum + 1} failed:`, err);
-                break;
-            }
+            const resp = await this.signAndExecuteTx(tx);
+            resps.push(resp);
         }
 
-        return result;
+        return resps;
     }
 
     public async userClaims(
         sender: string,
         xdrop: XDropIdentifier,
         linkIds: string[],
-    ) {
+    ): Promise<SuiTransactionBlockResponse>
+    {
         const tx = new Transaction();
 
         for (const linkId of linkIds) {

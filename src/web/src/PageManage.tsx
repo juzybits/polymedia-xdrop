@@ -3,13 +3,13 @@ import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, formatNumber, TransferModule } from "@polymedia/suitcase-core";
 import { useFetch, useTextArea } from "@polymedia/suitcase-react";
 import { LinkNetwork, MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comps/button";
 import { CardSpinner, CardWithMsg } from "./comps/cards";
 import { ConnectToGetStarted } from "./comps/connect";
-import { capitalize } from "./lib/misc";
+import { capitalize, SubmitRes } from "./lib/misc";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageManage: React.FC = () =>
@@ -213,6 +213,7 @@ const ActionAddClaims: React.FC<{
     // === state ===
 
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
+    const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
     let networkName: LinkNetwork;
     if (xdrop.type_network.endsWith("::Ethereum")) {
@@ -307,14 +308,17 @@ const ActionAddClaims: React.FC<{
 
         try {
             setIsWorking(true);
+            setSubmitRes({ ok: undefined });
             const resp = await xdropClient.adminAddsClaims(
                 currAddr,
                 xdrop,
                 textArea.val!.claims,
             );
             console.debug("[onSubmit] okay:", resp);
+            setSubmitRes({ ok: true });
         } catch (err) {
             console.warn("[onSubmit] error:", err);
+            setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to add claims") });
         } finally {
             setIsWorking(false);
         }
@@ -326,9 +330,11 @@ const ActionAddClaims: React.FC<{
 
     return <>
     <div className="card compact">
+
         <div className="card-title">
             <p>Add Claims</p>
         </div>
+
         <div className="card-description">
             <p>Enter 1 claim per line in this format:<br/>FOREIGN_ADDRESS,RAW_AMOUNT
             <br/><br/>
@@ -337,9 +343,11 @@ const ActionAddClaims: React.FC<{
             RAW_AMOUNT is the amount claimable by the user, in raw units (e.g. 1 SUI = 1000000000).
             </p>
         </div>
+
         <div className="card-description">
             {textArea.input}
         </div>
+
         {textArea.val && <>
         <div className="card-description">
         <div className="card-title">Summary:</div>
@@ -348,9 +356,12 @@ const ActionAddClaims: React.FC<{
             {requiredTxs > 1 && <p>⚠️ Requires {requiredTxs} transactions</p>}
         </div>
         </>}
+
         <div className="card-description">
             <Btn onClick={onSubmit} disabled={disableSubmit}>ADD CLAIMS</Btn>
         </div>
+        {submitRes.ok === true && <div className="success">Success!</div>}
+        {submitRes.ok === false && submitRes.err && <div className="error">{submitRes.err}</div>}
     </div>
     </>;
 };
