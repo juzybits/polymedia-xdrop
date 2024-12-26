@@ -2,7 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, shortenAddress, TransferModule } from "@polymedia/suitcase-core";
 import { LinkToExplorer, useFetch, useTextArea } from "@polymedia/suitcase-react";
-import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule, XDropStatus } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -32,7 +32,7 @@ export const PageManage: React.FC = () =>
     // === effects ===
 
     useEffect(() => {
-        console.debug("[PageManage] xdrop:", JSON.stringify(xdrop, null, 2));
+        console.debug("[PageManage] xdrop:", xdrop);
     }, [xdrop]);
 
     // === html ===
@@ -355,6 +355,13 @@ const CardAddClaims: React.FC<{
     </>;
 };
 
+const StatusLabel: React.FC<{ status: XDropStatus }> = ({ status }) => {
+    if (status === "open")   return <label className="text-green">Open</label>;
+    if (status === "paused") return <label className="text-orange">Paused</label>;
+    if (status === "ended")  return <label className="text-red">Ended</label>;
+    throw new Error(`Unknown status: ${status}`);
+};
+
 const CardDetails: React.FC<{
     xdrop: XDrop;
 }> = ({
@@ -370,11 +377,9 @@ const CardDetails: React.FC<{
                 <Detail label="Network type:" val={shortenAddress(xdrop.type_network)} />
                 <Detail label="Coin type:" val={<LinkToExplorer addr={xdrop.type_coin} kind="coin" explorer={explorer} network={network} />} />
                 <Detail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} />
-                <Detail label="Status:" val={xdrop.status} />
-                <Detail label="Balance:" val={formatBalance(xdrop.balance, coinDecimals, "compact")} />
-                <Detail label="Claims length:" val={xdrop.claims_length} />
-                <Detail label="Addresses claimed/unclaimed:" val={`${xdrop.stats.addrs_claimed}/${xdrop.stats.addrs_unclaimed}`} />
-                <Detail label="Amount claimed/unclaimed:" val={`${formatBalance(xdrop.stats.amount_claimed, coinDecimals, "compact")}/${formatBalance(xdrop.stats.amount_unclaimed, coinDecimals, "compact")}`} />
+                <Detail label="Status:" val={<StatusLabel status={xdrop.status} />} />
+                <Detail label="Balance claimed/unclaimed:" val={`${formatBalance(xdrop.stats.amount_claimed, coinDecimals, "compact")} / ${formatBalance(xdrop.stats.amount_unclaimed, coinDecimals, "compact")}`} />
+                <Detail label="Addresses claimed/unclaimed:" val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
             </div>
         </div>
     );

@@ -15,6 +15,8 @@
 @color-blue: #00fffc;
 @color-border-gray: rgb(138 145 158 / 20%);
 @color-text-gray: #aaa;
+@color-text-green: lightgreen;
+@color-text-orange: rgb(255 190 71);
 @color-text-red: rgb(255, 158, 158);
 @color-text: #eee;
 @font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -46,42 +48,20 @@ h1, h2, h3, h4, h5, button, input {
 
 // === utility classes ===
 
-.cursor-pointer {
-    cursor: pointer;
-}
-
-.break-any {
-    overflow-wrap: anywhere;
-}
-
-.break-all {
-    word-break: break-all;
-}
-
-.center-text {
-    text-align: center;
-}
-
-.center-element {
-    margin: 0 auto;
-}
-
-.text-green {
-    color: lightgreen;
-}
-
-.success {
-    .break-any;
-    .text-green;
-}
+.address { .break-all; }
+.break-all { word-break: break-all; }
+.break-any { overflow-wrap: anywhere; }
+.center-element { margin: 0 auto; }
+.center-text { text-align: center; }
+.cursor-pointer { cursor: pointer; }
+.success { .break-any; .text-green; }
+.text-green { color: @color-text-green; }
+.text-orange { color: @color-text-orange; }
+.text-red { color: @color-text-red; }
 
 .error {
     .break-any;
     color: @color-text-red;
-}
-
-.address {
-    .break-all;
 }
 
 .rounded {
@@ -848,7 +828,7 @@ a.card, .card.link {
         }
         &:hover {
             .selector-text {
-                color: lightgreen;
+                color: @color-text-green;
             }
         }
     }
@@ -863,13 +843,13 @@ a.card, .card.link {
         position: relative;
 
         &:checked {
-            border-color: lightgreen;
+            border-color: @color-text-green;
 
             &::after {
                 content: '';
                 width: 0.75em;
                 height: 0.75em;
-                background-color: lightgreen;
+                background-color: @color-text-green;
                 border-radius: 50%;
                 position: absolute;
                 inset: 0;
@@ -877,12 +857,12 @@ a.card, .card.link {
             }
 
             & + .selector-text {
-                color: lightgreen;
+                color: @color-text-green;
             }
         }
 
         &:hover {
-            border-color: lightgreen;
+            border-color: @color-text-green;
         }
     }
 }
