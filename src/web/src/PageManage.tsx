@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, TransferModule } from "@polymedia/suitcase-core";
-import { useFetch, useTextArea } from "@polymedia/suitcase-react";
+import { balanceToString, formatBalance, shortenAddress, TransferModule } from "@polymedia/suitcase-core";
+import { LinkToExplorer, useFetch, useTextArea } from "@polymedia/suitcase-react";
 import { LinkNetwork, MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -141,9 +141,10 @@ export const PageManage: React.FC = () =>
         };
 
         return <>
-            <ActionAddClaims xdrop={xdrop} currAddr={currAcct.address} />
+            <CardDetails xdrop={xdrop} />
+            <CardAddClaims xdrop={xdrop} currAddr={currAcct.address} />
             {adminActions.map((action, idx) => (
-                <AdminAction
+                <CardAction
                     key={idx}
                     {...action}
                     submit={() => onSubmitAction(action.submit)}
@@ -170,7 +171,7 @@ export const PageManage: React.FC = () =>
     </>;
 };
 
-const AdminAction: React.FC<{
+const CardAction: React.FC<{
     title: string;
     info: string;
     btnTxt: string;
@@ -201,7 +202,7 @@ const AdminAction: React.FC<{
     );
 };
 
-const ActionAddClaims: React.FC<{
+const CardAddClaims: React.FC<{
     xdrop: XDrop;
     currAddr: string;
 }> = ({
@@ -364,4 +365,42 @@ const ActionAddClaims: React.FC<{
         <ResultMsg res={submitRes} />
     </div>
     </>;
+};
+
+const CardDetails: React.FC<{
+    xdrop: XDrop;
+}> = ({
+    xdrop,
+}) => {
+    const { explorer, network } = useAppContext();
+    const coinDecimals = 9; // TODO
+    return (
+        <div className="card compact">
+            <div className="card-title">Details</div>
+            <div className="card-details">
+                <Detail label="xDrop ID:" val={<LinkToExplorer addr={xdrop.id} kind="object" explorer={explorer} network={network} />} />
+                <Detail label="Network type:" val={shortenAddress(xdrop.type_network)} />
+                <Detail label="Coin type:" val={<LinkToExplorer addr={xdrop.type_coin} kind="coin" explorer={explorer} network={network} />} />
+                <Detail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} />
+                <Detail label="Status:" val={xdrop.status} />
+                <Detail label="Balance:" val={formatBalance(xdrop.balance, coinDecimals, "compact")} />
+                <Detail label="Claims length:" val={xdrop.claims_length} />
+                <Detail label="Addresses claimed/unclaimed:" val={`${xdrop.stats.addrs_claimed}/${xdrop.stats.addrs_unclaimed}`} />
+                <Detail label="Amount claimed/unclaimed:" val={`${formatBalance(xdrop.stats.amount_claimed, coinDecimals, "compact")}/${formatBalance(xdrop.stats.amount_unclaimed, coinDecimals, "compact")}`} />
+            </div>
+        </div>
+    );
+};
+
+const Detail: React.FC<{
+    label: string;
+    val: React.ReactNode;
+}> = ({
+    label,
+    val,
+}) => {
+    return <div className="detail">
+        <span className="label">{label}</span>
+        <span className="value">{val}</span>
+    </div>;
 };
