@@ -1,5 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { REGEX_TYPE_BASIC } from "@polymedia/suitcase-core";
+import { getCoinMeta } from "@polymedia/coinmeta";
+import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
 import { useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
@@ -41,7 +42,7 @@ export const PageNew: React.FC = () =>
 
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    const hasErrors = [coinType, linkNetwork].some(input => !!input.err);
+    const hasErrors = [linkNetwork, coinType].some(input => !!input.err);
     const disableSubmit = !currAcct || isWorking || hasErrors;
 
     // === functions ===
@@ -53,6 +54,12 @@ export const PageNew: React.FC = () =>
         try {
             setIsWorking(true);
             setSubmitRes({ ok: undefined });
+
+            const coinMeta = await getCoinMeta(xdropClient.suiClient, coinType.val!);
+            if (!coinMeta) {
+                throw new Error(`CoinMetadata not found for type ${shortenAddress(coinType.val!)}`);
+            }
+
             const { resp, xdropObjChange } = await xdropClient.adminCreatesAndSharesXDrop(
                 coinType.val!, linkNetwork.val!
             );

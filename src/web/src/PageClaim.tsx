@@ -159,7 +159,7 @@ const WidgetClaim: React.FC<{
         };
     }, [currAddr, xCnf.linkNetwork, xCnf.coinType, xCnf.xdropId]);
 
-    const { error, isLoading, data, refetch } = eligibleLinksWithStatus;
+    const { err, isLoading, data, refetch } = eligibleLinksWithStatus;
     const { hasAnyLinks, hasEligibleLinks, eligibleLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
     const disableSubmit = !currAcct || isWorking || !data || !data.hasClaimableLinks;
 
@@ -201,8 +201,8 @@ const WidgetClaim: React.FC<{
 
     // === html ===
 
-    if (error) {
-        return <CardWithMsg className="compact">{error}</CardWithMsg>;
+    if (err) {
+        return <CardWithMsg className="compact">{err}</CardWithMsg>;
     } else if (isLoading) {
         return <CardSpinner />;
     }

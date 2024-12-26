@@ -31,7 +31,7 @@ export const PageManage: React.FC = () =>
         async () => !currAcct ? undefined : await xdropClient.fetchXDrop(xdropId),
         [xdropId, currAcct?.address]
     );
-    const { error, isLoading, refetch, data: xdrop } = fetched;
+    const { err, isLoading, refetch, data: xdrop } = fetched;
 
     // === effects ===
 
@@ -43,9 +43,9 @@ export const PageManage: React.FC = () =>
 
     const body: React.ReactNode = (() =>
     {
-        if (error) {
+        if (err) {
             return <CardWithMsg className="compact">
-                {error}
+                {err}
             </CardWithMsg>;
         }
         if (!currAcct) {
