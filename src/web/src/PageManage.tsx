@@ -13,6 +13,7 @@ import { CardSpinner, CardWithMsg } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 import { PageNotFound } from "./PageNotFound";
+import { useXDrop } from "./comp/hooks";
 
 export const PageManage: React.FC = () =>
 {
@@ -22,14 +23,8 @@ export const PageManage: React.FC = () =>
     if (!xdropId) { return <PageNotFound />; }
 
     const { header, xdropClient, isWorking, setIsWorking } = useAppContext();
-
     const currAcct = useCurrentAccount();
-
-    const fetched = useFetch(async () => {
-        const xdrop = await xdropClient.fetchXDrop(xdropId);
-        const coinMeta = !xdrop ? null : await getCoinMeta(xdropClient.suiClient, xdrop.type_coin);
-        return { xdrop, coinMeta };
-    }, [xdropId]);
+    const fetched = useXDrop(xdropId);
 
     // === effects ===
 
