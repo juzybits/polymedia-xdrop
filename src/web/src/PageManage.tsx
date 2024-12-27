@@ -12,6 +12,8 @@ import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 import { PageNotFound } from "./PageNotFound";
 
+type AdminAction = (tx: Transaction) => TransactionResult;
+
 export const PageManage: React.FC = () =>
 {
     const { xdropId } = useParams();
@@ -21,7 +23,9 @@ export const PageManage: React.FC = () =>
     const currAcct = useCurrentAccount();
     const fetched = useXDrop(xdropId);
 
-    const onSubmitAction = async (action: (tx: Transaction) => TransactionResult) => {
+    const [reclaimOnEnd, setReclaimOnEnd] = useState(true);
+
+    const onSubmitAction = async (action: AdminAction) => {
         if (isWorking || !currAcct) return;
         try {
             setIsWorking(true);
@@ -46,63 +50,84 @@ export const PageManage: React.FC = () =>
                 </div>
 
                 <XDropLoader fetched={fetched} requireWallet={true}>
-                {(xdrop, coinMeta) => {
+                {(xdrop, coinMeta) =>
+                {
+                    const admin_opens_xdrop: AdminAction = (tx) =>
+                        XDropModule.admin_opens_xdrop(
+                            tx,
+                            xdropClient.xdropPkgId,
+                            xdrop.type_coin,
+                            xdrop.type_network,
+                            xdrop.id,
+                        );
+
+                    const admin_pauses_xdrop: AdminAction = (tx) =>
+                        XDropModule.admin_pauses_xdrop(
+                            tx,
+                            xdropClient.xdropPkgId,
+                            xdrop.type_coin,
+                            xdrop.type_network,
+                            xdrop.id,
+                        );
+
+                    const admin_ends_xdrop: AdminAction = (tx) => {
+                        const result = XDropModule.admin_ends_xdrop(
+                            tx,
+                            xdropClient.xdropPkgId,
+                            xdrop.type_coin,
+                            xdrop.type_network,
+                            xdrop.id,
+                        );
+                        return reclaimOnEnd ? admin_reclaims_balance(tx) : result;
+                    };
+
+                    const admin_reclaims_balance: AdminAction = (tx) => {
+                        const [coin] = XDropModule.admin_reclaims_balance(
+                            tx,
+                            xdropClient.xdropPkgId,
+                            xdrop.type_coin,
+                            xdrop.type_network,
+                            xdrop.id,
+                        );
+                        return TransferModule.public_transfer(
+                            tx, `0x2::coin::Coin<${xdrop.type_coin}>`, coin, currAcct!.address
+                        );
+                    };
+
                     const adminActions = [
                         {
                             title: "Open xDrop",
                             info: "Allow users to claim their share of the xDrop.",
                             btnTxt: "OPEN",
-                            submit: (tx: Transaction) => XDropModule.admin_opens_xdrop(
-                                tx,
-                                xdropClient.xdropPkgId,
-                                xdrop.type_coin,
-                                xdrop.type_network,
-                                xdrop.id,
-                            ),
+                            submit: admin_opens_xdrop,
                             show: !xdrop.is_ended && xdrop.is_paused,
                         },
                         {
                             title: "Pause xDrop",
                             info: "Stop users from claiming their share of the xDrop.",
                             btnTxt: "PAUSE",
-                            submit: (tx: Transaction) => XDropModule.admin_pauses_xdrop(
-                                tx,
-                                xdropClient.xdropPkgId,
-                                xdrop.type_coin,
-                                xdrop.type_network,
-                                xdrop.id,
-                            ),
+                            submit: admin_pauses_xdrop,
                             show: !xdrop.is_ended && xdrop.is_open,
                         },
                         {
                             title: "End xDrop",
                             info: "End the xDrop permanently. This cannot be undone.",
                             btnTxt: "END",
-                            submit: (tx: Transaction) => XDropModule.admin_ends_xdrop(
-                                tx,
-                                xdropClient.xdropPkgId,
-                                xdrop.type_coin,
-                                xdrop.type_network,
-                                xdrop.id,
-                            ),
+                            submit: admin_ends_xdrop,
                             show: !xdrop.is_ended,
+                            extra: <label>
+                                <input
+                                    type="checkbox"
+                                    checked={reclaimOnEnd}
+                                    onChange={(e) => setReclaimOnEnd(e.target.checked)}
+                                /> Also reclaim any remaining balance
+                            </label>,
                         },
                         {
                             title: "Reclaim Balance",
                             info: "Reclaim the remaining balance of the xDrop.",
                             btnTxt: "RECLAIM",
-                            submit: (tx: Transaction) => {
-                                const [coin] = XDropModule.admin_reclaims_balance(
-                                    tx,
-                                    xdropClient.xdropPkgId,
-                                    xdrop.type_coin,
-                                    xdrop.type_network,
-                                    xdrop.id,
-                                );
-                                return TransferModule.public_transfer(
-                                    tx, `0x2::coin::Coin<${xdrop.type_coin}>`, coin, currAcct!.address
-                                )
-                            },
+                            submit: admin_reclaims_balance,
                             show: xdrop.is_ended && xdrop.balance > 0n,
                         },
                     ];
@@ -143,6 +168,7 @@ const CardAction: React.FC<{
     submit: () => Promise<void>;
     show: boolean;
     disabled?: boolean;
+    extra?: React.ReactNode;
 }> = (a) =>
 {
     if (!a.show) return null;
@@ -158,6 +184,7 @@ const CardAction: React.FC<{
             <div className="card-description">
                 <p>{a.info}</p>
             </div>
+            {a.extra}
             <div className="card-description">
                 <Btn onClick={a.submit} disabled={disabled} className={a.btnTxt === "END" ? "red" : ""}>
                     {a.btnTxt}
