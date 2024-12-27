@@ -1,4 +1,5 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
+import { CoinMetadata } from "@mysten/sui/client";
 import { formatBalance, NetworkName, shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
 import { LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
@@ -9,145 +10,117 @@ import { PageNotFound } from "./PageNotFound";
 import { Btn } from "./comp/button";
 import { CardSpinner, CardWithMsg } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
+import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
-import { getCoinMeta } from "@polymedia/coinmeta";
-import { CoinMetadata } from "@mysten/sui/client";
 
 export const PageClaim: React.FC = () =>
 {
-    // === state ===
-
     let { xdropId } = useParams();
-    if (!xdropId) { return <PageNotFound />; }
+    if (!xdropId) return <PageNotFound />;
 
-    const currAcct = useCurrentAccount();
-    const { mutate: disconnect } = useDisconnectWallet();
-    const { header, network, xdropClient } = useAppContext();
+    const { header, network } = useAppContext();
 
-    let bannerUrl: string | undefined;
+    // Handle configured xDrops
     if (xdropId in XDropConfigs[network]) {
-        const xCnf = XDropConfigs[network][xdropId];
-        xdropId = xCnf.xdropId;
-        bannerUrl = xCnf.bannerUrl;
+        xdropId = XDropConfigs[network][xdropId].xdropId;
     }
 
-    const xdrop = useFetch(
-        async () => !currAcct ? undefined : await xdropClient.fetchXDrop(xdropId),
-        [xdropId, currAcct?.address] // TODO: remove currAcct?.address
-    );
+    const fetched = useXDrop(xdropId);
+    const bannerUrl = XDropConfigs[network][xdropId]?.bannerUrl;
 
-    const coinMeta = useFetch(
-        async () => !xdrop.data ? undefined : await getCoinMeta(xdropClient.suiClient, xdrop.data.type_coin),
-        [xdrop.data?.type_coin]
-    );
+    return <>
+        {header}
 
-    // === effects ===
+        {bannerUrl && <div className="page-banner">
+            <img src={bannerUrl} alt="banner" />
+        </div>}
 
-    useEffect(() => {
-        xdrop.data && console.debug("[PageClaim] xdrop:", xdrop.data);
-    }, [xdrop.data]);
+        <div id="page-claim" className="page-regular">
+            <div className="page-content">
 
-    useEffect(() => {
-        coinMeta.data && console.debug("[PageClaim] coinMeta:", coinMeta.data);
-    }, [coinMeta.data]);
+                <XDropLoader fetched={fetched} requireWallet={false}>
+                {(xdrop, coinMeta) => (<>
+                    <div className="page-title">
+                        Claim {coinMeta.symbol}
+                    </div>
 
-    // === html ===
-
-    const content: React.ReactNode = (() =>
-    {
-        if (xdrop.err || coinMeta.err) {
-            return <CardWithMsg className="compact">
-                {xdrop.err || coinMeta.err}
-            </CardWithMsg>;
-        }
-        if (xdrop.isLoading || xdrop.data === undefined) {
-            return <CardSpinner className="compact" />;
-        }
-        if (xdrop.data === null) {
-            return <CardWithMsg className="compact">
-                xDrop not found.
-            </CardWithMsg>;
-        }
-        if (coinMeta.isLoading || coinMeta.data === undefined) {
-            return <CardSpinner className="compact" />;
-        }
-        if (coinMeta.data === null) {
-            return <CardWithMsg className="compact">
-                Coin metadata not found.
-            </CardWithMsg>;
-        }
-
-        return <>
-            <div className="page-title">
-                Claim {coinMeta.data.symbol}
-            </div>
-
-            <div className="card compact">
-                <div className="card-title">
-                    <p>Step 1: Get a Sui wallet</p>
-                </div>
-                <div className="card-description">
-                    <p>You need a wallet to claim your {coinMeta.data.symbol} on Sui. We recommend the official Sui wallet.</p>
-                </div>
-                <div className="center-element">
-                    <LinkExternal className="btn" href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
-                </div>
-            </div>
-
-            <div className="card compact">
-                <div className="card-title">
-                    <p>Step 2: Verify your {xdrop.data.network_name} address</p>
-                </div>
-                <div className="card-description">
-                    <p>Prove that you own {coinMeta.data.symbol} on {xdrop.data.network_name} by linking your {xdrop.data.network_name} address to your Sui wallet.</p>
-                </div>
-                <div className="card-description">
-                    <p>If you hold {coinMeta.data.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
-                </div>
-                <div className="center-element">
-                    <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
-                </div>
-            </div>
-
-            <div className="card compact">
-                <div className="card-title">
-                    <p>Step 3: Claim your {coinMeta.data.symbol} on Sui</p>
-                </div>
-                <div className="card-description">
-                    <p>You'll receive the same amount of {coinMeta.data.symbol} on Sui as you have in your {xdrop.data.network_name} address.</p>
-                </div>
-                {!currAcct
-                    ? <>
+                    <div className="card compact">
+                        <div className="card-title">
+                            <p>Step 1: Get a Sui wallet</p>
+                        </div>
                         <div className="card-description">
-                            Connect your Sui wallet to claim.
+                            <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
                         </div>
                         <div className="center-element">
-                            <BtnConnect />
+                            <LinkExternal className="btn" href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
                         </div>
-                    </>
-                : <>
+                    </div>
+
+                    <div className="card compact">
+                        <div className="card-title">
+                            <p>Step 2: Verify your {xdrop.network_name} address</p>
+                        </div>
+                        <div className="card-description">
+                            <p>Prove that you own {coinMeta.symbol} on {xdrop.network_name} by linking your {xdrop.network_name} address to your Sui wallet.</p>
+                        </div>
+                        <div className="card-description">
+                            <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
+                        </div>
+                        <div className="center-element">
+                            <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
+                        </div>
+                    </div>
+
+                    <CardClaim xdrop={xdrop} coinMeta={coinMeta} />
+                </>)}
+                </XDropLoader>
+
+            </div>
+        </div>
+    </>;
+};
+
+const CardClaim: React.FC<{
+    xdrop: XDrop;
+    coinMeta: CoinMetadata;
+}> = ({
+    xdrop,
+    coinMeta,
+}) => {
+    const currAcct = useCurrentAccount();
+    const { mutate: disconnect } = useDisconnectWallet();
+
+    return (
+        <div className="card compact">
+            <div className="card-title">
+                <p>Step 3: Claim your {coinMeta.symbol} on Sui</p>
+            </div>
+            <div className="card-description">
+                <p>You'll receive the same amount of {coinMeta.symbol} on Sui as you have in your {xdrop.network_name} address.</p>
+            </div>
+            {!currAcct ? (
+                <>
+                    <div className="card-description">
+                        Connect your Sui wallet to claim.
+                    </div>
+                    <div className="center-element">
+                        <BtnConnect />
+                    </div>
+                </>
+            ) : (
+                <>
                     <div className="card-description">
                         <p>You are connected as {shortenAddress(currAcct.address)} (<a onClick={() => disconnect()}>disconnect</a>).</p>
                     </div>
-                    <WidgetClaim xdrop={xdrop.data} coinMeta={coinMeta.data} currAddr={currAcct.address} />
-                </>}
-            </div>
-        </>;
-    })();
-
-    return <>
-    {header}
-    {bannerUrl && <div className="page-banner">
-        <img src={bannerUrl} alt="banner" />
-    </div>}
-    <div id="page-claim" className="page-regular">
-
-        <div className="page-content">
-            {content}
+                    <WidgetClaim
+                        xdrop={xdrop}
+                        coinMeta={coinMeta}
+                        currAddr={currAcct.address}
+                    />
+                </>
+            )}
         </div>
-
-    </div>
-    </>;
+    );
 };
 
 type EligibleLinksWithStatus = {
