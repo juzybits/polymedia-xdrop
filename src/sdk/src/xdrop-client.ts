@@ -4,6 +4,8 @@ import {
     SuiTransactionBlockResponse,
     SuiTransactionBlockResponseOptions,
 } from "@mysten/sui/client";
+import { SuiGraphQLClient } from "@mysten/sui/graphql";
+import { graphql } from '@mysten/sui/graphql/schemas/latest';
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import {
     chunkArray,
@@ -29,7 +31,7 @@ import {
     XDrop,
     XDropIdentifier,
 } from "./xdrop-structs.js";
-import { extractXDropObjCreated, parseTxAdminSharesXDrop } from "./xdrop-txs.js";
+import { extractXDropObjCreated } from "./xdrop-txs.js";
 
 /**
  * How many claims can be added to an xDrop in a single transaction.
@@ -46,6 +48,7 @@ export class XDropClient extends SuiClientBase
     public readonly xdropPkgId: string;
     public readonly suilinkPkgId: string;
     public readonly errParser: TxErrorParser;
+    public readonly suiQL: SuiGraphQLClient;
 
     constructor(args: {
         network: NetworkName;
@@ -66,6 +69,7 @@ export class XDropClient extends SuiClientBase
         this.xdropPkgId = args.xdropPkgId;
         this.suilinkPkgId = args.suilinkPkgId;
         this.errParser = new TxErrorParser(args.xdropPkgId, ERRORS_CODES);
+        this.suiQL = new SuiGraphQLClient( { url: "https://sui-devnet.mystenlabs.com/graphql" } ); // TODO
     }
 
     // === data fetching ===
@@ -142,23 +146,70 @@ export class XDropClient extends SuiClientBase
         );
     }
 
-    public async fetchTxsAdminCreatesXDrop(
+    public async fetchTxsAdminSharesXDrop(
+        sender: string,
         cursor: string | null | undefined,
         limit?: number,
         order: "ascending" | "descending" = "descending",
     ) {
-        return this.fetchAndParseTxs(
-            (resp) => parseTxAdminSharesXDrop(resp, this.xdropPkgId),
-            {
-                filter: { MoveFunction: {
-                    package: this.xdropPkgId, module: "xdrop", function: "new" }
-                },
-                options: { showEffects: true, showObjectChanges: true, showInput: true },
-                cursor,
-                limit,
-                order,
+        const getShareTxsBySender = graphql(`
+            query {
+                transactionBlocks(
+                    last: 5,
+                    filter: {
+                        function: "${this.xdropPkgId}::xdrop::share",
+                        sentAddress: "${sender}"
+                    }
+                ) {
+                    nodes {
+                        digest
+                        effects {
+                            timestamp
+                            objectChanges {
+                                nodes {
+                                    idCreated
+                                    address
+                                    outputState {
+                                        asMoveObject {
+                                            contents {
+                                                type {
+                                                    repr
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        );
+        `);
+
+        const result = await this.suiQL.query({
+            query: getShareTxsBySender,
+        });
+
+        return result.data!.transactionBlocks.nodes.flatMap(tx => {
+            const xdropObject = tx.effects!.objectChanges.nodes.find(change =>
+                change.idCreated &&
+                change.outputState?.asMoveObject?.contents?.type?.repr.startsWith(`${this.xdropPkgId}::xdrop::XDrop<`)
+            );
+
+            if (!xdropObject) return [];
+
+            const typeStr = xdropObject.outputState!.asMoveObject!.contents!.type.repr;
+            const typeParams = typeStr.match(/<(.+)>/)?.[1].split(',').map(t => t.trim());
+
+            if (!typeParams || typeParams.length !== 2) return [];
+
+            return [{
+                id: xdropObject.address,
+                type_coin: typeParams[0],
+                type_network: typeParams[1],
+                timestamp: tx.effects!.timestamp!,
+            }];
+        });
     }
 
     // === module interactions ===
