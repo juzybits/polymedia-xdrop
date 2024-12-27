@@ -25,49 +25,35 @@ export const PageManage: React.FC = () =>
 
     const currAcct = useCurrentAccount();
 
-    const xdrop = useFetch(
-        async () => !currAcct ? undefined : await xdropClient.fetchXDrop(xdropId),
-        [xdropId, currAcct?.address]
-    );
-
-    const coinMeta = useFetch(
-        async () => !xdrop.data ? undefined : await getCoinMeta(xdropClient.suiClient, xdrop.data.type_coin),
-        [xdrop.data?.type_coin]
-    );
+    const fetched = useFetch(async () => {
+        const xdrop = await xdropClient.fetchXDrop(xdropId);
+        const coinMeta = !xdrop ? null : await getCoinMeta(xdropClient.suiClient, xdrop.type_coin);
+        return { xdrop, coinMeta };
+    }, [xdropId]);
 
     // === effects ===
 
     useEffect(() => {
-        xdrop.data && console.debug("[PageManage] xdrop:", xdrop.data);
-    }, [xdrop.data]);
-
-    useEffect(() => {
-        coinMeta.data && console.debug("[PageManage] coinMeta:", coinMeta.data);
-    }, [coinMeta.data]);
+        fetched.data && console.debug("[PageManage] fetched:", fetched.data);
+    }, [fetched.data]);
 
     // === html ===
 
     const content: React.ReactNode = (() =>
     {
-        if (xdrop.err || coinMeta.err) {
+        if (fetched.err) {
             return <CardWithMsg className="compact">
-                {xdrop.err || coinMeta.err}
+                {fetched.err}
             </CardWithMsg>;
         }
-        if (xdrop.isLoading || xdrop.data === undefined) {
+        if (fetched.isLoading || fetched.data === undefined) {
             return <CardSpinner className="compact" />;
         }
-        if (xdrop.data === null) {
+        const xdrop = fetched.data.xdrop;
+        const coinMeta = fetched.data.coinMeta;
+        if (xdrop === null || coinMeta === null) {
             return <CardWithMsg className="compact">
-                xDrop not found.
-            </CardWithMsg>;
-        }
-        if (coinMeta.isLoading || coinMeta.data === undefined) {
-            return <CardSpinner className="compact" />;
-        }
-        if (coinMeta.data === null) {
-            return <CardWithMsg className="compact">
-                Coin metadata not found.
+                {xdrop === null ? "xDrop not found." : "Coin metadata not found."}
             </CardWithMsg>;
         }
         if (!currAcct) {
@@ -75,8 +61,6 @@ export const PageManage: React.FC = () =>
                 <ConnectToGetStarted />
             </div>;
         }
-
-        const xDropData = xdrop.data; // TypeScript is dumb
 
         const adminActions = [
             {
@@ -86,11 +70,11 @@ export const PageManage: React.FC = () =>
                 submit: (tx: Transaction) => XDropModule.admin_opens_xdrop(
                     tx,
                     xdropClient.xdropPkgId,
-                    xDropData.type_coin,
-                    xDropData.type_network,
+                    xdrop.type_coin,
+                    xdrop.type_network,
                     xdropId,
                 ),
-                show: !xDropData.is_ended && xDropData.is_paused,
+                show: !xdrop.is_ended && xdrop.is_paused,
             },
             {
                 title: "Pause xDrop",
@@ -99,11 +83,11 @@ export const PageManage: React.FC = () =>
                 submit: (tx: Transaction) => XDropModule.admin_pauses_xdrop(
                     tx,
                     xdropClient.xdropPkgId,
-                    xDropData.type_coin,
-                    xDropData.type_network,
+                    xdrop.type_coin,
+                    xdrop.type_network,
                     xdropId,
                 ),
-                show: !xDropData.is_ended && xDropData.is_open,
+                show: !xdrop.is_ended && xdrop.is_open,
             },
             {
                 title: "End xDrop",
@@ -112,11 +96,11 @@ export const PageManage: React.FC = () =>
                 submit: (tx: Transaction) => XDropModule.admin_ends_xdrop(
                     tx,
                     xdropClient.xdropPkgId,
-                    xDropData.type_coin,
-                    xDropData.type_network,
+                    xdrop.type_coin,
+                    xdrop.type_network,
                     xdropId,
                 ),
-                show: !xDropData.is_ended,
+                show: !xdrop.is_ended,
             },
             {
                 title: "Reclaim Balance",
@@ -126,15 +110,15 @@ export const PageManage: React.FC = () =>
                     const [coin] = XDropModule.admin_reclaims_balance(
                         tx,
                         xdropClient.xdropPkgId,
-                        xDropData.type_coin,
-                        xDropData.type_network,
+                        xdrop.type_coin,
+                        xdrop.type_network,
                         xdropId,
                     );
                     return TransferModule.public_transfer(
-                        tx, `0x2::coin::Coin<${xDropData.type_coin}>`, coin, currAcct.address
+                        tx, `0x2::coin::Coin<${xdrop.type_coin}>`, coin, currAcct.address
                     )
                 },
-                show: xDropData.is_ended && xDropData.balance > 0n,
+                show: xdrop.is_ended && xdrop.balance > 0n,
             },
         ];
 
@@ -151,13 +135,13 @@ export const PageManage: React.FC = () =>
                 console.warn("[onSubmit] error:", err);
             } finally {
                 setIsWorking(false);
-                xdrop.refetch();
+                fetched.refetch();
             }
         };
 
         return <>
-            <CardDetails xdrop={xDropData} coinMeta={coinMeta.data} />
-            <CardAddClaims xdrop={xDropData} coinMeta={coinMeta.data} currAddr={currAcct.address} />
+            <CardDetails xdrop={xdrop} coinMeta={coinMeta} />
+            <CardAddClaims xdrop={xdrop} coinMeta={coinMeta} currAddr={currAcct.address} />
             {adminActions.map((action, idx) => (
                 <CardAction
                     key={idx}
