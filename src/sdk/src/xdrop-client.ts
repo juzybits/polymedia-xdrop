@@ -29,6 +29,7 @@ import {
     XDrop,
     XDropIdentifier,
 } from "./xdrop-structs.js";
+import { extractXDropObjCreated, parseTxAdminSharesXDrop } from "./xdrop-txs.js";
 
 /**
  * How many claims can be added to an xDrop in a single transaction.
@@ -141,6 +142,25 @@ export class XDropClient extends SuiClientBase
         );
     }
 
+    public async fetchTxsAdminCreatesXDrop(
+        cursor: string | null | undefined,
+        limit?: number,
+        order: "ascending" | "descending" = "descending",
+    ) {
+        return this.fetchAndParseTxs(
+            (resp) => parseTxAdminSharesXDrop(resp, this.xdropPkgId),
+            {
+                filter: { MoveFunction: {
+                    package: this.xdropPkgId, module: "xdrop", function: "new" }
+                },
+                options: { showEffects: true, showObjectChanges: true, showInput: true },
+                cursor,
+                limit,
+                order,
+            }
+        );
+    }
+
     // === module interactions ===
 
     /**
@@ -167,7 +187,7 @@ export class XDropClient extends SuiClientBase
 
         const resp = await this.signAndExecuteTx(tx);
 
-        const xdropObjChange = this.extractXDropObjCreated(resp);
+        const xdropObjChange = extractXDropObjCreated(resp, this.xdropPkgId);
         if (!xdropObjChange) {
             throw new Error(`Transaction succeeded but no XDrop object was found: ${JSON.stringify(resp, null, 2)}`);
         }
@@ -249,17 +269,4 @@ export class XDropClient extends SuiClientBase
         return await this.signAndExecuteTx(tx);
     }
 
-    // === object extractors ===
-
-    /**
-     * Extract the created XDrop object (if any) from `SuiTransactionBlockResponse.objectChanges`.
-     */
-    public extractXDropObjCreated(
-        resp: SuiTransactionBlockResponse,
-    ): ObjChangeKind<"created"> | undefined
-    {
-        return resp.objectChanges?.find(o =>
-            o.type === "created" && o.objectType.startsWith(`${this.xdropPkgId}::xdrop::XDrop<`)
-        ) as ObjChangeKind<"created"> | undefined;
-    }
 }
