@@ -5,7 +5,7 @@ import { formatBalance, shortenAddress, TransferModule } from "@polymedia/suitca
 import { LinkToExplorer, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule, XDropStatus } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comp/button";
 import { useXDrop, XDropLoader } from "./comp/loader";
@@ -57,7 +57,7 @@ export const PageManage: React.FC = () =>
                                 xdropClient.xdropPkgId,
                                 xdrop.type_coin,
                                 xdrop.type_network,
-                                xdropId,
+                                xdrop.id,
                             ),
                             show: !xdrop.is_ended && xdrop.is_paused,
                         },
@@ -70,7 +70,7 @@ export const PageManage: React.FC = () =>
                                 xdropClient.xdropPkgId,
                                 xdrop.type_coin,
                                 xdrop.type_network,
-                                xdropId,
+                                xdrop.id,
                             ),
                             show: !xdrop.is_ended && xdrop.is_open,
                         },
@@ -83,7 +83,7 @@ export const PageManage: React.FC = () =>
                                 xdropClient.xdropPkgId,
                                 xdrop.type_coin,
                                 xdrop.type_network,
-                                xdropId,
+                                xdrop.id,
                             ),
                             show: !xdrop.is_ended,
                         },
@@ -97,7 +97,7 @@ export const PageManage: React.FC = () =>
                                     xdropClient.xdropPkgId,
                                     xdrop.type_coin,
                                     xdrop.type_network,
-                                    xdropId,
+                                    xdrop.id,
                                 );
                                 return TransferModule.public_transfer(
                                     tx, `0x2::coin::Coin<${xdrop.type_coin}>`, coin, currAcct!.address
@@ -366,6 +366,9 @@ const CardDetails: React.FC<{
                 <Detail label="Status:" val={<StatusLabel status={xdrop.status} />} />
                 <Detail label="Balance claimed/unclaimed:" val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / ${formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")}`} />
                 <Detail label="Addresses claimed/unclaimed:" val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
+            </div>
+            <div className="card-description">
+                <Link to={`/claim/${xdrop.id}`} className="btn">VIEW CLAIM PAGE</Link>
             </div>
         </div>
     );

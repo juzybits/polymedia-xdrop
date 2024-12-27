@@ -24,9 +24,9 @@ export const PageClaim: React.FC = () =>
     if (xdropId in XDropConfigs[network]) {
         xdropId = XDropConfigs[network][xdropId].xdropId;
     }
+    const bannerUrl = XDropConfigs[network][xdropId]?.bannerUrl;
 
     const fetched = useXDrop(xdropId);
-    const bannerUrl = XDropConfigs[network][xdropId]?.bannerUrl;
 
     return <>
         {header}
