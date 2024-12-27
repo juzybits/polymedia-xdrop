@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Btn } from "./comp/button";
+import { ConnectOr } from "./comp/connect";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 
 export const PageNew: React.FC = () =>
@@ -99,10 +100,12 @@ export const PageNew: React.FC = () =>
                         {coinType.input}
                     </div>
 
-                    <Btn onClick={onSubmit} disabled={disableSubmit}>
-                        CREATE
-                    </Btn>
-                    <ResultMsg res={submitRes} />
+                    <ConnectOr>
+                        <Btn onClick={onSubmit} disabled={disableSubmit}>
+                            CREATE
+                        </Btn>
+                        <ResultMsg res={submitRes} />
+                    </ConnectOr>
                 </div>
             </div>
 

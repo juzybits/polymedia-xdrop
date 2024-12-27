@@ -21,16 +21,22 @@ export const BtnConnect: React.FC = () =>
     );
 };
 
-
-
 export const ConnectToGetStarted: React.FC = () =>
 {
-    return (
-        <>
-            <div className="card-description">
-                Connect your Sui wallet to get started.
-            </div>
-            <BtnConnect />
-        </>
-    );
+    return <>
+        <div className="card-description">
+            Connect your Sui wallet to get started.
+        </div>
+        <BtnConnect />
+    </>;
+};
+
+export const ConnectOr: React.FC<{
+    children: React.ReactNode;
+}> = ({ children }) =>
+{
+    const currAcct = useCurrentAccount();
+    return <>
+        {!currAcct ? <ConnectToGetStarted /> : children}
+    </>;
 };
