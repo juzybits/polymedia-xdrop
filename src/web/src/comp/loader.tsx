@@ -14,7 +14,7 @@ export type UseXDropResult = UseFetchResult<{
 
 export type XDropLoaderProps = {
     fetched: UseXDropResult;
-    requireWallet?: boolean;
+    requireWallet: boolean;
     children: (xdrop: XDrop, coinMeta: CoinMetadata) => React.ReactNode;
 };
 
@@ -32,7 +32,7 @@ export function useXDrop(
 
 export const XDropLoader: React.FC<XDropLoaderProps> = ({
     fetched,
-    requireWallet = true,
+    requireWallet,
     children
 }) => {
     const currAcct = useCurrentAccount();

@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, TransferModule } from "@polymedia/suitcase-core";
+import { formatBalance, shortenAddress, TransferModule } from "@polymedia/suitcase-core";
 import { LinkToExplorer, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule, XDropStatus } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
@@ -45,7 +45,7 @@ export const PageManage: React.FC = () =>
                     Manage xDrop
                 </div>
 
-                <XDropLoader fetched={fetched}>
+                <XDropLoader fetched={fetched} requireWallet={true}>
                 {(xdrop, coinMeta) => {
                     const adminActions = [
                         {
@@ -109,18 +109,24 @@ export const PageManage: React.FC = () =>
 
                     return <>
                         <CardDetails xdrop={xdrop} coinMeta={coinMeta} />
-                        <CardAddClaims
-                            xdrop={xdrop}
-                            coinMeta={coinMeta}
-                            currAddr={currAcct!.address}
-                        />
-                        {adminActions.map((action, idx) => (
-                            <CardAction
+
+                        {currAcct!.address !== xdrop.admin
+                        ? <CardNotAdmin xdrop={xdrop} />
+                        : <>
+                            <CardAddClaims
+                                xdrop={xdrop}
+                                coinMeta={coinMeta}
+                                refetch={fetched.refetch}
+                                currAddr={currAcct!.address}
+                                />
+                            {adminActions.map((action, idx) => (
+                                <CardAction
                                 key={idx}
                                 {...action}
                                 submit={() => onSubmitAction(action.submit)}
-                            />
-                        ))}
+                                />
+                            ))}
+                        </>}
                     </>;
                 }}
                 </XDropLoader>
@@ -164,10 +170,12 @@ const CardAction: React.FC<{
 const CardAddClaims: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
+    refetch: () => Promise<void>;
     currAddr: string;
 }> = ({
     xdrop,
     coinMeta,
+    refetch,
     currAddr,
 }) =>
 {
@@ -275,6 +283,7 @@ const CardAddClaims: React.FC<{
             setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to add claims") });
         } finally {
             setIsWorking(false);
+            refetch();
         }
     };
 
@@ -324,6 +333,18 @@ const StatusLabel: React.FC<{ status: XDropStatus }> = ({ status }) => {
     if (status === "paused") return <label className="text-orange">Paused</label>;
     if (status === "ended")  return <label className="text-red">Ended</label>;
     throw new Error(`Unknown status: ${status}`);
+};
+
+const CardNotAdmin: React.FC<{
+    xdrop: XDrop;
+}> = ({
+    xdrop,
+}) => {
+    return <div className="card compact">
+        <div className="card-title">Not admin</div>
+        <div className="card-description">You are not the admin of this xDrop.
+            Log in as {shortenAddress(xdrop.admin)} to manage this xDrop.</div>
+    </div>;
 };
 
 const CardDetails: React.FC<{
