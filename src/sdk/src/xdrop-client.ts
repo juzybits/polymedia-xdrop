@@ -176,7 +176,15 @@ export class XDropClient extends SuiClientBase
             }
         });
 
-        const events = result.data!.events.nodes
+        if (result.errors) {
+            throw new Error(`[fetchCreatedXDrops] GraphQL error: ${JSON.stringify(result.errors, null, 2)}`);
+        }
+        const data = result.data;
+        if (!data) {
+            throw new Error(`[fetchCreatedXDrops] GraphQL returned no data`);
+        }
+
+        const events = data.events.nodes
             .map(event => ({
                 digest: event.transactionBlock!.digest!,
                 timestamp: new Date(event.timestamp!),
@@ -186,21 +194,18 @@ export class XDropClient extends SuiClientBase
 
         const xdrops = await this.fetchXDrops(events.map(evt => evt.id));
 
-        const enhancedXDrops: (XDrop & { digest: string, timestamp: Date })[] = [];
-        for (const xdrop of xdrops) {
+        const enhancedXDrops = xdrops.map(xdrop => {
             const event = events.find(e => e.id === xdrop.id);
-            if (event) {
-                enhancedXDrops.push({
-                    ...xdrop,
-                    digest: event.digest,
-                    timestamp: event.timestamp,
-                });
-            }
-        }
+            return {
+                ...xdrop,
+                digest: event!.digest,
+                timestamp: event!.timestamp,
+            };
+        });
 
         return {
-            hasNextPage: result.data!.events.pageInfo.hasPreviousPage,
-            nextCursor: result.data!.events.pageInfo.startCursor,
+            hasNextPage: data.events.pageInfo.hasPreviousPage,
+            nextCursor: data.events.pageInfo.startCursor,
             data: enhancedXDrops,
         };
     }

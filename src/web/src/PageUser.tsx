@@ -1,5 +1,4 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { shortenAddress } from "@polymedia/suitcase-core";
 import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
@@ -49,13 +48,13 @@ const ListXdrops: React.FC<{
     }
     if (xdrops.page.length === 0) {
         return xdrops.isLoading
-            ? <CardSpinner />
+            ? <CardSpinner className="compact" />
             : <CardWithMsg>No auctions yet</CardWithMsg>;
     }
 
     return <>
-        <div ref={listRef}>
-            {xdrops.isLoading && <CardSpinner />}
+        <div ref={listRef} className={`card-list ${xdrops.isLoading ? "loading" : ""}`}>
+            {xdrops.isLoading && <CardSpinner className="compact" />}
             {xdrops.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
                     button={<Link to={`/manage/${x.id}`} className="btn">MANAGE</Link>}
