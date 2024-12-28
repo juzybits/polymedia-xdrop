@@ -4,7 +4,7 @@ import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardSpinner, CardWithMsg, CardXDropDetails } from "./comp/cards";
+import { CardSpinner, CardWithMsg, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 
 export const PageUser: React.FC = () =>
@@ -54,12 +54,12 @@ const ListXdrops: React.FC<{
     }
 
     return <>
-        <div className="card-list" ref={listRef}>
+        <div ref={listRef}>
             {xdrops.isLoading && <CardSpinner />}
             {xdrops.page.map(x =>
-                <CardXDropDetails xdrop={x}
-                    title="TODO show date"
+                <CardXDropDetails xdrop={x} key={x.id}
                     button={<Link to={`/manage/${x.id}`} className="btn">MANAGE</Link>}
+                    extraDetails={<XDropDetail label="Created:" val={x.timestamp.toLocaleString()} />}
                 />
             )}
         </div>

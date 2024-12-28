@@ -178,6 +178,7 @@ export class XDropClient extends SuiClientBase
 
         const events = result.data!.events.nodes
             .map(event => ({
+                digest: event.transactionBlock!.digest!,
                 timestamp: new Date(event.timestamp!),
                 ...event.contents.json as XDropIdentifier,
             }))
@@ -185,10 +186,22 @@ export class XDropClient extends SuiClientBase
 
         const xdrops = await this.fetchXDrops(events.map(evt => evt.id));
 
+        const enhancedXDrops: (XDrop & { digest: string, timestamp: Date })[] = [];
+        for (const xdrop of xdrops) {
+            const event = events.find(e => e.id === xdrop.id);
+            if (event) {
+                enhancedXDrops.push({
+                    ...xdrop,
+                    digest: event.digest,
+                    timestamp: event.timestamp,
+                });
+            }
+        }
+
         return {
             hasNextPage: result.data!.events.pageInfo.hasPreviousPage,
             nextCursor: result.data!.events.pageInfo.startCursor,
-            data: xdrops,
+            data: enhancedXDrops,
         };
     }
 
