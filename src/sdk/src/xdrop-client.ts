@@ -10,14 +10,12 @@ import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import {
     chunkArray,
     devInspectAndGetReturnValues,
-    NetworkName,
     ObjChangeKind,
-    PaginatedResponse,
     SignTransaction,
     SuiClientBase,
     TransferModule,
     TxErrorParser,
-    WaitForTxOptions,
+    WaitForTxOptions
 } from "@polymedia/suitcase-core";
 import { ERRORS_CODES } from "./config.js";
 import { getSuiLinkNetworkType, getSuiLinkType, LinkNetwork } from "./suilink.js";
@@ -45,14 +43,13 @@ export const MAX_CLAIMS_ADDED_PER_TX = 1000;
  */
 export class XDropClient extends SuiClientBase
 {
-    public readonly network: NetworkName;
+    public readonly graphClient: SuiGraphQLClient;
     public readonly xdropPkgId: string;
     public readonly suilinkPkgId: string;
     public readonly errParser: TxErrorParser;
-    public readonly suiQL: SuiGraphQLClient;
 
     constructor(args: {
-        network: NetworkName;
+        graphClient: SuiGraphQLClient;
         xdropPkgId: string;
         suilinkPkgId: string;
         suiClient: SuiClient;
@@ -66,11 +63,10 @@ export class XDropClient extends SuiClientBase
             waitForTxOptions: args.waitForTxOptions,
             txResponseOptions: args.txResponseOptions,
         });
-        this.network = args.network;
+        this.graphClient = args.graphClient;
         this.xdropPkgId = args.xdropPkgId;
         this.suilinkPkgId = args.suilinkPkgId;
         this.errParser = new TxErrorParser(args.xdropPkgId, ERRORS_CODES);
-        this.suiQL = new SuiGraphQLClient( { url: "https://sui-devnet.mystenlabs.com/graphql" } ); // TODO
     }
 
     // === data fetching ===
@@ -152,7 +148,7 @@ export class XDropClient extends SuiClientBase
         limit: number,
         cursor: string | null | undefined,
     ) {
-        const result = await this.suiQL.query({
+        const result = await this.graphClient.query({
             query: graphql(`
                 query($limit: Int!, $cursor: String, $sender: SuiAddress!, $eventType: String!) {
                     events(

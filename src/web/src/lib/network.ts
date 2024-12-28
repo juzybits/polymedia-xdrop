@@ -2,6 +2,12 @@ import { getFullnodeUrl } from "@mysten/sui/client";
 import { NetworkName } from "@polymedia/suitcase-core";
 import { loadRpc } from "@polymedia/suitcase-react";
 
+export const getGraphqlUrl = (network: NetworkName) => {
+    if (network === "localnet")
+        throw new Error("Localnet does not support graphql");
+    return `https://sui-${network}.mystenlabs.com/graphql`;
+};
+
 export const loadNetworkConfig = (network: NetworkName) => ({
     url: loadRpc({
         network,

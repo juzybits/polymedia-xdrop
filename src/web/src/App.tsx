@@ -6,6 +6,7 @@ import {
     useSuiClient,
 } from "@mysten/dapp-kit";
 import "@mysten/dapp-kit/dist/index.css";
+import { SuiGraphQLClient } from "@mysten/sui/graphql";
 import { ExplorerName, ReactSetter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
 import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,7 +14,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comp/glitch";
 import { IconGears, IconHistory, IconNew } from "./comp/icons";
-import { loadNetworkConfig } from "./lib/network";
+import { getGraphqlUrl, loadNetworkConfig } from "./lib/network";
 import { PageClaim } from "./PageClaim";
 import { PageDevLink } from "./PageDevLink";
 import { PageHome } from "./PageHome";
@@ -140,7 +141,7 @@ const App: React.FC<{
     const netCnf = getNetworkConfig(network);
     const xdropClient = useMemo(() => {
         return new XDropClient({
-            network,
+            graphClient: new SuiGraphQLClient({ url: getGraphqlUrl(network) }),
             xdropPkgId: netCnf.xdropPkgId,
             suilinkPkgId: netCnf.suilinkPkgId,
             suiClient,
