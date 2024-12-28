@@ -148,36 +148,48 @@ export class XDropClient extends SuiClientBase
 
     public async fetchEventsShare(
         sender: string,
+        limit: number,
         cursor: string | null | undefined,
-        limit?: number,
-        order: "ascending" | "descending" = "descending",
-    ): Promise<(XDropIdentifier & { timestamp: string })[]>
-    {
-        const getShareEvents = graphql(`
-            query {
-                events(
-                    last: 5,
-                    filter: {
-                        eventType: "${this.xdropPkgId}::xdrop::EventShare",
-                        sender: "${sender}"
-                    }
-                ) {
-                    nodes {
-                        timestamp
-                        contents { json }
+    ) {
+        const result = await this.suiQL.query({
+            query: graphql(`
+                query($limit: Int!, $cursor: String, $sender: SuiAddress!, $eventType: String!) {
+                    events(
+                        last: $limit
+                        before: $cursor
+                        filter: {
+                            eventType: $eventType
+                            sender: $sender
+                        }
+                    ) {
+                        pageInfo {
+                            hasPreviousPage
+                            hasNextPage
+                            startCursor
+                            endCursor
+                        }
+                        nodes {
+                            transactionBlock { digest }
+                            timestamp
+                            contents { json }
+                        }
                     }
                 }
+            `),
+            variables: {
+                limit, cursor, sender, eventType: `${this.xdropPkgId}::xdrop::EventShare`,
             }
-        `);
-
-        const result = await this.suiQL.query({
-            query: getShareEvents,
         });
 
-        return result.data!.events.nodes.map(event => ({
-            timestamp: event.timestamp!,
-            ...event.contents.json as XDropIdentifier,
-        }));
+        return {
+            items: result.data!.events.nodes
+            .map(event => ({
+                timestamp: new Date(event.timestamp!),
+                ...event.contents.json as XDropIdentifier,
+            }))
+            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
+            pageInfo: result.data!.events.pageInfo,
+        };
     }
 
     // === module interactions ===

@@ -12,7 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comp/glitch";
-import { IconGears, IconNew } from "./comp/icons";
+import { IconGears, IconHistory, IconNew } from "./comp/icons";
 import { loadNetworkConfig } from "./lib/network";
 import { PageClaim } from "./PageClaim";
 import { PageDevLink } from "./PageDevLink";
@@ -21,6 +21,7 @@ import { PageManage } from "./PageManage";
 import { PageNew } from "./PageNew";
 import { PageNotFound } from "./PageNotFound";
 import { PageSettings } from "./PageSettings";
+import { PageUser } from "./PageUser";
 import "./styles/App.less";
 
 /* App router */
@@ -34,6 +35,7 @@ export const AppRouter: React.FC = () => {
                 <Route path="/new" element={<PageNew />} />
                 <Route path="/claim/:xdropId" element={<PageClaim />} />
                 <Route path="/manage/:xdropId" element={<PageManage />} />
+                <Route path="/user" element={<PageUser />} />
                 <Route path="/settings" element={<PageSettings />} />
                 <Route path="/dev-link" element={<PageDevLink />} />
                 <Route path="*" element={<PageNotFound />} />
@@ -212,10 +214,14 @@ const Header: React.FC = () =>
             </Link>
         </div>
         {isLocalDomain &&
-        <Link to="/new" className="header-item" title="Create Auction">
-            <IconNew />
-        </Link>
-        }
+        <>
+            <Link to="/new" className="header-item" title="Create Auction">
+                <IconNew />
+            </Link>
+            <Link to="/user" className="header-item" title="Your History">
+                <IconHistory />
+            </Link>
+        </>}
         {/* {currAcct && <Link to={`/user/${currAcct.address}/bids`} className="header-item" title="Your History">
             <IconHistory />
         </Link>} */}
