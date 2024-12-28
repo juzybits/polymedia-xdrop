@@ -11,7 +11,7 @@ export const PageUser: React.FC = () =>
     // === state ===
 
     const currAcct = useCurrentAccount();
-    const { header, setIsWorking } = useAppContext();
+    const { header } = useAppContext();
 
     return <>
         {header}
@@ -39,7 +39,7 @@ const ListXdrops: React.FC<{
     const listRef = useRef<HTMLDivElement>(null);
 
     const xdrops = useFetchAndPaginate(
-        async (cursor) => await xdropClient.fetchCreatedXDrops(currAddr, PAGE_SIZE, cursor as any),
+        async (cursor) => await xdropClient.fetchXDropsCreated(currAddr, PAGE_SIZE, cursor as any),
         [xdropClient, currAddr],
     );
 

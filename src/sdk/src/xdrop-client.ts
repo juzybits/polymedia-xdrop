@@ -71,31 +71,6 @@ export class XDropClient extends SuiClientBase
 
     // === data fetching ===
 
-    public async fetchOwnedLinks(
-        owner: string,
-        linkNetwork: LinkNetwork,
-    ): Promise<SuiLink[]>
-    {
-        const links: SuiLink[] = [];
-        const linkType = getSuiLinkType(this.suilinkPkgId, linkNetwork);
-        let cursor: string|null|undefined = null;
-        let hasNextPage = true;
-        while (hasNextPage) {
-            const resp = await this.suiClient.getOwnedObjects({
-                owner,
-                cursor,
-                options: { showContent: true },
-                filter: { StructType: linkType },
-            });
-            for (const objRes of resp.data) {
-                links.push(objResToSuiLink(objRes));
-            }
-            cursor = resp.nextCursor;
-            hasNextPage = resp.hasNextPage;
-        }
-        return links;
-    }
-
     public async fetchClaimStatuses(
         typeCoin: string,
         linkNetwork: LinkNetwork,
@@ -143,7 +118,7 @@ export class XDropClient extends SuiClientBase
         );
     }
 
-    public async fetchCreatedXDrops(
+    public async fetchXDropsCreated(
         sender: string,
         limit: number,
         cursor: string | null | undefined,
@@ -208,6 +183,31 @@ export class XDropClient extends SuiClientBase
             nextCursor: data.events.pageInfo.startCursor,
             data: enhancedXDrops,
         };
+    }
+
+    public async fetchOwnedLinks(
+        owner: string,
+        linkNetwork: LinkNetwork,
+    ): Promise<SuiLink[]>
+    {
+        const links: SuiLink[] = [];
+        const linkType = getSuiLinkType(this.suilinkPkgId, linkNetwork);
+        let cursor: string|null|undefined = null;
+        let hasNextPage = true;
+        while (hasNextPage) {
+            const resp = await this.suiClient.getOwnedObjects({
+                owner,
+                cursor,
+                options: { showContent: true },
+                filter: { StructType: linkType },
+            });
+            for (const objRes of resp.data) {
+                links.push(objResToSuiLink(objRes));
+            }
+            cursor = resp.nextCursor;
+            hasNextPage = resp.hasNextPage;
+        }
+        return links;
     }
 
     // === module interactions ===
