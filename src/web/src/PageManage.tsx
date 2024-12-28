@@ -7,6 +7,7 @@ import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule, XDropStatus } from "@polym
 import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
+import { CardXDropDetails, XDropDetail, XDropStatusLabel } from "./comp/cards";
 import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 import { PageNotFound } from "./PageNotFound";
@@ -18,7 +19,7 @@ export const PageManage: React.FC = () =>
     const { xdropId } = useParams();
     if (!xdropId) return <PageNotFound />;
 
-    const { header, isWorking, setIsWorking, xdropClient } = useAppContext();
+    const { header, isWorking, setIsWorking, explorer, network, xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
     const fetched = useXDrop(xdropId);
 
@@ -132,7 +133,15 @@ export const PageManage: React.FC = () =>
                     ];
 
                     return <>
-                        <CardDetails xdrop={xdrop} coinMeta={coinMeta} />
+                        <CardXDropDetails xdrop={xdrop}
+                            title="Details"
+                            extraDetails={<>
+                                <XDropDetail label="Balance claimed/unclaimed:" val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / ${formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")}`} />
+                                <XDropDetail label="Addresses claimed/unclaimed:" val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
+                                {/* <XDropDetail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} /> */}
+                            </>}
+                            button={<Link to={`/claim/${xdrop.id}`} className="btn">VIEW CLAIM PAGE</Link>}
+                         />
 
                         {currAcct!.address !== xdrop.admin
                         ? <CardNotAdmin xdrop={xdrop} />
@@ -356,13 +365,6 @@ const CardAddClaims: React.FC<{
     </>;
 };
 
-const StatusLabel: React.FC<{ status: XDropStatus }> = ({ status }) => {
-    if (status === "open")   return <label className="text-green">Open</label>;
-    if (status === "paused") return <label className="text-orange">Paused</label>;
-    if (status === "ended")  return <label className="text-red">Ended</label>;
-    throw new Error(`Unknown status: ${status}`);
-};
-
 const CardNotAdmin: React.FC<{
     xdrop: XDrop;
 }> = ({
@@ -372,45 +374,5 @@ const CardNotAdmin: React.FC<{
         <div className="card-title">Not admin</div>
         <div className="card-description">You are not the admin of this xDrop.
             Log in as {shortenAddress(xdrop.admin)} to manage this xDrop.</div>
-    </div>;
-};
-
-const CardDetails: React.FC<{
-    xdrop: XDrop;
-    coinMeta: CoinMetadata;
-}> = ({
-    xdrop,
-    coinMeta,
-}) => {
-    const { explorer, network } = useAppContext();
-    return (
-        <div className="card compact">
-            <div className="card-title">Details</div>
-            <div className="card-details">
-                <Detail label="xDrop ID:" val={<LinkToExplorer addr={xdrop.id} kind="object" explorer={explorer} network={network} />} />
-                <Detail label="Network type:" val={xdrop.network_name} />
-                <Detail label="Coin type:" val={<LinkToExplorer addr={xdrop.type_coin} kind="coin" explorer={explorer} network={network} />} />
-                <Detail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} />
-                <Detail label="Status:" val={<StatusLabel status={xdrop.status} />} />
-                <Detail label="Balance claimed/unclaimed:" val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / ${formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")}`} />
-                <Detail label="Addresses claimed/unclaimed:" val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
-            </div>
-            <div className="card-description">
-                <Link to={`/claim/${xdrop.id}`} className="btn">VIEW CLAIM PAGE</Link>
-            </div>
-        </div>
-    );
-};
-
-const Detail: React.FC<{
-    label: string;
-    val: React.ReactNode;
-}> = ({
-    label,
-    val,
-}) => {
-    return <div className="detail">
-        <span className="label">{label}</span>
-        <span className="value">{val}</span>
     </div>;
 };

@@ -143,7 +143,7 @@ export class XDropClient extends SuiClientBase
         );
     }
 
-    public async fetchEventShare(
+    public async fetchCreatedXDrops(
         sender: string,
         limit: number,
         cursor: string | null | undefined,
@@ -176,15 +176,19 @@ export class XDropClient extends SuiClientBase
             }
         });
 
+        const events = result.data!.events.nodes
+            .map(event => ({
+                timestamp: new Date(event.timestamp!),
+                ...event.contents.json as XDropIdentifier,
+            }))
+            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
+        const xdrops = await this.fetchXDrops(events.map(evt => evt.id));
+
         return {
             hasNextPage: result.data!.events.pageInfo.hasPreviousPage,
             nextCursor: result.data!.events.pageInfo.startCursor,
-            data: result.data!.events.nodes
-                .map(event => ({
-                    timestamp: new Date(event.timestamp!),
-                    ...event.contents.json as XDropIdentifier,
-                }))
-                .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
+            data: xdrops,
         };
     }
 

@@ -4,7 +4,7 @@ import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardSpinner, CardWithMsg } from "./comp/cards";
+import { CardSpinner, CardWithMsg, CardXDropDetails } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 
 export const PageUser: React.FC = () =>
@@ -40,7 +40,7 @@ const ListXdrops: React.FC<{
     const listRef = useRef<HTMLDivElement>(null);
 
     const xdrops = useFetchAndPaginate(
-        async (cursor) => await xdropClient.fetchEventShare(currAddr, PAGE_SIZE, cursor as any),
+        async (cursor) => await xdropClient.fetchCreatedXDrops(currAddr, PAGE_SIZE, cursor as any),
         [xdropClient, currAddr],
     );
 
@@ -57,21 +57,10 @@ const ListXdrops: React.FC<{
         <div className="card-list" ref={listRef}>
             {xdrops.isLoading && <CardSpinner />}
             {xdrops.page.map(x =>
-                <Link to={`/manage/${x.id}`} className="card tx" key={x.id}>
-                    <div className="card-header column-on-small">
-                    <div className="card-title">
-                        {x.timestamp.toLocaleString()}
-                    </div>
-                    <div className="auction-header-info">
-                        <span className="header-label">xdrop status</span>
-                        </div>
-                    </div>
-                    <div className="card-body">
-                        <div>{shortenAddress(x.id)}</div>
-                        <div>{shortenAddress("0x" + x.type_coin)}</div>
-                        <div>{shortenAddress("0x" + x.type_network)}</div>
-                    </div>
-                </Link>
+                <CardXDropDetails xdrop={x}
+                    title="TODO show date"
+                    button={<Link to={`/manage/${x.id}`} className="btn">MANAGE</Link>}
+                />
             )}
         </div>
         <BtnPrevNext data={xdrops} scrollToRefOnPageChange={listRef} />
