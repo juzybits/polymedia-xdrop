@@ -86,7 +86,7 @@ export class XDropClient extends SuiClientBase
             typeCoin,
             getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork),
             xdropId,
-            addrs.map(addr => addr.toLowerCase()),
+            addrs,
         );
 
         const blockReturns = await devInspectAndGetReturnValues(
