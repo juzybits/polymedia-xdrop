@@ -38,40 +38,52 @@ export const PageClaim: React.FC = () =>
             <div className="page-content">
 
                 <XDropLoader fetched={fetched} requireWallet={false}>
-                {(xdrop, coinMeta) => (<>
-                    <div className="page-title">
-                        Claim {coinMeta.symbol}
-                    </div>
+                {(xdrop, coinMeta) => (
+                    xdrop.is_ended ?
+                    <>
+                        <div className="card compact center-text">
+                            <div className="card-title center-element">
+                                {coinMeta.symbol} xDrop ended
+                            </div>
+                            <div className="card-description">
+                                <p className="text-orange">Claims are no longer possible.</p>
+                            </div>
+                        </div>
+                    </> : <>
+                        <div className="page-title">
+                            Claim {coinMeta.symbol}
+                        </div>
 
-                    <div className="card compact">
-                        <div className="card-title">
-                            <p>Step 1: Get a Sui wallet</p>
+                        <div className="card compact">
+                            <div className="card-title">
+                                <p>Step 1: Get a Sui wallet</p>
+                            </div>
+                            <div className="card-description">
+                                <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
+                            </div>
+                            <div className="center-element">
+                                <LinkExternal className="btn" href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
+                            </div>
                         </div>
-                        <div className="card-description">
-                            <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
-                        </div>
-                        <div className="center-element">
-                            <LinkExternal className="btn" href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
-                        </div>
-                    </div>
 
-                    <div className="card compact">
-                        <div className="card-title">
-                            <p>Step 2: Verify your {xdrop.network_name} address</p>
+                        <div className="card compact">
+                            <div className="card-title">
+                                <p>Step 2: Verify your {xdrop.network_name} address</p>
+                            </div>
+                            <div className="card-description">
+                                <p>Prove that you own {coinMeta.symbol} on {xdrop.network_name} by linking your {xdrop.network_name} address to your Sui wallet.</p>
+                            </div>
+                            <div className="card-description">
+                                <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
+                            </div>
+                            <div className="center-element">
+                                <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
+                            </div>
                         </div>
-                        <div className="card-description">
-                            <p>Prove that you own {coinMeta.symbol} on {xdrop.network_name} by linking your {xdrop.network_name} address to your Sui wallet.</p>
-                        </div>
-                        <div className="card-description">
-                            <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
-                        </div>
-                        <div className="center-element">
-                            <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
-                        </div>
-                    </div>
 
-                    <CardClaim xdrop={xdrop} coinMeta={coinMeta} />
-                </>)}
+                        <CardClaim xdrop={xdrop} coinMeta={coinMeta} />
+                    </>
+                )}
                 </XDropLoader>
 
             </div>
@@ -252,7 +264,12 @@ const WidgetClaim: React.FC<{
 
         {hasEligibleLinks && <>
             <div className="center-element">
-                <Btn disabled={disableSubmit} working={isWorking} onClick={onSubmit}>CLAIM ALL</Btn>
+                {!xdrop.is_open ?
+                    <div className="card-description">
+                        <p className="text-orange">Claims are not open yet.</p>
+                    </div>
+                : <Btn disabled={disableSubmit} working={isWorking} onClick={onSubmit}>CLAIM ALL</Btn>
+                }
             </div>
             <ResultMsg res={submitRes} />
         </>}
