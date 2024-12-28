@@ -3,11 +3,14 @@ module xdrop::xdrop;
 // == imports ==
 
 use std::{
+    ascii::{String as AsciiString},
     string::{String},
+    type_name::{Self},
 };
 use sui::{
     balance::{Self, Balance},
     coin::{Self, Coin},
+    event::{emit},
     package::{Self},
     table::{Self, Table},
 };
@@ -76,6 +79,12 @@ public struct ClaimStatus has copy, drop, store {
     amount: u64,
 }
 
+public struct EventShare has drop, copy {
+    id: address,
+    type_coin: AsciiString,
+    type_network: AsciiString,
+}
+
 // === admin functions ===
 
 public fun new<C, N>(
@@ -99,6 +108,11 @@ public fun new<C, N>(
 public fun share<C, N>(
     xdrop: XDrop<C, N>,
 ) {
+    emit(EventShare {
+        id: xdrop.id.to_address(),
+        type_coin: type_name::get<C>().into_string(),
+        type_network: type_name::get<N>().into_string(),
+    });
     transfer::share_object(xdrop);
 }
 
