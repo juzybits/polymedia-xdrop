@@ -1,12 +1,11 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
-import { useDropdown, useInputString } from "@polymedia/suitcase-react";
+import { Btn, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "./App";
-import { Btn } from "./comp/button";
 import { ConnectOr } from "./comp/connect";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 
@@ -101,7 +100,7 @@ export const PageNew: React.FC = () =>
                     </div>
 
                     <ConnectOr>
-                        <Btn onClick={onSubmit} disabled={disableSubmit}>
+                        <Btn disabled={disableSubmit} working={isWorking} onClick={onSubmit}>
                             CREATE
                         </Btn>
                         <ResultMsg res={submitRes} />

@@ -2,12 +2,11 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, shortenAddress, TransferModule } from "@polymedia/suitcase-core";
-import { LinkToExplorer, useTextArea } from "@polymedia/suitcase-react";
+import { Btn, LinkToExplorer, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule, XDropStatus } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
-import { Btn } from "./comp/button";
 import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 import { PageNotFound } from "./PageNotFound";
@@ -186,7 +185,9 @@ const CardAction: React.FC<{
             </div>
             {a.extra}
             <div className="card-description">
-                <Btn onClick={a.submit} disabled={disabled} className={a.btnTxt === "END" ? "red" : ""}>
+                <Btn disabled={disabled} working={isWorking} onClick={a.submit}
+                    className={a.btnTxt === "END" ? "red" : ""}
+                >
                     {a.btnTxt}
                 </Btn>
             </div>
@@ -348,7 +349,7 @@ const CardAddClaims: React.FC<{
         </>}
 
         <div className="card-description">
-            <Btn onClick={onSubmit} disabled={disableSubmit}>ADD CLAIMS</Btn>
+            <Btn disabled={disableSubmit} working={isWorking} onClick={onSubmit}>ADD CLAIMS</Btn>
         </div>
         <ResultMsg res={submitRes} />
     </div>

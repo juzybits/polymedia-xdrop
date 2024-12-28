@@ -1,9 +1,9 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
+import { Btn } from "@polymedia/suitcase-react";
 import { getNetworkConfig } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useAppContext } from "./App";
-import { Btn } from "./comp/button";
 import { BtnConnect } from "./comp/connect";
 
 export const devClaims = [
@@ -75,7 +75,7 @@ export const PageDevLink: React.FC = () =>
                 </div>
                 <div>
                     {currAcct
-                        ? <Btn onClick={onSubmit}>Create</Btn>
+                        ? <Btn working={isWorking} onClick={onSubmit}>Create</Btn>
                         : <BtnConnect />}
                 </div>
             </div>

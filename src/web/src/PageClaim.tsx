@@ -1,13 +1,12 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { formatBalance, NetworkName, shortenAddress } from "@polymedia/suitcase-core";
-import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
+import { Btn, LinkExternal, useFetch } from "@polymedia/suitcase-react";
 import { LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { PageNotFound } from "./PageNotFound";
-import { Btn } from "./comp/button";
 import { CardSpinner, CardWithMsg } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 import { useXDrop, XDropLoader } from "./comp/loader";
@@ -253,7 +252,7 @@ const WidgetClaim: React.FC<{
 
         {hasEligibleLinks && <>
             <div className="center-element">
-                <Btn disabled={disableSubmit} onClick={onSubmit}>CLAIM ALL</Btn>
+                <Btn disabled={disableSubmit} working={isWorking} onClick={onSubmit}>CLAIM ALL</Btn>
             </div>
             <ResultMsg res={submitRes} />
         </>}

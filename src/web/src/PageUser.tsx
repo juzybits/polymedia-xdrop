@@ -1,10 +1,9 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { shortenAddress } from "@polymedia/suitcase-core";
-import { useFetchAndPaginate } from "@polymedia/suitcase-react";
+import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "./App";
-import { BtnPrevNext } from "./comp/BtnPrevNext";
 import { CardSpinner, CardWithMsg } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 
