@@ -199,7 +199,7 @@ const WidgetClaim: React.FC<{
 
     const { err, isLoading, data, refetch } = eligibleLinksWithStatus;
     const { hasAnyLinks, hasEligibleLinks, eligibleLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
-    const disableSubmit = !currAcct || isWorking || !data || !data.hasClaimableLinks;
+    const disableSubmit = !currAcct || isWorking || !data?.hasClaimableLinks;
 
     // == effects ==
 

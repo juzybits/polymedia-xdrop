@@ -39,7 +39,7 @@ const ListXdrops: React.FC<{
     const listRef = useRef<HTMLDivElement>(null);
 
     const xdrops = useFetchAndPaginate(
-        async (cursor) => await xdropClient.fetchXDropsCreated(currAddr, PAGE_SIZE, cursor as any),
+        async (cursor) => await xdropClient.fetchXDropsCreated(currAddr, PAGE_SIZE, cursor as any), // eslint-disable-line
         [xdropClient, currAddr],
     );
 

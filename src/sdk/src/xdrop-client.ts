@@ -5,7 +5,7 @@ import {
     SuiTransactionBlockResponseOptions,
 } from "@mysten/sui/client";
 import { SuiGraphQLClient } from "@mysten/sui/graphql";
-import { graphql } from '@mysten/sui/graphql/schemas/latest';
+import { graphql } from "@mysten/sui/graphql/schemas/latest";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import {
     chunkArray,
@@ -156,7 +156,7 @@ export class XDropClient extends SuiClientBase
         }
         const data = result.data;
         if (!data) {
-            throw new Error(`[fetchCreatedXDrops] GraphQL returned no data`);
+            throw new Error("[fetchCreatedXDrops] GraphQL returned no data");
         }
 
         const events = data.events.nodes
@@ -251,7 +251,7 @@ export class XDropClient extends SuiClientBase
     public async adminAddsClaims(
         sender: string,
         xdrop: XDropIdentifier,
-        claims: { foreignAddr: string, amount: bigint }[],
+        claims: { foreignAddr: string; amount: bigint }[],
     ): Promise<SuiTransactionBlockResponse[]>
     {
         const resps: SuiTransactionBlockResponse[] = [];

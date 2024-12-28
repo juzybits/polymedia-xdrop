@@ -1,6 +1,5 @@
 import { SuiTransactionBlockResponse } from "@mysten/sui/client";
-import { isTxKind, ObjChangeKind, txResToData } from "@polymedia/suitcase-core";
-import { XDropIdentifier } from "./xdrop-structs";
+import { ObjChangeKind } from "@polymedia/suitcase-core";
 
 /**
  * Extract the created XDrop object (if any) from `SuiTransactionBlockResponse.objectChanges`.
@@ -13,4 +12,4 @@ export const extractXDropObjCreated = (
     return resp.objectChanges?.find(o =>
         o.type === "created" && o.objectType.startsWith(`${xdropPkgId}::xdrop::XDrop<`)
     ) as ObjChangeKind<"created"> | undefined;
-}
+};

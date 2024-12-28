@@ -224,23 +224,23 @@ const CardAddClaims: React.FC<{
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
     const textArea = useTextArea<{
-        claims: { foreignAddr: string, amount: bigint }[],
-        totalAmount: bigint,
+        claims: { foreignAddr: string; amount: bigint }[];
+        totalAmount: bigint;
     }>({
         msgRequired: "Claims are required.",
         html: {
             value: (() => {
                 const rows = Array.from({ length: 1001 }, () => {
                     // Generate random Ethereum address (40 hex chars)
-                    const addr = '0x' + Array.from({ length: 40 }, () =>
+                    const addr = "0x" + Array.from({ length: 40 }, () =>
                         Math.floor(Math.random() * 16).toString(16)
-                    ).join('');
+                    ).join("");
                     // Random amount between 1 and 100
                     const amount = Math.floor(Math.random() * (100 * 10**coinMeta.decimals)) + 1;
                     return `${addr},${amount}`;
                 });
                 // const rows = devClaims.map(claim => `${claim.foreignAddr},${claim.amount}`);
-                return rows.join('\n');
+                return rows.join("\n");
             })(),
             required: true,
             placeholder: xdrop.network_name === "Solana"
@@ -254,23 +254,23 @@ const CardAddClaims: React.FC<{
             let totalAmount = BigInt(0);
             try {
                 const lines = input
-                    .split('\n')
+                    .split("\n")
                     .map(line => line.trim())
                     .filter(line => line.length > 0);
 
-                const claims: {foreignAddr: string, amount: bigint}[] = [];
+                const claims: {foreignAddr: string; amount: bigint}[] = [];
 
                 for (const line of lines) {
-                    let [addr, amountStr] = line.split(',').map(s => s.trim());
+                    let [addr, amountStr] = line.split(",").map(s => s.trim()); // eslint-disable-line
 
                     // Validate address based on network type
                     if (xdrop.network_name === "Ethereum") {
                         addr = addr.toLowerCase(); // IMPORTANT: SuiLink uses lowercase Ethereum addresses
-                        if (!addr?.match(/^0x[0-9a-fA-F]{40}$/)) {
+                        if (!/^0x[0-9a-fA-F]{40}$/.exec(addr)) {
                             throw new Error(`Invalid Ethereum address: ${addr}`);
                         }
                     } else if (xdrop.network_name === "Solana") {
-                        if (!addr?.match(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/)) {
+                        if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.exec(addr)) {
                             throw new Error(`Invalid Solana address: ${addr}`);
                         }
                     } else {
@@ -278,7 +278,7 @@ const CardAddClaims: React.FC<{
                     }
 
                     // Validate amount
-                    if (!amountStr.match(/^\d+$/)) {
+                    if (!(/^\d+$/.exec(amountStr))) {
                         throw new Error(`Invalid amount: ${amountStr}`);
                     }
 

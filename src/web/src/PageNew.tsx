@@ -57,7 +57,7 @@ export const PageNew: React.FC = () =>
 
             const coinMeta = await getCoinMeta(xdropClient.suiClient, coinType.val!);
             if (!coinMeta) {
-                throw new Error(`CoinMetadata not found for type ${shortenAddress(coinType.val!)}`);
+                throw new Error(`CoinMetadata not found for type ${shortenAddress(coinType.val)}`);
             }
 
             const { resp, xdropObjChange } = await xdropClient.adminCreatesAndSharesXDrop(
