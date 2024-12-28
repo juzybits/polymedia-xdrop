@@ -146,70 +146,38 @@ export class XDropClient extends SuiClientBase
         );
     }
 
-    public async fetchTxsAdminSharesXDrop(
+    public async fetchEventsShare(
         sender: string,
         cursor: string | null | undefined,
         limit?: number,
         order: "ascending" | "descending" = "descending",
-    ) {
-        const getShareTxsBySender = graphql(`
+    ): Promise<(XDropIdentifier & { timestamp: string })[]>
+    {
+        const getShareEvents = graphql(`
             query {
-                transactionBlocks(
+                events(
                     last: 5,
                     filter: {
-                        function: "${this.xdropPkgId}::xdrop::share",
-                        sentAddress: "${sender}"
+                        eventType: "${this.xdropPkgId}::xdrop::EventShare",
+                        sender: "${sender}"
                     }
                 ) {
                     nodes {
-                        digest
-                        effects {
-                            timestamp
-                            objectChanges {
-                                nodes {
-                                    idCreated
-                                    address
-                                    outputState {
-                                        asMoveObject {
-                                            contents {
-                                                type {
-                                                    repr
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        timestamp
+                        contents { json }
                     }
                 }
             }
         `);
 
         const result = await this.suiQL.query({
-            query: getShareTxsBySender,
+            query: getShareEvents,
         });
 
-        return result.data!.transactionBlocks.nodes.flatMap(tx => {
-            const xdropObject = tx.effects!.objectChanges.nodes.find(change =>
-                change.idCreated &&
-                change.outputState?.asMoveObject?.contents?.type?.repr.startsWith(`${this.xdropPkgId}::xdrop::XDrop<`)
-            );
-
-            if (!xdropObject) return [];
-
-            const typeStr = xdropObject.outputState!.asMoveObject!.contents!.type.repr;
-            const typeParams = typeStr.match(/<(.+)>/)?.[1].split(',').map(t => t.trim());
-
-            if (!typeParams || typeParams.length !== 2) return [];
-
-            return [{
-                id: xdropObject.address,
-                type_coin: typeParams[0],
-                type_network: typeParams[1],
-                timestamp: tx.effects!.timestamp!,
-            }];
-        });
+        return result.data!.events.nodes.map(event => ({
+            timestamp: event.timestamp!,
+            ...event.contents.json as XDropIdentifier,
+        }));
     }
 
     // === module interactions ===
