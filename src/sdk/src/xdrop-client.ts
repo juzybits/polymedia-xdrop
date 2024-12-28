@@ -12,6 +12,7 @@ import {
     devInspectAndGetReturnValues,
     NetworkName,
     ObjChangeKind,
+    PaginatedResponse,
     SignTransaction,
     SuiClientBase,
     TransferModule,
@@ -146,7 +147,7 @@ export class XDropClient extends SuiClientBase
         );
     }
 
-    public async fetchEventsShare(
+    public async fetchEventShare(
         sender: string,
         limit: number,
         cursor: string | null | undefined,
@@ -164,9 +165,7 @@ export class XDropClient extends SuiClientBase
                     ) {
                         pageInfo {
                             hasPreviousPage
-                            hasNextPage
                             startCursor
-                            endCursor
                         }
                         nodes {
                             transactionBlock { digest }
@@ -182,13 +181,14 @@ export class XDropClient extends SuiClientBase
         });
 
         return {
-            items: result.data!.events.nodes
-            .map(event => ({
-                timestamp: new Date(event.timestamp!),
-                ...event.contents.json as XDropIdentifier,
-            }))
-            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
-            pageInfo: result.data!.events.pageInfo,
+            hasNextPage: result.data!.events.pageInfo.hasPreviousPage,
+            nextCursor: result.data!.events.pageInfo.startCursor,
+            data: result.data!.events.nodes
+                .map(event => ({
+                    timestamp: new Date(event.timestamp!),
+                    ...event.contents.json as XDropIdentifier,
+                }))
+                .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
         };
     }
 

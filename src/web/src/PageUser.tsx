@@ -1,14 +1,12 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { shortenAddress } from "@polymedia/suitcase-core";
 import { useFetchAndPaginate } from "@polymedia/suitcase-react";
-import React from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "./App";
-import { ConnectOr, ConnectToGetStarted } from "./comp/connect";
-import { CardSpinner } from "./comp/cards";
-import { CardWithMsg } from "./comp/cards";
-import { shortenAddress } from "@polymedia/suitcase-core";
-import { XDropIdentifier } from "@polymedia/xdrop-sdk";
 import { BtnPrevNext } from "./comp/BtnPrevNext";
+import { CardSpinner, CardWithMsg } from "./comp/cards";
+import { ConnectToGetStarted } from "./comp/connect";
 
 export const PageUser: React.FC = () =>
 {
@@ -31,39 +29,34 @@ export const PageUser: React.FC = () =>
     </>;
 };
 
+const PAGE_SIZE = 2;
+
 const ListXdrops: React.FC<{
     currAddr: string;
 }> = ({
     currAddr,
 }) =>
 {
-    const PAGE_SIZE = 2;
     const { xdropClient } = useAppContext();
+    const listRef = useRef<HTMLDivElement>(null);
 
-    const xdrops = useFetchAndPaginate<XDropIdentifier & {timestamp: Date}, string | null>(
-        async (cursor) => {
-            const xdrops = await xdropClient.fetchEventsShare(currAddr, PAGE_SIZE, cursor);
-            return {
-                data: xdrops.items,
-                hasNextPage: xdrops.pageInfo.hasPreviousPage,
-                nextCursor: xdrops.pageInfo.startCursor,
-            };
-        },
+    const xdrops = useFetchAndPaginate(
+        async (cursor) => await xdropClient.fetchEventShare(currAddr, PAGE_SIZE, cursor as any),
         [xdropClient, currAddr],
     );
 
     if (xdrops.err) {
         return <CardWithMsg>{xdrops.err}</CardWithMsg>;
     }
-    if (xdrops.isLoading && xdrops.page.length === 0) {
-        return <CardSpinner />;
-    }
-    if (!xdrops.isLoading && xdrops.page.length === 0) {
-        return <CardWithMsg>No auctions yet</CardWithMsg>;
+    if (xdrops.page.length === 0) {
+        return xdrops.isLoading
+            ? <CardSpinner />
+            : <CardWithMsg>No auctions yet</CardWithMsg>;
     }
 
     return <>
-        <div className="card-list">
+        <div className="card-list" ref={listRef}>
+            {xdrops.isLoading && <CardSpinner />}
             {xdrops.page.map(x =>
                 <Link to={`/manage/${x.id}`} className="card tx" key={x.id}>
                     <div className="card-header column-on-small">
@@ -82,6 +75,6 @@ const ListXdrops: React.FC<{
                 </Link>
             )}
         </div>
-        <BtnPrevNext data={xdrops} />
+        <BtnPrevNext data={xdrops} scrollToRefOnPageChange={listRef} />
     </>;
 };
