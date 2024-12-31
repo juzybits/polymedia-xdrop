@@ -1,15 +1,15 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { balanceToString, formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
-import { Btn, isLocalhost, LinkToExplorer, useTextArea } from "@polymedia/suitcase-react";
-import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule, XDropStatus } from "@polymedia/xdrop-sdk";
-import React, { useState } from "react";
+import { formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
+import { Btn, isLocalhost, ReactSetter, useTextArea } from "@polymedia/suitcase-react";
+import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardXDropDetails, XDropDetail, XDropStatusLabel } from "./comp/cards";
+import { CardXDropDetails, XDropDetail } from "./comp/cards";
 import { useXDrop, XDropLoader } from "./comp/loader";
-import { ResultMsg, SubmitRes } from "./comp/submits";
+import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
 import { PageNotFound } from "./PageNotFound";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
@@ -24,6 +24,13 @@ export const PageManage: React.FC = () =>
     const fetched = useXDrop(xdropId);
 
     const [reclaimOnEnd, setReclaimOnEnd] = useState(true);
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    useEffect(() => {
+        if (!showSuccess) return;
+        const id = setTimeout(() => { setShowSuccess(false); }, 2000);
+        return () => clearTimeout(id);
+    }, [showSuccess]);
 
     const onSubmitAction = async (action: AdminAction) => {
         if (isWorking || !currAcct) return;
@@ -33,11 +40,12 @@ export const PageManage: React.FC = () =>
             action(tx);
             const resp = await xdropClient.signAndExecuteTx(tx);
             console.debug("[onSubmit] okay:", resp);
+            fetched.refetch();
+            setShowSuccess(true);
         } catch (err) {
             console.warn("[onSubmit] error:", err);
         } finally {
             setIsWorking(false);
-            fetched.refetch();
         }
     };
 
@@ -48,6 +56,8 @@ export const PageManage: React.FC = () =>
                 <div className="page-title">
                     Manage xDrop
                 </div>
+
+                {showSuccess && <SuccessMsg res={{ ok: true }} />}
 
                 <XDropLoader fetched={fetched} requireWallet={true}>
                 {(xdrop, coinMeta) =>
@@ -147,10 +157,11 @@ export const PageManage: React.FC = () =>
                         ? <CardNotAdmin xdrop={xdrop} />
                         : <>
                             <CardAddClaims
+                                currAddr={currAcct!.address}
                                 xdrop={xdrop}
                                 coinMeta={coinMeta}
                                 refetch={fetched.refetch}
-                                currAddr={currAcct!.address}
+                                setShowSuccess={setShowSuccess}
                                 />
                             {adminActions.map((action, idx) => (
                                 <CardAction
@@ -205,15 +216,17 @@ const CardAction: React.FC<{
 };
 
 const CardAddClaims: React.FC<{
+    currAddr: string;
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     refetch: () => Promise<void>;
-    currAddr: string;
+    setShowSuccess: ReactSetter<boolean>;
 }> = ({
+    currAddr,
     xdrop,
     coinMeta,
     refetch,
-    currAddr,
+    setShowSuccess,
 }) =>
 {
     if (xdrop.is_ended) return null;
@@ -303,12 +316,13 @@ const CardAddClaims: React.FC<{
             );
             console.debug("[onSubmit] okay:", resp);
             setSubmitRes({ ok: true });
+            refetch();
+            setShowSuccess(true);
         } catch (err) {
             console.warn("[onSubmit] error:", err);
             setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to add claims") });
         } finally {
             setIsWorking(false);
-            refetch();
         }
     };
 

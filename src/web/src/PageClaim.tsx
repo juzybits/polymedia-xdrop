@@ -225,7 +225,7 @@ const WidgetClaim: React.FC<{
             setSubmitRes({ ok: true });
         } catch (err) {
             console.warn("[onSubmit] error:", err);
-            setSubmitRes({ ok: false, err: err instanceof Error ? err.message : String(err) });
+            setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to claim") });
         } finally {
             setIsWorking(false);
             refetch();
