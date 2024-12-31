@@ -1,8 +1,8 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, shortenAddress, TransferModule } from "@polymedia/suitcase-core";
-import { Btn, LinkToExplorer, useTextArea } from "@polymedia/suitcase-react";
+import { balanceToString, formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
+import { Btn, isLocalhost, LinkToExplorer, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule, XDropStatus } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -229,19 +229,7 @@ const CardAddClaims: React.FC<{
     }>({
         msgRequired: "Claims are required.",
         html: {
-            value: (() => {
-                const rows = Array.from({ length: 1001 }, () => {
-                    // Generate random Ethereum address (40 hex chars)
-                    const addr = "0x" + Array.from({ length: 40 }, () =>
-                        Math.floor(Math.random() * 16).toString(16)
-                    ).join("");
-                    // Random amount between 1 and 100
-                    const amount = Math.floor(Math.random() * (100 * 10**coinMeta.decimals)) + 1;
-                    return `${addr},${amount}`;
-                });
-                // const rows = devClaims.map(claim => `${claim.foreignAddr},${claim.amount}`);
-                return rows.join("\n");
-            })(),
+            value: localhostClaimsOrEmpty(),
             required: true,
             placeholder: xdrop.network_name === "Solana"
                 ? "AaAaAa,1000\nBbBbBb,2000"
@@ -277,13 +265,13 @@ const CardAddClaims: React.FC<{
                         throw new Error(`Unsupported network: ${xdrop.network_name}`);
                     }
 
-                    // Validate amount
-                    if (!(/^\d+$/.exec(amountStr))) {
+                    try {
+                        const amount = stringToBalance(amountStr, coinMeta.decimals);
+                        claims.push({foreignAddr: addr, amount});
+                        totalAmount += amount;
+                    } catch (e) {
                         throw new Error(`Invalid amount: ${amountStr}`);
                     }
-
-                    claims.push({foreignAddr: addr, amount: BigInt(amountStr)});
-                    totalAmount += BigInt(amountStr);
                 }
 
                 return { err: null, val: { claims, totalAmount } };
@@ -376,3 +364,17 @@ const CardNotAdmin: React.FC<{
             Log in as {shortenAddress(xdrop.admin)} to manage this xDrop.</div>
     </div>;
 };
+
+function localhostClaimsOrEmpty()
+{
+    if (!isLocalhost) return "";
+    return Array.from({ length: 1001 }, () => {
+        // Generate random Ethereum address (40 hex chars)
+        const addr = "0x" + Array.from({ length: 40 }, () =>
+            Math.floor(Math.random() * 16).toString(16)
+        ).join("");
+        // Random amount between 1 and 100
+        const amount = Math.random() * 100 + 1;
+        return `${addr},${amount}`;
+    }).join("\n");
+}
