@@ -20,10 +20,11 @@ export const PageClaim: React.FC = () =>
     const { header, network } = useAppContext();
 
     // Handle configured xDrops
+    let bannerUrl: string | undefined;
     if (xdropId in XDropConfigs[network]) {
+        bannerUrl = XDropConfigs[network][xdropId].bannerUrl;
         xdropId = XDropConfigs[network][xdropId].xdropId;
     }
-    const bannerUrl = XDropConfigs[network][xdropId]?.bannerUrl;
 
     const fetched = useXDrop(xdropId);
 
@@ -332,7 +333,7 @@ export const XDropConfigs: Record<
     "testnet": {},
     "devnet": {
         "detf": {
-            xdropId: "0x411cdfccd6a8fbc23d10a247f8477e2d123f60bc2cb62cab1f080c1cafe07ca1",
+            xdropId: "0x2173e0e1d8725eed0e28d721aa8da55e7ea7fdd3a4b51a7bd99575ce5c138f4a",
             bannerUrl: "https://dummyimage.com/1500x500/011346/eee/",
             // bannerUrl: "/img/banner-detf.webp",
         },
