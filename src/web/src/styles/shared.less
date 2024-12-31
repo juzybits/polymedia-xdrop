@@ -490,7 +490,7 @@ footer {
             }
         }
     }
-    .disabled {
+    &.disabled {
         opacity: 0.6;
         background-color: #333;
     }
@@ -726,10 +726,11 @@ a.card, .card.link {
             background-color: @btn-white;
         }
     }
-    &:disabled, &.working {
+    &:disabled, &.working, &.disabled {
         cursor: default;
         &, * { color: #ddd; }
         background-color: gray;
+        pointer-events: none;
     }
     &.working {
         .spinner();

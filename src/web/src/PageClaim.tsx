@@ -17,7 +17,7 @@ export const PageClaim: React.FC = () =>
     let { xdropId } = useParams();
     if (!xdropId) return <PageNotFound />;
 
-    const { header, network } = useAppContext();
+    const { header, network, isWorking } = useAppContext();
 
     // Handle configured xDrops
     let bannerUrl: string | undefined;
@@ -63,7 +63,7 @@ export const PageClaim: React.FC = () =>
                                 <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
                             </div>
                             <div className="center-element">
-                                <LinkExternal className="btn" href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
+                                <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
                             </div>
                         </div>
 
@@ -78,7 +78,7 @@ export const PageClaim: React.FC = () =>
                                 <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
                             </div>
                             <div className="center-element">
-                                <LinkExternal className="btn" href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
+                                <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
                             </div>
                         </div>
 
