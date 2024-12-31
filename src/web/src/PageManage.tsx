@@ -3,8 +3,8 @@ import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { Btn, isLocalhost, ReactSetter, useTextArea } from "@polymedia/suitcase-react";
-import { MAX_CLAIMS_ADDED_PER_TX, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
-import React, { useState, useEffect } from "react";
+import { MAX_CLAIMS_ADDED_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { CardXDropDetails, XDropDetail } from "./comp/cards";
@@ -264,18 +264,10 @@ const CardAddClaims: React.FC<{
                 for (const line of lines) {
                     let [addr, amountStr] = line.split(",").map(s => s.trim()); // eslint-disable-line
 
-                    // Validate address based on network type
-                    if (xdrop.network_name === "Ethereum") {
-                        addr = addr.toLowerCase(); // IMPORTANT: SuiLink uses lowercase Ethereum addresses
-                        if (!/^0x[0-9a-fA-F]{40}$/.exec(addr)) {
-                            throw new Error(`Invalid Ethereum address: ${addr}`);
-                        }
-                    } else if (xdrop.network_name === "Solana") {
-                        if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.exec(addr)) {
-                            throw new Error(`Invalid Solana address: ${addr}`);
-                        }
-                    } else {
-                        throw new Error(`Unsupported network: ${xdrop.network_name}`);
+                    try {
+                        addr = validateAndNormalizeNetworkAddr(xdrop.network_name, addr);
+                    } catch (e) {
+                        throw e instanceof Error ? e : new Error(`Invalid address: ${addr}`);
                     }
 
                     try {

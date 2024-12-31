@@ -1,5 +1,6 @@
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { NestedResult, ObjectInput, objectArg } from "@polymedia/suitcase-core";
+import { ObjectInput, objectArg } from "@polymedia/suitcase-core";
+import { suiLinkNetworkTypeToName, validateAndNormalizeNetworkAddr } from "./suilink";
 
 /**
  * Build transactions for the xdrop::xdrop Sui module.
@@ -50,6 +51,9 @@ export const XDropModule =
         amounts: bigint[],
     ): TransactionResult =>
     {
+        const networkName = suiLinkNetworkTypeToName(type_network);
+        addrs = addrs.map(addr => validateAndNormalizeNetworkAddr(networkName, addr)); // crucial
+
         return tx.moveCall({
             target: `${packageId}::xdrop::admin_adds_claims`,
             typeArguments: [ type_coin, type_network ],

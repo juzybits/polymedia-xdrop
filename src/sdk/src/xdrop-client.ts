@@ -246,7 +246,6 @@ export class XDropClient extends SuiClientBase
 
     /**
      * Add claims to an XDrop. Does multiple transactions if needed.
-     * IMPORTANT: Ethereum addresses must be lowercase.
      */
     public async adminAddsClaims(
         sender: string,
@@ -269,7 +268,7 @@ export class XDropClient extends SuiClientBase
             tx.setSender(sender);
 
             const claimsByFnCall = chunkArray(txClaims, maxClaimsPerFnCall);
-            for (const [callNum, callClaims] of claimsByFnCall.entries())
+            for (const callClaims of claimsByFnCall)
             {
                 const chunkTotalAmount = callClaims.reduce((sum, c) => sum + c.amount, 0n);
                 XDropModule.admin_adds_claims(

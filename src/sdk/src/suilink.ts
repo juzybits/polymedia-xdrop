@@ -37,3 +37,46 @@ export function suiLinkNetworkTypeToName(
     if (networkType.endsWith("::Solana")) return "Solana";
     throw new Error(`Unsupported network: ${networkType}`);
 }
+
+// === foreign network addresses ===
+
+/**
+ * Normalize a foreign network address to the format used by SuiLink.
+ * This is crucial when adding claims to an XDrop.
+ */
+export function normalizeNetworkAddr(network: LinkNetwork, addr: string): string {
+    if (network === "Ethereum") {
+        return addr.toLowerCase();
+    }
+    if (network === "Solana") {
+        return addr;
+    }
+    throw new Error(`Unsupported network: ${network}`);
+}
+
+/**
+ * Validate a (non-normalized) foreign network address.
+ */
+export function validateNetworkAddr(network: LinkNetwork, addr: string) {
+    if (network === "Ethereum") {
+        if (!/^0x[0-9a-fA-F]{40}$/.test(addr)) {
+            throw new Error(`Invalid Ethereum address: ${addr}`);
+        }
+        return;
+    }
+    if (network === "Solana") {
+        if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)) {
+            throw new Error(`Invalid Solana address: ${addr}`);
+        }
+        return;
+    }
+    throw new Error(`Unsupported network: ${network}`);
+}
+
+/**
+ * Validate and normalize a foreign network address.
+ */
+export function validateAndNormalizeNetworkAddr(network: LinkNetwork, addr: string): string {
+    validateNetworkAddr(network, addr);
+    return normalizeNetworkAddr(network, addr);
+}
