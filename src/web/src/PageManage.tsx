@@ -324,12 +324,8 @@ const CardAddClaims: React.FC<{
         </div>
 
         <div className="card-description">
-            <p>Enter 1 claim per line in this format:<br/>FOREIGN_ADDRESS,RAW_AMOUNT
-            <br/><br/>
-            FOREIGN_ADDRESS is the user's {xdrop.network_name} address.
-            <br/><br/>
-            RAW_AMOUNT is the amount claimable by the user, in raw units (e.g. 1 SUI = 1000000000).
-            </p>
+            <p>Enter 1 claim per line as follows:</p>
+            <p>{xdrop.network_name.toUpperCase()}_ADDRESS,{coinMeta.symbol}_AMOUNT</p>
         </div>
 
         <div className="card-description">
@@ -339,8 +335,8 @@ const CardAddClaims: React.FC<{
         {textArea.val && <>
         <div className="card-description">
         <div className="card-title">Summary:</div>
-            <p>Addresses: {textArea.val.claims.length}</p>
-            <p>Amount: {formatBalance(textArea.val.totalAmount, coinMeta.decimals, "compact")}</p>
+            <p>▸ {textArea.val.claims.length} addresses</p>
+            <p>▸ {formatBalance(textArea.val.totalAmount, coinMeta.decimals, "compact")} {coinMeta.symbol}</p>
             {requiredTxs > 1 && <p>⚠️ Requires {requiredTxs} transactions</p>}
         </div>
         </>}
