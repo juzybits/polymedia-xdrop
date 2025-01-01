@@ -99,7 +99,7 @@ export const PageNew: React.FC = () =>
                     </div>
 
                     <ConnectOr>
-                        <Btn disabled={disableSubmit} working={isWorking} onClick={onSubmit}>
+                        <Btn disabled={disableSubmit} onClick={onSubmit}>
                             CREATE
                         </Btn>
                         <ResultMsg res={submitRes} />

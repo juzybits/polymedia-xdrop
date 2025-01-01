@@ -86,7 +86,7 @@ export const PageDevLink: React.FC = () =>
                 </div>
                 <div>
                     {currAcct
-                        ? <Btn working={isWorking} onClick={onSubmit}>Create</Btn>
+                        ? <Btn onClick={onSubmit}>Create</Btn>
                         : <BtnConnect />}
                 </div>
             </div>

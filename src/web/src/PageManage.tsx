@@ -32,8 +32,9 @@ export const PageManage: React.FC = () =>
         return () => clearTimeout(id);
     }, [showSuccess]);
 
+    const disableSubmit = isWorking || !currAcct;
     const onSubmitAction = async (action: AdminAction) => {
-        if (isWorking || !currAcct) return;
+        if (disableSubmit) return;
         try {
             setIsWorking(true);
             const tx = new Transaction();
@@ -193,7 +194,7 @@ const CardAction: React.FC<{
     if (!a.show) return null;
 
     const { isWorking } = useAppContext();
-    const disabled = a.disabled || isWorking;
+    const disableBtn = isWorking || a.disabled;
 
     return (
         <div className="card compact">
@@ -205,7 +206,7 @@ const CardAction: React.FC<{
             </div>
             {a.extra}
             <div className="card-description">
-                <Btn disabled={disabled} working={isWorking} onClick={a.submit}
+                <Btn disabled={disableBtn} onClick={a.submit}
                     className={a.btnTxt === "END" ? "red" : ""}
                 >
                     {a.btnTxt}
@@ -348,7 +349,7 @@ const CardAddClaims: React.FC<{
         </>}
 
         <div className="card-description">
-            <Btn disabled={disableSubmit} working={isWorking} onClick={onSubmit}>ADD CLAIMS</Btn>
+            <Btn disabled={disableSubmit} onClick={onSubmit}>ADD CLAIMS</Btn>
         </div>
         <ResultMsg res={submitRes} />
     </div>

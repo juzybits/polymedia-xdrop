@@ -1,5 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
+import { BtnPrevNext, isLocalhost, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -27,7 +27,7 @@ export const PageUser: React.FC = () =>
     </>;
 };
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = isLocalhost() ? 2 : 10;
 
 const ListXdrops: React.FC<{
     currAddr: string;

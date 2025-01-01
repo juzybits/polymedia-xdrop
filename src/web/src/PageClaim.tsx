@@ -269,7 +269,7 @@ const WidgetClaim: React.FC<{
                     <div className="card-description">
                         <p className="text-orange">Claims are not open yet.</p>
                     </div>
-                : <Btn disabled={disableSubmit} working={isWorking} onClick={onSubmit}>CLAIM ALL</Btn>
+                : <Btn disabled={disableSubmit} onClick={onSubmit}>CLAIM ALL</Btn>
                 }
             </div>
             <ResultMsg res={submitRes} />
