@@ -363,8 +363,8 @@ fun test_admin_opens_xdrop_e_not_admin()
     destroy(runner);
 }
 
-#[test, expected_failure(abort_code = xdrop::E_ENDED)]
-fun test_admin_opens_xdrop_e_ended()
+#[test, expected_failure(abort_code = xdrop::E_NOT_PAUSED)]
+fun test_admin_opens_xdrop_e_not_paused()
 {
     let mut runner = begin(ADMIN);
     runner.admin_ends_xdrop(ADMIN);
@@ -382,8 +382,8 @@ fun test_admin_pauses_xdrop_e_not_admin()
     destroy(runner);
 }
 
-#[test, expected_failure(abort_code = xdrop::E_ENDED)]
-fun test_admin_pauses_xdrop_e_ended()
+#[test, expected_failure(abort_code = xdrop::E_NOT_OPEN)]
+fun test_admin_pauses_xdrop_e_not_open()
 {
     let mut runner = begin(ADMIN);
     runner.admin_ends_xdrop(ADMIN);
@@ -398,6 +398,15 @@ fun test_admin_ends_xdrop_e_not_admin()
 {
     let mut runner = begin(ADMIN);
     runner.admin_ends_xdrop(USER_1);
+    destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ENDED)]
+fun test_admin_ends_xdrop_e_ended()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_ends_xdrop(ADMIN);
+    runner.admin_ends_xdrop(ADMIN);
     destroy(runner);
 }
 
@@ -428,6 +437,15 @@ fun test_admin_sets_admin_address_e_not_admin()
 {
     let mut runner = begin(ADMIN);
     runner.admin_sets_admin_address(USER_1, ADMIN_2);
+    destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ENDED)]
+fun test_admin_sets_admin_address_e_ended()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_ends_xdrop(ADMIN);
+    runner.admin_sets_admin_address(ADMIN, ADMIN_2);
     destroy(runner);
 }
 

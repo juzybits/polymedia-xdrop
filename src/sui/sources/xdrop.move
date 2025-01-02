@@ -29,7 +29,8 @@ const E_AMOUNT_MISMATCH: u64 = 3007;
 const E_ENDED: u64 = 3008;
 const E_NOT_ENDED: u64 = 3009;
 const E_NOT_OPEN: u64 = 3010;
-const E_ZERO_LENGTH_ADDRESS: u64 = 3011;
+const E_NOT_PAUSED: u64 = 3011;
+const E_ZERO_LENGTH_ADDRESS: u64 = 3012;
 
 // === constants ===
 
@@ -160,7 +161,7 @@ public fun admin_opens_xdrop<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    assert!( !xdrop.is_ended(), E_ENDED );
+    assert!( xdrop.is_paused(), E_NOT_PAUSED );
     xdrop.status = XDROP_STATUS_OPEN;
 }
 
@@ -169,7 +170,7 @@ public fun admin_pauses_xdrop<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
-    assert!( !xdrop.is_ended(), E_ENDED );
+    assert!( xdrop.is_open(), E_NOT_OPEN );
     xdrop.status = XDROP_STATUS_PAUSED;
 }
 
