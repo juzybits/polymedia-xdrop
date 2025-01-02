@@ -268,7 +268,7 @@ const CardAddClaims: React.FC<{
                 const claims: {foreignAddr: string; amount: bigint}[] = [];
 
                 for (const line of lines) {
-                    let [addr, amountStr] = line.split(",").map(s => s.trim()); // eslint-disable-line
+                    let [addr, amountStr] = line.split(/[,\t]/).map(s => s.trim()); // eslint-disable-line
 
                     try {
                         addr = validateAndNormalizeNetworkAddr(xdrop.network_name, addr);
@@ -278,6 +278,9 @@ const CardAddClaims: React.FC<{
 
                     try {
                         const amount = stringToBalance(amountStr, coinMeta.decimals);
+                        if (amount <= 0n) {
+                            throw new Error(`Amount must be greater than 0: ${amountStr}`);
+                        }
                         claims.push({foreignAddr: addr, amount});
                         totalAmount += amount;
                     } catch (e) {
@@ -375,7 +378,7 @@ const CardNotAdmin: React.FC<{
 
 function localhostClaimsOrEmpty()
 {
-    if (!isLocalhost) return "";
+    if (!isLocalhost()) return "";
     return Array.from({ length: 1001 }, () => {
         // Generate random Ethereum address (40 hex chars)
         const addr = "0x" + Array.from({ length: 40 }, () =>
