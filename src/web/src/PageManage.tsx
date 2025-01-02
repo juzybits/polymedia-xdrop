@@ -131,7 +131,7 @@ export const PageManage: React.FC = () =>
                                     type="checkbox"
                                     checked={reclaimOnEnd}
                                     onChange={(e) => setReclaimOnEnd(e.target.checked)}
-                                /> Also reclaim any remaining balance
+                                /> Reclaim any remaining balance
                             </label>,
                         },
                         {
@@ -147,8 +147,11 @@ export const PageManage: React.FC = () =>
                         <CardXDropDetails xdrop={xdrop}
                             title="xDrop Details"
                             extraDetails={<>
-                                <XDropDetail label="Balance claimed/unclaimed:" val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / ${formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")}`} />
-                                <XDropDetail label="Addresses claimed/unclaimed:" val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
+                                <XDropDetail label="Balance claimed/unclaimed:"
+                                    val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / `
+                                       + `${formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")}`} />
+                                <XDropDetail label="Addresses claimed/unclaimed:"
+                                    val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
                                 {/* <XDropDetail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} /> */}
                             </>}
                             button={<Link to={`/claim/${xdrop.id}`} className="btn">VIEW CLAIM PAGE</Link>}
