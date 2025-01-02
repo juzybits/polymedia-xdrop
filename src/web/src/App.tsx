@@ -53,7 +53,7 @@ const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname
 const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
 
 const [ defaultNetwork, supportedNetworks ] =
-    isLocalDomain  ? ["localnet" as const, ["mainnet", "testnet", "devnet", "localnet"] as const]
+    isLocalDomain  ? ["devnet" as const, ["mainnet", "testnet", "devnet"] as const]
     : isDevDomain  ? ["devnet"   as const, ["devnet"] as const]
     : isTestDomain ? ["testnet"  as const, ["testnet"] as const]
     : /* prod */     ["mainnet"  as const, ["mainnet"] as const];

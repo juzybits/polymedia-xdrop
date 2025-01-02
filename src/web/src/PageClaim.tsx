@@ -331,7 +331,7 @@ export const XDropConfigs: Record<
 > = {
     "mainnet": {
         "detf": {
-            xdropId: "0x131100c7727f08d722a982bdeefb6d44d36942c9cf15aa17be2bf12eda49feea", // DEMO
+            xdropId: "0x53d19097beb34b0be5ffb3994a0b7d3100c7a12f217a2cdb4beb020743d7be2f", // DEMO
             bannerUrl: "/img/banner-detf.webp",
         },
     },
