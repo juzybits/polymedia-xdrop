@@ -36,14 +36,14 @@ const SectionHowItWorks: React.FC = () =>
             <div className="card compact">
                 <div className="card-description">
                     <p>
-                        1. Admin creates an xDrop by sending coins to a Sui smart contract and defining which Ethereum or Solana addresses can claim them.
+                        1. Admin creates a Sui xDrop and specifies which Ethereum or Solana addresses can claim coins.
                     </p>
                 </div>
             </div>
             <div className="card compact">
                 <div className="card-description">
                     <p>
-                        2. Eligible users prove ownership of their Ethereum or Solana address through SuiLink, then claim their allocated coins on Sui.
+                        2. Users verify their Ethereum or Solana address via SuiLink and can then claim coins on Sui.
                     </p>
                 </div>
             </div>
