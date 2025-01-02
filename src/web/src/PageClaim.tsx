@@ -329,7 +329,12 @@ export const XDropConfigs: Record<
     NetworkName,
     Record<string, XDropConfig>
 > = {
-    "mainnet": {},
+    "mainnet": {
+        "detf": {
+            xdropId: "0x131100c7727f08d722a982bdeefb6d44d36942c9cf15aa17be2bf12eda49feea", // DEMO
+            bannerUrl: "/img/banner-detf.webp",
+        },
+    },
     "testnet": {},
     "devnet": {
         "detf": {

@@ -90,7 +90,7 @@ export function objResToXDrop(
     if (fields.status === 0) { status = "paused"; }
     else if (fields.status === 1) { status = "open"; }
     else if (fields.status === 2) { status = "ended"; }
-    else { throw new Error(`Unknown status: ${fields.status}`); }
+    else { throw new Error(`[objResToXDrop] Unknown status: ${fields.status}`); }
 
     const type_coin = objType.match(/<([^,>]+)/)?.[1] || "";
     const type_network = objType.match(/,\s*([^>]+)>/)?.[1] || "";
