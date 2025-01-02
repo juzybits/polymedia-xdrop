@@ -92,6 +92,8 @@ export const PageManage: React.FC = () =>
                         return reclaimOnEnd ? admin_reclaims_balance(tx) : result;
                     };
 
+                    // const admin_sets_admin_address: AdminAction = (tx) => // TODO
+
                     const admin_reclaims_balance: AdminAction = (tx) => {
                         const [coin] = XDropModule.admin_reclaims_balance(
                             tx,
