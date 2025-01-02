@@ -240,16 +240,16 @@ fun test_end_to_end()
     assert_eq( runner.xdrop.is_ended(), false );
     assert_eq( runner.xdrop.status(), 0 ); // XDROP_STATUS_PAUSED
 
+    // admin changes admin address
+    runner.admin_sets_admin_address(ADMIN, ADMIN_2);
+    assert_eq( runner.xdrop.admin(), ADMIN_2 );
+
     // admin ends xdrop
-    runner.admin_ends_xdrop(ADMIN);
+    runner.admin_ends_xdrop(ADMIN_2);
     assert_eq( runner.xdrop.is_paused(), false );
     assert_eq( runner.xdrop.is_open(), false );
     assert_eq( runner.xdrop.is_ended(), true );
     assert_eq( runner.xdrop.status(), 2 ); // XDROP_STATUS_ENDED
-
-    // admin changes admin address
-    runner.admin_sets_admin_address(ADMIN, ADMIN_2);
-    assert_eq( runner.xdrop.admin(), ADMIN_2 );
 
     // admin 2 reclaims remaining balance
     let coin = runner.admin_reclaims_remaining_balance(ADMIN_2);

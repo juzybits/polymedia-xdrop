@@ -178,6 +178,7 @@ public fun admin_ends_xdrop<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    assert!( !xdrop.is_ended(), E_ENDED );
     xdrop.status = XDROP_STATUS_ENDED;
 }
 
@@ -187,6 +188,7 @@ public fun admin_sets_admin_address<C, N>(
     ctx: &mut TxContext,
 ) {
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
+    assert!( !xdrop.is_ended(), E_ENDED );
     xdrop.admin = new_admin;
 }
 
