@@ -338,7 +338,7 @@ export const XDropConfigs: Record<
     "testnet": {},
     "devnet": {
         "detf": {
-            xdropId: "0x2173e0e1d8725eed0e28d721aa8da55e7ea7fdd3a4b51a7bd99575ce5c138f4a",
+            xdropId: "0x02b38f71ce00443d4bc78249d4b98aed6da2779ec29be253c07c4ef924d8376a",
             bannerUrl: "https://dummyimage.com/1500x500/011346/eee/",
             // bannerUrl: "/img/banner-detf.webp",
         },

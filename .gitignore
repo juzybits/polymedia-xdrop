@@ -2,9 +2,9 @@
 
 # JavaScript
 .env*
-*.tsbuildinfo
 .turbo
 .wrangler
+*.tsbuildinfo
 dist
 node_modules
 
