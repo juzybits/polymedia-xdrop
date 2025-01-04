@@ -51,6 +51,7 @@ export const AppRouter: React.FC = () => {
 const isLocalDomain = isLocalhost();
 const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname;
 const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
+const isDemoDomain = "demo.polymedia-xdrop.pages.dev" === window.location.hostname;
 
 const [ defaultNetwork, supportedNetworks ] =
     isLocalDomain  ? ["devnet" as const, ["mainnet", "testnet", "devnet"] as const]
@@ -214,7 +215,7 @@ const Header: React.FC = () =>
                 {network !== "mainnet" && <span className="header-network-label">{network}</span>}
             </Link>
         </div>
-        {isLocalDomain &&
+        {(isLocalDomain || isDemoDomain) &&
         <>
             <Link to="/new" className="header-item" title="Create Auction">
                 <IconNew />
