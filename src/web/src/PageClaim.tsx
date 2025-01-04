@@ -12,6 +12,8 @@ import { BtnConnect } from "./comp/connect";
 import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 
+// TODO: step 1: only show if Sui wallet is not detected
+// TODO: steps 2,3: show generic text for regular xDrops
 export const PageClaim: React.FC = () =>
 {
     let { xdropId } = useParams();

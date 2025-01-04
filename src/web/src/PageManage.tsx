@@ -14,6 +14,8 @@ import { PageNotFound } from "./PageNotFound";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
 
+// TODO check wallet balance < totalAmount
+// TODO: maybe add fee
 export const PageManage: React.FC = () =>
 {
     const { xdropId } = useParams();
