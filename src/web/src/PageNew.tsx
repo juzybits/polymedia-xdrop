@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
-import { Btn, useDropdown, useInputString } from "@polymedia/suitcase-react";
+import { Btn, IconInfo, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,14 +9,13 @@ import { useAppContext } from "./App";
 import { ConnectOr } from "./comp/connect";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 
-// TODO: info modal
 export const PageNew: React.FC = () =>
 {
     // === state ===
 
     const navigate = useNavigate();
     const currAcct = useCurrentAccount();
-    const { header, xdropClient, isWorking, setIsWorking } = useAppContext();
+    const { header, xdropClient, isWorking, setIsWorking, setModalContent } = useAppContext();
 
     // === form state ===
 
@@ -77,6 +76,14 @@ export const PageNew: React.FC = () =>
         }
     };
 
+    const showFormInfoModal = () => {
+        setModalContent(<>
+            <div className="card-title"><IconInfo />Settings</div>
+            <div><b>Network:</b> The blockchain where users are coming from.</div>
+            <div><b>Coin type:</b> The kind of Sui coin you want to distribute.</div>
+        </>);
+    };
+
     // === html ===
 
     return <>
@@ -89,8 +96,11 @@ export const PageNew: React.FC = () =>
                 Create xDrop
             </div>
             <div className="card compact">
-                <div className="card-title center-element center-text">
-                    Settings
+                <div className="card-header">
+                    <div className="card-title">
+                        Settings
+                    </div>
+                    <IconInfo onClick={showFormInfoModal} />
                 </div>
                 <div className="form">
                     <div className="form-section">
