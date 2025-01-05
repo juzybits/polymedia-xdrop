@@ -70,18 +70,22 @@ export const PageClaim: React.FC = () =>
                             <div className="card-title">
                                 <p>Step 2: Verify your {xdrop.network_name} address</p>
                             </div>
-                            <div className="card-description">
-                                <p>Prove that you own {coinMeta.symbol} on {xdrop.network_name} by linking your {xdrop.network_name} address to your Sui wallet.</p>
-                            </div>
-                            <div className="card-description">
-                                <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
-                            </div>
+
+                            {custom?.step2?.(xdrop, coinMeta) ?? <>
+                                <div className="card-description">
+                                    <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
+                                </div>
+                                <div className="card-description">
+                                    <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
+                                </div>
+                            </>}
+
                             <div className="center-element">
                                 <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
                             </div>
                         </div>
 
-                        <CardClaim xdrop={xdrop} coinMeta={coinMeta} />
+                        <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} />
                     </>
                 )}
                 </XDropLoader>
@@ -94,9 +98,11 @@ export const PageClaim: React.FC = () =>
 const CardClaim: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
+    custom: CustomXDropConfig | null;
 }> = ({
     xdrop,
     coinMeta,
+    custom,
 }) => {
     const currAcct = useCurrentAccount();
     const { mutate: disconnect } = useDisconnectWallet();
@@ -106,9 +112,9 @@ const CardClaim: React.FC<{
             <div className="card-title">
                 <p>Step 3: Claim your {coinMeta.symbol} on Sui</p>
             </div>
-            <div className="card-description">
-                <p>You'll receive the same amount of {coinMeta.symbol} on Sui as you have in your {xdrop.network_name} address.</p>
-            </div>
+
+            {custom?.step3?.(xdrop, coinMeta)}
+
             {!currAcct ? (
                 <>
                     <div className="card-description">
@@ -319,12 +325,16 @@ function linkedAddrUrl(network: LinkNetwork, addr: string): string {
 
 // === config ===
 
-export type CustomXDropConfig = {
+type CustomXDropConfig = {
     xdropId: string;
     bannerUrl?: string;
+    step2?: CustomStep;
+    step3?: CustomStep;
 };
 
-export const CustomXDrops: Record<
+type CustomStep = (xdrop: XDrop, coinMeta: CoinMetadata) => React.ReactNode;
+
+const CustomXDrops: Record<
     NetworkName,
     Record<string, CustomXDropConfig>
 > = {
@@ -332,6 +342,19 @@ export const CustomXDrops: Record<
         "detf": {
             xdropId: "0x53d19097beb34b0be5ffb3994a0b7d3100c7a12f217a2cdb4beb020743d7be2f", // DEMO
             bannerUrl: "/img/banner-detf.webp",
+            step2: (xdrop, coinMeta) => <>
+                <div className="card-description">
+                    <p>Prove that you own {coinMeta.symbol} on {xdrop.network_name} by linking your {xdrop.network_name} address to your Sui wallet.</p>
+                </div>
+                <div className="card-description">
+                    <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
+                </div>
+            </>,
+            step3: (xdrop, coinMeta) => <>
+                <div className="card-description">
+                    <p>You'll receive the same amount of {coinMeta.symbol} on Sui as you have in your {xdrop.network_name} address.</p>
+                </div>
+            </>,
         },
     },
     "testnet": {},
