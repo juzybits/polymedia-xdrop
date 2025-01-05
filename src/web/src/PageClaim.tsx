@@ -13,7 +13,6 @@ import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 
 // TODO: step 1: only show if Sui wallet is not detected
-// TODO: steps 2,3: show generic text for regular xDrops
 export const PageClaim: React.FC = () =>
 {
     let { xdropId } = useParams();
@@ -210,7 +209,7 @@ const WidgetClaim: React.FC<{
     // == effects ==
 
     useEffect(() => { // dev only
-        data && console.debug("[ClaimWidget] eligibleLinksWithStatus:", data);
+        data && console.debug("[WidgetClaim] eligibleLinksWithStatus:", data);
     }, [data]);
 
     // == functions ==
@@ -323,7 +322,7 @@ function linkedAddrUrl(network: LinkNetwork, addr: string): string {
     throw new Error(`Unsupported network: ${network}`);
 }
 
-// === config ===
+// === custom xdrops ===
 
 type CustomXDropConfig = {
     xdropId: string;
@@ -334,6 +333,21 @@ type CustomXDropConfig = {
 
 type CustomStep = (xdrop: XDrop, coinMeta: CoinMetadata) => React.ReactNode;
 
+const step2Migration: CustomStep = (xdrop, coinMeta) => <>
+    <div className="card-description">
+        <p>Prove that you own {coinMeta.symbol} on {xdrop.network_name} by linking your {xdrop.network_name} address to your Sui wallet.</p>
+    </div>
+    <div className="card-description">
+        <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
+    </div>
+</>;
+
+const step3Migration: CustomStep = (xdrop, coinMeta) => <>
+    <div className="card-description">
+        <p>You'll receive the same amount of {coinMeta.symbol} on Sui as you have in your {xdrop.network_name} address.</p>
+    </div>
+</>;
+
 const CustomXDrops: Record<
     NetworkName,
     Record<string, CustomXDropConfig>
@@ -342,19 +356,8 @@ const CustomXDrops: Record<
         "detf": {
             xdropId: "0x53d19097beb34b0be5ffb3994a0b7d3100c7a12f217a2cdb4beb020743d7be2f", // DEMO
             bannerUrl: "/img/banner-detf.webp",
-            step2: (xdrop, coinMeta) => <>
-                <div className="card-description">
-                    <p>Prove that you own {coinMeta.symbol} on {xdrop.network_name} by linking your {xdrop.network_name} address to your Sui wallet.</p>
-                </div>
-                <div className="card-description">
-                    <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
-                </div>
-            </>,
-            step3: (xdrop, coinMeta) => <>
-                <div className="card-description">
-                    <p>You'll receive the same amount of {coinMeta.symbol} on Sui as you have in your {xdrop.network_name} address.</p>
-                </div>
-            </>,
+            step2: step2Migration,
+            step3: step3Migration,
         },
     },
     "testnet": {},
@@ -362,6 +365,8 @@ const CustomXDrops: Record<
         "detf": {
             xdropId: "0x02b38f71ce00443d4bc78249d4b98aed6da2779ec29be253c07c4ef924d8376a",
             bannerUrl: "https://dummyimage.com/1500x500/011346/eee/",
+            step2: step2Migration,
+            step3: step3Migration,
         },
     },
     "localnet": {},
