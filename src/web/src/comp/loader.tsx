@@ -30,17 +30,6 @@ export function useXDrop(
     }, [xdropClient, xdropId]);
 }
 
-export function useBalance(
-    owner: string,
-    coinType: string,
-) {
-    const { xdropClient } = useAppContext();
-    return useFetch(async () => {
-        const balance = await xdropClient.suiClient.getBalance({ owner, coinType });
-        return BigInt(balance.totalBalance);
-    }, [xdropClient, owner, coinType]);
-}
-
 export const XDropLoader: React.FC<XDropLoaderProps> = ({
     fetched,
     requireWallet,

@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { CardXDropDetails, XDropDetail } from "./comp/cards";
-import { useBalance, useXDrop, XDropLoader } from "./comp/loader";
+import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
 import { fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
@@ -234,8 +234,6 @@ const CardAddClaims: React.FC<{
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    const balance = useBalance(currAddr, xdrop.type_coin);
-
     const decimals = coinMeta.decimals;
     const symbol = coinMeta.symbol;
 
@@ -308,13 +306,14 @@ const CardAddClaims: React.FC<{
             setIsWorking(true);
             setSubmitRes({ ok: undefined });
 
-            if (balance.data === undefined) {
-                throw new Error(`Failed to fetch your ${symbol} balance`);
-            }
-            if (textArea.val!.totalAmount > balance.data) {
+            const respBalance = await xdropClient.suiClient.getBalance({
+                owner: currAddr, coinType: xdrop.type_coin,
+            });
+            const balance = BigInt(respBalance.totalBalance);
+            if (textArea.val!.totalAmount > balance) {
                 throw new Error(`Insufficient balance: `
                     + `need ${fmtBal(textArea.val!.totalAmount, decimals, symbol)}, `
-                    + `have ${fmtBal(balance.data, decimals, symbol)}`);
+                    + `have ${fmtBal(balance, decimals, symbol)}`);
             }
 
             const resp = await xdropClient.adminAddsClaims(
@@ -331,7 +330,6 @@ const CardAddClaims: React.FC<{
             setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to add claims") });
         } finally {
             setIsWorking(false);
-            balance.refetch();
         }
     };
 
