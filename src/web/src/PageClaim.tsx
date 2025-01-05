@@ -11,6 +11,7 @@ import { CardSpinner, CardWithMsg } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
+import { fmtBal } from "./lib/helpers";
 
 export const PageClaim: React.FC = () =>
 {
@@ -306,7 +307,7 @@ const CardClaimableLink: React.FC<{
             <div className="card-title">
                 {link.status.claimed
                     ? "Claimed"
-                    : formatBalance(link.status.amount, coinMeta.decimals) + " " + coinMeta.symbol}
+                    : fmtBal(link.status.amount, coinMeta.decimals, coinMeta.symbol)}
             </div>
         </div>
         <div className="card-body">

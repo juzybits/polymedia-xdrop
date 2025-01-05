@@ -10,6 +10,7 @@ import { useAppContext } from "./App";
 import { CardXDropDetails, XDropDetail } from "./comp/cards";
 import { useBalance, useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
+import { fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
@@ -235,6 +236,9 @@ const CardAddClaims: React.FC<{
 
     const balance = useBalance(currAddr, xdrop.type_coin);
 
+    const decimals = coinMeta.decimals;
+    const symbol = coinMeta.symbol;
+
     const textArea = useTextArea<{
         claims: { foreignAddr: string; amount: bigint }[];
         totalAmount: bigint;
@@ -270,7 +274,7 @@ const CardAddClaims: React.FC<{
                     }
 
                     try {
-                        const amount = stringToBalance(amountStr, coinMeta.decimals);
+                        const amount = stringToBalance(amountStr, decimals);
                         if (amount <= 0n) {
                             throw new Error(`Amount must be greater than 0: ${amountStr}`);
                         }
@@ -305,12 +309,12 @@ const CardAddClaims: React.FC<{
             setSubmitRes({ ok: undefined });
 
             if (balance.data === undefined) {
-                throw new Error(`Failed to fetch your ${coinMeta.symbol} balance`);
+                throw new Error(`Failed to fetch your ${symbol} balance`);
             }
             if (textArea.val!.totalAmount > balance.data) {
-                throw new Error(`Insufficient balance: need `
-                    + `${formatBalance(textArea.val!.totalAmount, coinMeta.decimals, "compact")} ${coinMeta.symbol}, `
-                    + `have ${formatBalance(balance.data, coinMeta.decimals, "compact")} ${coinMeta.symbol}`);
+                throw new Error(`Insufficient balance: `
+                    + `need ${fmtBal(textArea.val!.totalAmount, decimals, symbol)}, `
+                    + `have ${fmtBal(balance.data, decimals, symbol)}`);
             }
 
             const resp = await xdropClient.adminAddsClaims(
@@ -344,7 +348,7 @@ const CardAddClaims: React.FC<{
 
         <div className="card-description">
             <p>Enter 1 claim per line as follows:</p>
-            <p>{xdrop.network_name.toUpperCase()}_ADDRESS,{coinMeta.symbol}_AMOUNT</p>
+            <p>{xdrop.network_name.toUpperCase()}_ADDRESS,{symbol}_AMOUNT</p>
         </div>
 
         <div className="card-description">
@@ -355,7 +359,7 @@ const CardAddClaims: React.FC<{
         <div className="card-description">
         <div className="card-title">Summary:</div>
             <p>▸ {textArea.val.claims.length} addresses</p>
-            <p>▸ {formatBalance(textArea.val.totalAmount, coinMeta.decimals, "compact")} {coinMeta.symbol}</p>
+            <p>▸ {fmtBal(textArea.val.totalAmount, decimals, symbol)}</p>
             {requiredTxs > 1 && <p>⚠️ Requires {requiredTxs} transactions</p>}
         </div>
         </>}

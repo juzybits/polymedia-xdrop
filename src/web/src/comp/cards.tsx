@@ -1,9 +1,6 @@
-import { CoinMetadata } from "@mysten/sui/client";
-import { formatBalance } from "@polymedia/suitcase-core";
 import { LinkToExplorer } from "@polymedia/suitcase-react";
 import { XDrop, XDropStatus } from "@polymedia/xdrop-sdk";
 import React from "react";
-import { Link } from "react-router-dom";
 import { useAppContext } from "../App";
 
 export const CardSpinner: React.FC<{
