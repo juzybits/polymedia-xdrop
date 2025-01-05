@@ -114,6 +114,18 @@ h1, h2, h3, h4, h5, button, input {
 
 // === layout ===
 
+body.modal-open {
+    overflow: hidden;
+}
+
+#layout {
+    &.disabled {
+        opacity: 0.6;
+        pointer-events: none;
+        cursor: wait;
+    }
+}
+
 header {
     display: flex;
     align-items: center;
@@ -924,9 +936,6 @@ a.card, .card.link {
     }
 }
 
-body.modal-open {
-    overflow: hidden;
-}
 .poly-modal-background {
     position: fixed;
     top: 0;
