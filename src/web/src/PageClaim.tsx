@@ -1,4 +1,4 @@
-import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
+import { useCurrentAccount, useCurrentWallet, useDisconnectWallet, useWallets } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { formatBalance, NetworkName, shortenAddress } from "@polymedia/suitcase-core";
 import { Btn, LinkExternal, useFetch } from "@polymedia/suitcase-react";
@@ -12,13 +12,15 @@ import { BtnConnect } from "./comp/connect";
 import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 
-// TODO: step 1: only show if Sui wallet is not detected
 export const PageClaim: React.FC = () =>
 {
     let { xdropId } = useParams();
     if (!xdropId) return <PageNotFound />;
 
     const { header, network, isWorking } = useAppContext();
+
+    const wallets = useWallets();
+    const hasWallet = wallets.length > 0;
 
     // Handle custom xDrops
     const custom = CustomXDrops[network][xdropId] ?? null;
@@ -57,12 +59,19 @@ export const PageClaim: React.FC = () =>
                             <div className="card-title">
                                 <p>Step 1: Get a Sui wallet</p>
                             </div>
-                            <div className="card-description">
-                                <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
-                            </div>
-                            <div className="center-element">
-                                <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
-                            </div>
+
+                            {hasWallet ?
+                                <div className="card-description">
+                                    <p>✅ Your Sui wallet is installed and ready.</p>
+                                </div>
+                            : <>
+                                <div className="card-description">
+                                    <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
+                                </div>
+                                <div className="center-element">
+                                    <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
+                                </div>
+                            </>}
                         </div>
 
                         <div className="card compact">
@@ -102,7 +111,8 @@ const CardClaim: React.FC<{
     xdrop,
     coinMeta,
     custom,
-}) => {
+}) =>
+{
     const currAcct = useCurrentAccount();
     const { mutate: disconnect } = useDisconnectWallet();
 
@@ -364,7 +374,7 @@ const CustomXDrops: Record<
     "devnet": {
         "detf": {
             xdropId: "0x02b38f71ce00443d4bc78249d4b98aed6da2779ec29be253c07c4ef924d8376a",
-            bannerUrl: "https://dummyimage.com/1500x500/011346/eee/",
+            bannerUrl: "https://dummyimage.com/1600x900/011346/eee/",
             step2: step2Migration,
             step3: step3Migration,
         },
