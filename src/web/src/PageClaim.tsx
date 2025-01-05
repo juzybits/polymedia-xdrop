@@ -29,7 +29,7 @@ export const PageClaim: React.FC = () =>
     return <>
         {header}
 
-        {custom?.bannerUrl && <div className="page-banner">
+        {custom?.bannerUrl && <div className="page-claim-banner">
             <img src={custom.bannerUrl} alt="banner" />
         </div>}
 
