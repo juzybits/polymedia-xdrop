@@ -9,6 +9,7 @@ import { useAppContext } from "./App";
 import { ConnectOr } from "./comp/connect";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 
+// TODO: info modal
 export const PageNew: React.FC = () =>
 {
     // === state ===

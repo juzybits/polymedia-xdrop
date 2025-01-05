@@ -25,7 +25,6 @@ export const PageManage: React.FC = () =>
     const currAcct = useCurrentAccount();
     const fetched = useXDrop(xdropId);
 
-    const [reclaimOnEnd, setReclaimOnEnd] = useState(true);
     const [showSuccess, setShowSuccess] = useState(false);
 
     useEffect(() => {
@@ -83,7 +82,7 @@ export const PageManage: React.FC = () =>
                             xdrop.id,
                         );
 
-                    const admin_ends_xdrop: AdminAction = (tx) => {
+                    const admin_ends_and_reclaims_xdrop: AdminAction = (tx) => {
                         const result = XDropModule.admin_ends_xdrop(
                             tx,
                             xdropClient.xdropPkgId,
@@ -91,7 +90,7 @@ export const PageManage: React.FC = () =>
                             xdrop.type_network,
                             xdrop.id,
                         );
-                        return reclaimOnEnd ? admin_reclaims_balance(tx) : result;
+                        return admin_reclaims_balance(tx);
                     };
 
                     // const admin_sets_admin_address: AdminAction = (tx) => // TODO
@@ -126,17 +125,10 @@ export const PageManage: React.FC = () =>
                         },
                         {
                             title: "End xDrop",
-                            info: "End the xDrop permanently. This cannot be undone.",
+                            info: "End the xDrop permanently and reclaim any remaining balance. This cannot be undone.",
                             btnTxt: "END",
-                            submit: admin_ends_xdrop,
+                            submit: admin_ends_and_reclaims_xdrop,
                             show: !xdrop.is_ended,
-                            extra: <label>
-                                <input
-                                    type="checkbox"
-                                    checked={reclaimOnEnd}
-                                    onChange={(e) => setReclaimOnEnd(e.target.checked)}
-                                /> Reclaim any remaining balance
-                            </label>,
                         },
                         {
                             title: "Reclaim Balance",
@@ -195,7 +187,6 @@ const CardAction: React.FC<{
     submit: () => Promise<void>;
     show: boolean;
     disabled?: boolean;
-    extra?: React.ReactNode;
 }> = (a) =>
 {
     if (!a.show) return null;
@@ -211,7 +202,6 @@ const CardAction: React.FC<{
             <div className="card-description">
                 <p>{a.info}</p>
             </div>
-            {a.extra}
             <div className="card-description">
                 <Btn disabled={disableBtn} onClick={a.submit}
                     className={a.btnTxt === "END" ? "red" : ""}
