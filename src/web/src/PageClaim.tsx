@@ -21,20 +21,17 @@ export const PageClaim: React.FC = () =>
 
     const { header, network, isWorking } = useAppContext();
 
-    // Handle configured xDrops
-    let bannerUrl: string | undefined;
-    if (xdropId in XDropConfigs[network]) {
-        bannerUrl = XDropConfigs[network][xdropId].bannerUrl;
-        xdropId = XDropConfigs[network][xdropId].xdropId;
-    }
+    // Handle custom xDrops
+    const custom = CustomXDrops[network][xdropId] ?? null;
+    xdropId = custom?.xdropId ?? xdropId;
 
     const fetched = useXDrop(xdropId);
 
     return <>
         {header}
 
-        {bannerUrl && <div className="page-banner">
-            <img src={bannerUrl} alt="banner" />
+        {custom?.bannerUrl && <div className="page-banner">
+            <img src={custom.bannerUrl} alt="banner" />
         </div>}
 
         <div id="page-claim" className="page-regular">
@@ -322,14 +319,14 @@ function linkedAddrUrl(network: LinkNetwork, addr: string): string {
 
 // === config ===
 
-export type XDropConfig = {
+export type CustomXDropConfig = {
     xdropId: string;
     bannerUrl?: string;
 };
 
-export const XDropConfigs: Record<
+export const CustomXDrops: Record<
     NetworkName,
-    Record<string, XDropConfig>
+    Record<string, CustomXDropConfig>
 > = {
     "mainnet": {
         "detf": {
@@ -342,7 +339,6 @@ export const XDropConfigs: Record<
         "detf": {
             xdropId: "0x02b38f71ce00443d4bc78249d4b98aed6da2779ec29be253c07c4ef924d8376a",
             bannerUrl: "https://dummyimage.com/1500x500/011346/eee/",
-            // bannerUrl: "/img/banner-detf.webp",
         },
     },
     "localnet": {},
