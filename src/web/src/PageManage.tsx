@@ -8,13 +8,12 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { CardXDropDetails, XDropDetail } from "./comp/cards";
-import { useXDrop, XDropLoader } from "./comp/loader";
+import { useBalance, useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
 import { PageNotFound } from "./PageNotFound";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
 
-// TODO check wallet balance < totalAmount
 // TODO: maybe add fee
 export const PageManage: React.FC = () =>
 {
@@ -234,6 +233,8 @@ const CardAddClaims: React.FC<{
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
+    const balance = useBalance(currAddr, xdrop.type_coin);
+
     const textArea = useTextArea<{
         claims: { foreignAddr: string; amount: bigint }[];
         totalAmount: bigint;
@@ -302,6 +303,16 @@ const CardAddClaims: React.FC<{
         try {
             setIsWorking(true);
             setSubmitRes({ ok: undefined });
+
+            if (balance.data === undefined) {
+                throw new Error(`Failed to fetch your ${coinMeta.symbol} balance`);
+            }
+            if (textArea.val!.totalAmount > balance.data) {
+                throw new Error(`Insufficient balance: need `
+                    + `${formatBalance(textArea.val!.totalAmount, coinMeta.decimals, "compact")} ${coinMeta.symbol}, `
+                    + `have ${formatBalance(balance.data, coinMeta.decimals, "compact")} ${coinMeta.symbol}`);
+            }
+
             const resp = await xdropClient.adminAddsClaims(
                 currAddr,
                 xdrop,
@@ -316,6 +327,7 @@ const CardAddClaims: React.FC<{
             setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to add claims") });
         } finally {
             setIsWorking(false);
+            balance.refetch();
         }
     };
 

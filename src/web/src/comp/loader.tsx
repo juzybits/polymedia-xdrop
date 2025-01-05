@@ -19,7 +19,7 @@ export type XDropLoaderProps = {
 };
 
 export function useXDrop(
-    xdropId: string
+    xdropId: string,
 ): UseXDropResult {
     const { xdropClient } = useAppContext();
     return useFetch(async () => {
@@ -27,7 +27,18 @@ export function useXDrop(
         const coinMeta = !xdrop ? null
             : await getCoinMeta(xdropClient.suiClient, xdrop.type_coin);
         return { xdrop, coinMeta };
-    }, [xdropId]);
+    }, [xdropClient, xdropId]);
+}
+
+export function useBalance(
+    owner: string,
+    coinType: string,
+) {
+    const { xdropClient } = useAppContext();
+    return useFetch(async () => {
+        const balance = await xdropClient.suiClient.getBalance({ owner, coinType });
+        return BigInt(balance.totalBalance);
+    }, [xdropClient, owner, coinType]);
 }
 
 export const XDropLoader: React.FC<XDropLoaderProps> = ({
