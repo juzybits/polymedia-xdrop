@@ -1,5 +1,6 @@
 import React from "react";
-import { useAppContext } from "./App";
+import { Link } from "react-router-dom";
+import { isProdDomain, useAppContext } from "./App";
 import { HeroBanner } from "./comp/hero";
 
 export const PageHome: React.FC = () =>
@@ -15,7 +16,8 @@ export const PageHome: React.FC = () =>
                 title="xDrop"
                 description={<>
                     Distribute Sui coins to Ethereum and Solana users.
-                </>} />
+                </>}
+                actions={isProdDomain ? null : <Link to="/new" className="btn">GET STARTED</Link>} />
 
             <SectionHowItWorks />
 

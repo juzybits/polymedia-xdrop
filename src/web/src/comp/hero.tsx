@@ -5,8 +5,9 @@ export const HeroBanner: React.FC<{
     title: string;
     subtitle?: React.ReactNode;
     description?: React.ReactNode;
+    actions?: React.ReactNode;
     extra?: React.ReactNode;
-}> = ({ title, subtitle, description, extra }) => {
+}> = ({ title, subtitle, description, actions, extra }) => {
     return (
         <div className="hero-banner">
             <Glitch text={title} />
@@ -20,6 +21,11 @@ export const HeroBanner: React.FC<{
                     <p>
                         {description}
                     </p>
+                </div>
+            )}
+            {actions && (
+                <div className="hero-actions">
+                    {actions}
                 </div>
             )}
             {extra}

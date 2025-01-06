@@ -28,7 +28,7 @@ import "./styles/App.less";
 const isLocalDomain = isLocalhost();
 const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname;
 const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
-const isProdDomain = "xdrop.polymedia.app" === window.location.hostname;
+export const isProdDomain = "xdrop.polymedia.app" === window.location.hostname;
 
 /* App router */
 
