@@ -45,7 +45,7 @@ export const PageManage: React.FC = () =>
             fetched.refetch();
             setShowSuccess(true);
         } catch (err) {
-            console.warn("[onSubmit] error:", err);
+            console.warn("[onSubmit] error:", err); // TODO: show error
         } finally {
             setIsWorking(false);
         }
@@ -249,7 +249,7 @@ const CardAddClaims: React.FC<{
                 ? "AaAaAa,1000\nBbBbBb,2000"
                 : "0xAAAAA,1000\n0xBBBBB,2000",
         },
-        validate: (input) => {
+        validate: (input) => { // TODO check for duplicate addresses
             if (!input) {
                 return { err: null, val: undefined };
             }
