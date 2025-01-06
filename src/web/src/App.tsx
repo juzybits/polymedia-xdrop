@@ -15,6 +15,7 @@ import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comp/glitch";
 import { getGraphqlUrl, loadNetworkConfig } from "./lib/network";
 import { PageClaim } from "./PageClaim";
+import { PageComingSoon } from "./PageComingSoon";
 import { PageDevLink } from "./PageDevLink";
 import { PageHome } from "./PageHome";
 import { PageManage } from "./PageManage";
@@ -24,6 +25,11 @@ import { PageSettings } from "./PageSettings";
 import { PageUser } from "./PageUser";
 import "./styles/App.less";
 
+const isLocalDomain = isLocalhost();
+const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname;
+const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
+const isProdDomain = "xdrop.polymedia.app" === window.location.hostname;
+
 /* App router */
 
 export const AppRouter: React.FC = () => {
@@ -31,14 +37,19 @@ export const AppRouter: React.FC = () => {
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<AppSuiProviders />} >
-                <Route index element={<PageHome />} />
-                <Route path="/new" element={<PageNew />} />
-                <Route path="/claim/:xdropId" element={<PageClaim />} />
-                <Route path="/manage/:xdropId" element={<PageManage />} />
-                <Route path="/user" element={<PageUser />} />
-                <Route path="/settings" element={<PageSettings />} />
-                <Route path="/dev-link" element={<PageDevLink />} />
-                <Route path="*" element={<PageNotFound />} />
+                {!isProdDomain ? <>
+                    <Route index element={<PageHome />} />
+                    <Route path="/new" element={<PageNew />} />
+                    <Route path="/claim/:xdropId" element={<PageClaim />} />
+                    <Route path="/manage/:xdropId" element={<PageManage />} />
+                    <Route path="/user" element={<PageUser />} />
+                    <Route path="/settings" element={<PageSettings />} />
+                    <Route path="/dev-link" element={<PageDevLink />} />
+                    <Route path="*" element={<PageNotFound />} />
+                </> : <>
+                    <Route index element={<PageComingSoon />} />
+                    <Route path="*" element={<PageComingSoon />} />
+                </>}
             </Route>
         </Routes>
     </BrowserRouter>
@@ -46,11 +57,6 @@ export const AppRouter: React.FC = () => {
 };
 
 /* Sui providers + network config */
-
-const isLocalDomain = isLocalhost();
-const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname;
-const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
-const isProdDomain = "xdrop.polymedia.app" === window.location.hostname;
 
 const [ defaultNetwork, supportedNetworks ] =
     isLocalDomain  ? ["devnet" as const, ["mainnet", "testnet", "devnet"] as const]
@@ -206,8 +212,8 @@ const App: React.FC<{
 const Header: React.FC = () =>
 {
     const { network } = useAppContext();
-    // const currAcct = useCurrentAccount();
-    return <header>
+    return (
+    <header>
         <div className="header-item">
             <Link to="/">
                 <Glitch text="xDrop" />
@@ -226,5 +232,5 @@ const Header: React.FC = () =>
                 <IconGears />
             </Link>
         </>}
-    </header>;
+    </header>);
 };
