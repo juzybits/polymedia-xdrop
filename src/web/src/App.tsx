@@ -50,7 +50,7 @@ export const AppRouter: React.FC = () => {
 const isLocalDomain = isLocalhost();
 const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname;
 const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
-const isDemoDomain = "demo.polymedia-xdrop.pages.dev" === window.location.hostname;
+const isProdDomain = "xdrop.polymedia.app" === window.location.hostname;
 
 const [ defaultNetwork, supportedNetworks ] =
     isLocalDomain  ? ["devnet" as const, ["mainnet", "testnet", "devnet"] as const]
@@ -214,7 +214,7 @@ const Header: React.FC = () =>
                 {network !== "mainnet" && <span className="header-network-label">{network}</span>}
             </Link>
         </div>
-        {(isLocalDomain || isDemoDomain) &&
+        {!isProdDomain &&
         <>
             <Link to="/new" className="header-item" title="Create Auction">
                 <IconNew />
@@ -222,12 +222,9 @@ const Header: React.FC = () =>
             <Link to="/user" className="header-item" title="Your History">
                 <IconHistory />
             </Link>
+            <Link to="/settings" className="header-item" title="Settings">
+                <IconGears />
+            </Link>
         </>}
-        {/* {currAcct && <Link to={`/user/${currAcct.address}/bids`} className="header-item" title="Your History">
-            <IconHistory />
-        </Link>} */}
-        <Link to="/settings" className="header-item" title="Settings">
-            <IconGears />
-        </Link>
     </header>;
 };
