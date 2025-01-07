@@ -1,6 +1,6 @@
 module xdrop::xdrop;
 
-// == imports ==
+// === imports ===
 
 use std::{
     ascii::{String as AsciiString},
@@ -16,7 +16,7 @@ use sui::{
 };
 use suilink::suilink::{SuiLink};
 
-// == errors ==
+// === errors ===
 
 const E_ADDRESS_NOT_FOUND: u64 = 3000;
 const E_ALREADY_CLAIMED: u64 = 3001;
@@ -79,6 +79,8 @@ public struct ClaimStatus has copy, drop, store {
     claimed: bool,
     amount: u64,
 }
+
+// === events ===
 
 public struct EventShare has drop, copy {
     id: address,
@@ -231,7 +233,7 @@ public fun user_claims<C, N>(
     return coin::take(&mut xdrop.balance, claim.amount, ctx)
 }
 
-// === devinspect functions ===
+// === view functions ===
 
 public fun get_claim_statuses<C, N>(
     xdrop: &XDrop<C, N>,
