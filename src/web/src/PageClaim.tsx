@@ -189,7 +189,7 @@ const WidgetClaim: React.FC<{
         }
 
         // Fetch claim statuses for those links
-        const statuses = await xdropClient.fetchClaimStatuses(
+        const statuses = await xdropClient.fetchEligibleStatuses(
             xdrop.type_coin,
             xdrop.network_name,
             xdrop.id,
