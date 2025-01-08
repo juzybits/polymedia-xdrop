@@ -161,9 +161,9 @@ fun assert_owns_coin<C>(
 
 fun assert_claim_statuses(
     runner: &TestRunner,
-    foreign_addrs: vector<vector<u8>>,
     expected_statuses: vector<ClaimStatus>,
 ) {
+    let foreign_addrs = expected_statuses.map!(|status| *status.addr().as_bytes());
     let statuses = runner.xdrop.get_claim_statuses(foreign_addrs);
     assert_eq( statuses, expected_statuses );
 }
@@ -202,11 +202,10 @@ fun test_end_to_end()
     assert_eq( runner.xdrop.value(), 300 );
     assert_eq( runner.xdrop.claims().length(), 2 );
     runner.assert_claim_statuses(
-        vector[USER_1_ETH, USER_2_ETH, RANDO_ETH],
         vector[
-            xdrop::new_status_for_testing(true, false, 100),
-            xdrop::new_status_for_testing(true, false, 200),
-            xdrop::new_status_for_testing(false, false, 0),
+            xdrop::new_status_for_testing(USER_1_ETH, true, false, 100),
+            xdrop::new_status_for_testing(USER_2_ETH, true, false, 200),
+            xdrop::new_status_for_testing(RANDO_ETH, false, false, 0),
         ],
     );
     runner.assert_stats(0, 2, 0, 300);
@@ -224,11 +223,10 @@ fun test_end_to_end()
     runner.assert_owns_coin<DEVCOIN>(USER_1, 100);
     assert_eq( runner.xdrop.value(), 200 );
     runner.assert_claim_statuses(
-        vector[USER_1_ETH, USER_2_ETH, RANDO_ETH],
         vector[
-            xdrop::new_status_for_testing(true, true, 100),
-            xdrop::new_status_for_testing(true, false, 200),
-            xdrop::new_status_for_testing(false, false, 0),
+            xdrop::new_status_for_testing(USER_1_ETH, true, true, 100),
+            xdrop::new_status_for_testing(USER_2_ETH, true, false, 200),
+            xdrop::new_status_for_testing(RANDO_ETH, false, false, 0),
         ],
     );
     runner.assert_stats(1, 1, 100, 200);
