@@ -76,8 +76,8 @@ public struct Stats has store {
     amount_unclaimed: u64,
 }
 
-/// Whether a foreign address can claim from an XDrop. For viewing purposes.
-public struct ClaimStatus has copy, drop, store {
+/// Whether a foreign address is eligible for an XDrop. For viewing purposes.
+public struct EligibleStatus has copy, drop, store {
     eligible: bool,
     amount: u64,
     claimed: bool,
@@ -239,12 +239,12 @@ public fun user_claims<C, N>(
 
 // === view functions ===
 
-public fun get_claim_statuses<C, N>(
+public fun get_eligible_statuses<C, N>(
     xdrop: &XDrop<C, N>,
     addrs: vector<vector<u8>>,
-): vector<ClaimStatus>
+): vector<EligibleStatus>
 {
-    let mut amounts = vector::empty<ClaimStatus>();
+    let mut amounts = vector::empty<EligibleStatus>();
     let mut i = 0;
     let len = addrs.length();
     while (i < len)
@@ -253,7 +253,7 @@ public fun get_claim_statuses<C, N>(
         if (!xdrop.claims.contains(addr)) {
             vector::push_back(
                 &mut amounts,
-                ClaimStatus {
+                EligibleStatus {
                     eligible: false,
                     amount: 0,
                     claimed: false,
@@ -262,7 +262,7 @@ public fun get_claim_statuses<C, N>(
             let claim = xdrop.claims.borrow(addr);
             vector::push_back(
                 &mut amounts,
-                ClaimStatus {
+                EligibleStatus {
                     eligible: true,
                     amount: claim.amount,
                     claimed: claim.claimed,
@@ -293,9 +293,9 @@ public fun addrs_unclaimed(stats: &Stats): u64 { stats.addrs_unclaimed }
 public fun amount_claimed(stats: &Stats): u64 { stats.amount_claimed }
 public fun amount_unclaimed(stats: &Stats): u64 { stats.amount_unclaimed }
 
-public fun eligible(status: &ClaimStatus): bool { status.eligible }
-public fun claimed(status: &ClaimStatus): bool { status.claimed }
-public fun amount(status: &ClaimStatus): u64 { status.amount }
+public fun eligible(status: &EligibleStatus): bool { status.eligible }
+public fun claimed(status: &EligibleStatus): bool { status.claimed }
+public fun amount(status: &EligibleStatus): u64 { status.amount }
 
 // === initialization ===
 
@@ -313,10 +313,10 @@ public fun init_for_testing(ctx: &mut TxContext) {
 }
 
 #[test_only]
-public fun new_status_for_testing(
+public fun new_eligible_status_for_testing(
     eligible: bool,
     claimed: bool,
     amount: u64,
-): ClaimStatus {
-    ClaimStatus { eligible, claimed, amount }
+): EligibleStatus {
+    EligibleStatus { eligible, claimed, amount }
 }

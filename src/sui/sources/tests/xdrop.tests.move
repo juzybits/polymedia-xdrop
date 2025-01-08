@@ -12,7 +12,7 @@ use suilink::{
     suilink::{SuiLink},
 };
 
-use xdrop::xdrop::{Self, XDrop, ClaimStatus};
+use xdrop::xdrop::{Self, XDrop, EligibleStatus};
 use xdrop::devcoin::{Self, DEVCOIN};
 
 // === addresses ===
@@ -159,12 +159,12 @@ fun assert_owns_coin<C>(
     transfer::public_transfer(owned_coin, owner);
 }
 
-fun assert_claim_statuses(
+fun assert_eligible_statuses(
     runner: &TestRunner,
     foreign_addrs: vector<vector<u8>>,
-    expected_statuses: vector<ClaimStatus>,
+    expected_statuses: vector<EligibleStatus>,
 ) {
-    let statuses = runner.xdrop.get_claim_statuses(foreign_addrs);
+    let statuses = runner.xdrop.get_eligible_statuses(foreign_addrs);
     assert_eq( statuses, expected_statuses );
 }
 
@@ -201,12 +201,12 @@ fun test_end_to_end()
     assert_eq( runner.xdrop.status(), 0 ); // XDROP_STATUS_PAUSED
     assert_eq( runner.xdrop.value(), 300 );
     assert_eq( runner.xdrop.claims().length(), 2 );
-    runner.assert_claim_statuses(
+    runner.assert_eligible_statuses(
         vector[USER_1_ETH, USER_2_ETH, RANDO_ETH],
         vector[
-            xdrop::new_status_for_testing(true, false, 100),
-            xdrop::new_status_for_testing(true, false, 200),
-            xdrop::new_status_for_testing(false, false, 0),
+            xdrop::new_eligible_status_for_testing(true, false, 100),
+            xdrop::new_eligible_status_for_testing(true, false, 200),
+            xdrop::new_eligible_status_for_testing(false, false, 0),
         ],
     );
     runner.assert_stats(0, 2, 0, 300);
@@ -223,12 +223,12 @@ fun test_end_to_end()
     runner.user_claims(USER_1, &link);
     runner.assert_owns_coin<DEVCOIN>(USER_1, 100);
     assert_eq( runner.xdrop.value(), 200 );
-    runner.assert_claim_statuses(
+    runner.assert_eligible_statuses(
         vector[USER_1_ETH, USER_2_ETH, RANDO_ETH],
         vector[
-            xdrop::new_status_for_testing(true, true, 100),
-            xdrop::new_status_for_testing(true, false, 200),
-            xdrop::new_status_for_testing(false, false, 0),
+            xdrop::new_eligible_status_for_testing(true, true, 100),
+            xdrop::new_eligible_status_for_testing(true, false, 200),
+            xdrop::new_eligible_status_for_testing(false, false, 0),
         ],
     );
     runner.assert_stats(1, 1, 100, 200);
