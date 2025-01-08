@@ -166,6 +166,10 @@ fun assert_eligible_statuses(
 ) {
     let statuses = runner.xdrop.get_eligible_statuses(foreign_addrs);
     assert_eq( statuses, expected_statuses );
+    // redundant but just for 100% test coverage
+    assert_eq( statuses[0].eligible(), expected_statuses[0].eligible() );
+    assert_eq( statuses[0].claimed(), expected_statuses[0].claimed() );
+    assert_eq( statuses[0].amount(), expected_statuses[0].amount() );
 }
 
 fun assert_stats(
