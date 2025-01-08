@@ -261,12 +261,17 @@ const CardAddClaims: React.FC<{
                     .filter(line => line.length > 0);
 
                 const claims: {foreignAddr: string; amount: bigint}[] = [];
+                const seenAddrs = new Set<string>();
 
                 for (const line of lines) {
                     let [addr, amountStr] = line.split(/[,\t]/).map(s => s.trim()); // eslint-disable-line
 
                     try {
                         addr = validateAndNormalizeNetworkAddr(xdrop.network_name, addr);
+                        if (seenAddrs.has(addr)) {
+                            throw new Error(`Duplicate address: ${addr}`);
+                        }
+                        seenAddrs.add(addr);
                     } catch (e) {
                         throw e instanceof Error ? e : new Error(`Invalid address: ${addr}`);
                     }
