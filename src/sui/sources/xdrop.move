@@ -315,8 +315,8 @@ public fun init_for_testing(ctx: &mut TxContext) {
 #[test_only]
 public fun new_eligible_status_for_testing(
     eligible: bool,
-    claimed: bool,
     amount: u64,
+    claimed: bool,
 ): EligibleStatus {
-    EligibleStatus { eligible, claimed, amount }
+    EligibleStatus { eligible, amount, claimed }
 }

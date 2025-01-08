@@ -204,9 +204,9 @@ fun test_end_to_end()
     runner.assert_eligible_statuses(
         vector[USER_1_ETH, USER_2_ETH, RANDO_ETH],
         vector[
-            xdrop::new_eligible_status_for_testing(true, false, 100),
-            xdrop::new_eligible_status_for_testing(true, false, 200),
-            xdrop::new_eligible_status_for_testing(false, false, 0),
+            xdrop::new_eligible_status_for_testing(true, 100, false),
+            xdrop::new_eligible_status_for_testing(true, 200, false),
+            xdrop::new_eligible_status_for_testing(false, 0, false),
         ],
     );
     runner.assert_stats(0, 2, 0, 300);
@@ -226,9 +226,9 @@ fun test_end_to_end()
     runner.assert_eligible_statuses(
         vector[USER_1_ETH, USER_2_ETH, RANDO_ETH],
         vector[
-            xdrop::new_eligible_status_for_testing(true, true, 100),
-            xdrop::new_eligible_status_for_testing(true, false, 200),
-            xdrop::new_eligible_status_for_testing(false, false, 0),
+            xdrop::new_eligible_status_for_testing(true, 100, true),
+            xdrop::new_eligible_status_for_testing(true, 200, false),
+            xdrop::new_eligible_status_for_testing(false, 0, false),
         ],
     );
     runner.assert_stats(1, 1, 100, 200);
