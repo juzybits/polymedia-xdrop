@@ -78,7 +78,6 @@ public struct Stats has store {
 
 /// Whether a foreign address can claim from an XDrop. For viewing purposes.
 public struct ClaimStatus has copy, drop, store {
-    addr: String,
     eligible: bool,
     amount: u64,
     claimed: bool,
@@ -255,7 +254,6 @@ public fun get_claim_statuses<C, N>(
             vector::push_back(
                 &mut amounts,
                 ClaimStatus {
-                    addr,
                     eligible: false,
                     amount: 0,
                     claimed: false,
@@ -265,7 +263,6 @@ public fun get_claim_statuses<C, N>(
             vector::push_back(
                 &mut amounts,
                 ClaimStatus {
-                    addr,
                     eligible: true,
                     amount: claim.amount,
                     claimed: claim.claimed,
@@ -296,7 +293,6 @@ public fun addrs_unclaimed(stats: &Stats): u64 { stats.addrs_unclaimed }
 public fun amount_claimed(stats: &Stats): u64 { stats.amount_claimed }
 public fun amount_unclaimed(stats: &Stats): u64 { stats.amount_unclaimed }
 
-public fun addr(status: &ClaimStatus): String { status.addr }
 public fun eligible(status: &ClaimStatus): bool { status.eligible }
 public fun claimed(status: &ClaimStatus): bool { status.claimed }
 public fun amount(status: &ClaimStatus): u64 { status.amount }
@@ -318,10 +314,9 @@ public fun init_for_testing(ctx: &mut TxContext) {
 
 #[test_only]
 public fun new_status_for_testing(
-    addr: vector<u8>,
     eligible: bool,
     claimed: bool,
     amount: u64,
 ): ClaimStatus {
-    ClaimStatus { addr: addr.to_string(), eligible, claimed, amount }
+    ClaimStatus { eligible, claimed, amount }
 }
