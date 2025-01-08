@@ -56,17 +56,19 @@ public struct XDrop<phantom C, phantom N> has key {
     status: u8,
     /// total balance remaining in the xdrop
     balance: Balance<C>,
-    /// keys are addresses in the foreign network
+    /// keys are addresses in the foreign network (e.g. Solana)
     claims: Table<String, Claim>,
     /// claimed/unclaimed addresses and amounts
     stats: Stats,
 }
 
+/// How much a foreign address can claim from an XDrop, and whether it has been claimed.
 public struct Claim has store {
     amount: u64,
     claimed: bool,
 }
 
+/// Aggregate XDrop statistics. For viewing purposes.
 public struct Stats has store {
     addrs_claimed: u64,
     addrs_unclaimed: u64,
@@ -74,11 +76,12 @@ public struct Stats has store {
     amount_unclaimed: u64,
 }
 
+/// Whether a foreign address can claim from an XDrop. For viewing purposes.
 public struct ClaimStatus has copy, drop, store {
     addr: String,
     eligible: bool,
-    claimed: bool,
     amount: u64,
+    claimed: bool,
 }
 
 // === events ===
@@ -120,6 +123,7 @@ public fun share<C, N>(
     transfer::share_object(xdrop);
 }
 
+/// `addrs` are addresses in the foreign network
 public fun admin_adds_claims<C, N>(
     xdrop: &mut XDrop<C, N>,
     coin: Coin<C>,
@@ -218,7 +222,7 @@ public fun user_claims<C, N>(
 {
     assert!( xdrop.is_open(), E_NOT_OPEN );
 
-    let addr = link.network_address();
+    let addr = link.network_address(); // the user address in the foreign network
     assert!( xdrop.claims.contains(addr), E_ADDRESS_NOT_FOUND );
 
     let claim = xdrop.claims.borrow_mut(addr);
@@ -286,6 +290,7 @@ public fun status<C, N>(xdrop: &XDrop<C, N>): u8 { xdrop.status }
 public fun value<C, N>(xdrop: &XDrop<C, N>): u64 { xdrop.balance.value() }
 public fun claims<C, N>(xdrop: &XDrop<C, N>): &Table<String, Claim> { &xdrop.claims }
 public fun stats<C, N>(xdrop: &XDrop<C, N>): &Stats { &xdrop.stats }
+
 public fun addrs_claimed(stats: &Stats): u64 { stats.addrs_claimed }
 public fun addrs_unclaimed(stats: &Stats): u64 { stats.addrs_unclaimed }
 public fun amount_claimed(stats: &Stats): u64 { stats.amount_claimed }
