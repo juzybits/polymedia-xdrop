@@ -32,16 +32,18 @@ export type XDropIdentifier = Pick<XDrop, "type_coin" | "type_network" | "id">;
 export type XDropStatus = "paused" | "open" | "ended";
 
 export const ClaimStatusBcs = bcs.struct("ClaimStatus", {
+    addr: bcs.String,
     eligible: bcs.Bool,
-    claimed: bcs.Bool,
     amount: bcs.U64,
+    claimed: bcs.Bool,
 });
 
 // typeof ClaimStatusBcs.$inferType; // doesn't work well: `(property) status: any`
 export type ClaimStatus = {
+    addr: string;
     eligible: boolean;
-    claimed: boolean;
     amount: bigint;
+    claimed: boolean;
 };
 
 export const XDropStatsBcs = bcs.struct("XDropStats", {
@@ -133,9 +135,10 @@ export function retValToClaimStatus(
 ): ClaimStatus
 {
     return {
+        addr: retVal.addr,
         eligible: retVal.eligible,
-        claimed: retVal.claimed,
         amount: BigInt(retVal.amount),
+        claimed: retVal.claimed,
     };
 }
 /* eslint-enable */
