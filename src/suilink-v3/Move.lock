@@ -34,9 +34,9 @@ latest-published-id = "0x39f8f1545bf13baa4c88d5143c4668e4bd481dbe5d0e7f43e156a0b
 published-version = "1"
 
 [env.devnet]
-chain-id = "19012592"
-original-published-id = "0x9e833a61b4e0461aa1f81432b07b1f80857e8402252e96ee6de835e8a5a6e672"
-latest-published-id = "0x9e833a61b4e0461aa1f81432b07b1f80857e8402252e96ee6de835e8a5a6e672"
+chain-id = "af8ca69b"
+original-published-id = "0xb274afa5687a19cbf952d4206d86e78decb2844ef99d2a255b2ebde3fc53f109"
+latest-published-id = "0xb274afa5687a19cbf952d4206d86e78decb2844ef99d2a255b2ebde3fc53f109"
 published-version = "1"
 
 [env.mainnet]
