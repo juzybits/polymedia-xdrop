@@ -40,5 +40,6 @@ export const ERRORS_CODES: Record<number, string> = {
     3008: "E_ENDED",
     3009: "E_NOT_ENDED",
     3010: "E_NOT_OPEN",
-    3011: "E_ZERO_LENGTH_ADDRESS",
+    3011: "E_NOT_PAUSED",
+    3012: "E_ZERO_LENGTH_ADDRESS",
 };
