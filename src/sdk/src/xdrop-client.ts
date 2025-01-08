@@ -21,11 +21,11 @@ import { ERRORS_CODES } from "./config.js";
 import { getSuiLinkNetworkType, getSuiLinkType, LinkNetwork } from "./suilink.js";
 import { XDropModule } from "./xdrop-functions.js";
 import {
-    ClaimStatus,
-    ClaimStatusBcs,
+    EligibleStatus,
+    EligibleStatusBcs,
     objResToSuiLink,
     objResToXDrop,
-    retValToClaimStatus,
+    retValToEligibleStatus,
     SuiLink,
     XDrop,
     XDropIdentifier,
@@ -71,16 +71,16 @@ export class XDropClient extends SuiClientBase
 
     // === data fetching ===
 
-    public async fetchClaimStatuses(
+    public async fetchEligibleStatuses(
         typeCoin: string,
         linkNetwork: LinkNetwork,
         xdropId: string,
         addrs: string[],
-    ): Promise<ClaimStatus[]>
+    ): Promise<EligibleStatus[]>
     {
         const tx = new Transaction();
 
-        XDropModule.get_claim_statuses(
+        XDropModule.get_eligible_statuses(
             tx,
             this.xdropPkgId,
             typeCoin,
@@ -90,11 +90,11 @@ export class XDropClient extends SuiClientBase
         );
 
         const blockReturns = await devInspectAndGetReturnValues(
-            this.suiClient, tx, [ [ bcs.vector(ClaimStatusBcs) ] ]
+            this.suiClient, tx, [ [ bcs.vector(EligibleStatusBcs) ] ]
         );
 
         // eslint-disable-next-line
-        return blockReturns[0][0].map(retValToClaimStatus);
+        return blockReturns[0][0].map(retValToEligibleStatus);
     }
 
     public async fetchXDrop(

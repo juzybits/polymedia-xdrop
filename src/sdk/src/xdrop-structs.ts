@@ -31,16 +31,14 @@ export type XDropIdentifier = Pick<XDrop, "type_coin" | "type_network" | "id">;
 
 export type XDropStatus = "paused" | "open" | "ended";
 
-export const ClaimStatusBcs = bcs.struct("ClaimStatus", {
-    addr: bcs.String,
+export const EligibleStatusBcs = bcs.struct("EligibleStatus", {
     eligible: bcs.Bool,
     amount: bcs.U64,
     claimed: bcs.Bool,
 });
 
-// typeof ClaimStatusBcs.$inferType; // doesn't work well: `(property) status: any`
-export type ClaimStatus = {
-    addr: string;
+// typeof EligibleStatusBcs.$inferType; // doesn't work well: `(property) status: any`
+export type EligibleStatus = {
     eligible: boolean;
     amount: bigint;
     claimed: boolean;
@@ -69,7 +67,7 @@ export type SuiLink = {
 };
 
 export type LinkWithStatus = SuiLink & {
-    status: ClaimStatus;
+    status: EligibleStatus;
 };
 
 // === parsers ===
@@ -130,12 +128,11 @@ export function objResToSuiLink(
     };
 }
 
-export function retValToClaimStatus(
+export function retValToEligibleStatus(
     retVal: any,
-): ClaimStatus
+): EligibleStatus
 {
     return {
-        addr: retVal.addr,
         eligible: retVal.eligible,
         amount: BigInt(retVal.amount),
         claimed: retVal.claimed,
