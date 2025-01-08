@@ -288,6 +288,11 @@ public fun value<C, N>(xdrop: &XDrop<C, N>): u64 { xdrop.balance.value() }
 public fun claims<C, N>(xdrop: &XDrop<C, N>): &Table<String, Claim> { &xdrop.claims }
 public fun stats<C, N>(xdrop: &XDrop<C, N>): &Stats { &xdrop.stats }
 
+public fun claim_amount(claim: &Claim): u64 { claim.amount }
+public fun claim_claimed(claim: &Claim): bool { claim.claimed }
+public use fun claim_amount as Claim.amount;
+public use fun claim_claimed as Claim.claimed;
+
 public fun addrs_claimed(stats: &Stats): u64 { stats.addrs_claimed }
 public fun addrs_unclaimed(stats: &Stats): u64 { stats.addrs_unclaimed }
 public fun amount_claimed(stats: &Stats): u64 { stats.amount_claimed }

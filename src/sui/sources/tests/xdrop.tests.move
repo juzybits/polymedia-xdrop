@@ -201,6 +201,9 @@ fun test_end_to_end()
     assert_eq( runner.xdrop.status(), 0 ); // XDROP_STATUS_PAUSED
     assert_eq( runner.xdrop.value(), 300 );
     assert_eq( runner.xdrop.claims().length(), 2 );
+    let user_1_claim = runner.xdrop.claims().borrow(USER_1_ETH.to_string());
+    assert_eq( user_1_claim.amount(), 100 );
+    assert_eq( user_1_claim.claimed(), false );
     runner.assert_eligible_statuses(
         vector[USER_1_ETH, USER_2_ETH, RANDO_ETH],
         vector[
