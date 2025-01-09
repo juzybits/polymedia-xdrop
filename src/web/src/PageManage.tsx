@@ -9,7 +9,7 @@ import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { CardXDropDetails, XDropDetail } from "./comp/cards";
 import { useXDrop, XDropLoader } from "./comp/loader";
-import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
+import { ErrorMsg, ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
 import { fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
@@ -249,7 +249,7 @@ const CardAddClaims: React.FC<{
                 ? "AaAaAa,1000\nBbBbBb,2000"
                 : "0xAAAAA,1000\n0xBBBBB,2000",
         },
-        validate: (input) => {
+        validateInput: (input) => {
             if (!input) {
                 return { err: null, val: undefined };
             }
@@ -301,6 +301,12 @@ const CardAddClaims: React.FC<{
 
     const privateKey = useInputPrivateKey({
         label: "Admin private key (optional, DYOR):",
+        validateValue: (pk) => {
+            if (pk.toSuiAddress() !== xdrop.admin) {
+                return { err: "Admin private key does not match XDrop admin.", val: undefined };
+            }
+            return { err: null, val: pk };
+        },
     });
 
     const disableSubmit = isWorking || !!textArea.err;
