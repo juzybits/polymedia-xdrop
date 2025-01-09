@@ -314,33 +314,38 @@ const CardAddClaims: React.FC<{
 
             const { claims, totalAmount } = textArea.val;
 
-            // check admin wallet has enough balance
-            console.debug("[onSubmit] checking admin wallet balance");
-            const respBalance = await xdropClient.suiClient.getBalance({
-                owner: currAddr, coinType: xdrop.type_coin,
-            });
-            const balance = BigInt(respBalance.totalBalance);
-            if (totalAmount > balance) {
-                throw new Error(`Insufficient balance: `
-                    + `need ${fmtBal(totalAmount, decimals, symbol)}, `
-                    + `have ${fmtBal(balance, decimals, symbol)}`);
-            }
-
-            // check for addresses already in xdrop
-            if (xdrop.claims_length > 0) {
-                console.debug("[onSubmit] checking for existing addresses in xdrop");
-                const statuses = await xdropClient.fetchEligibleStatuses(
-                    xdrop.type_coin,
-                    xdrop.network_name,
-                    xdrop.id,
-                    claims.map(c => c.foreignAddr),
-                );
-                const claimsAndStatus = claims.map((claim, i) => ({ ...claim, status: statuses[i] }));
-                const existingAddrs = claimsAndStatus.filter(c => c.status.eligible).map(c => c.foreignAddr);
-                if (existingAddrs.length > 0) {
-                    throw new Error(`Addresses already in xDrop: ${existingAddrs.join(", ")}`);
-                }
-            }
+            // last moment validation against onchain state
+            await Promise.all([
+                // check admin wallet has enough balance
+                (async () => {
+                    const respBalance = await xdropClient.suiClient.getBalance({
+                        owner: currAddr, coinType: xdrop.type_coin,
+                    });
+                    const balance = BigInt(respBalance.totalBalance);
+                    if (totalAmount > balance) {
+                        throw new Error(`Insufficient balance: `
+                            + `need ${fmtBal(totalAmount, decimals, symbol)}, `
+                            + `have ${fmtBal(balance, decimals, symbol)}`);
+                    }
+                })(),
+                // check for addresses already in xdrop
+                (async () => {
+                    if (xdrop.claims_length > 0) {
+                        console.debug("[onSubmit] checking for existing addresses in xdrop");
+                        const statuses = await xdropClient.fetchEligibleStatuses(
+                            xdrop.type_coin,
+                            xdrop.network_name,
+                            xdrop.id,
+                            claims.map(c => c.foreignAddr),
+                        );
+                        const claimsAndStatus = claims.map((claim, i) => ({ ...claim, status: statuses[i] }));
+                        const existingAddrs = claimsAndStatus.filter(c => c.status.eligible).map(c => c.foreignAddr);
+                        if (existingAddrs.length > 0) {
+                            throw new Error(`Addresses already in xDrop: ${existingAddrs.join(", ")}`);
+                        }
+                    }
+                })()
+            ]);
 
             // submit the tx
             console.debug("[onSubmit] submitting tx");
