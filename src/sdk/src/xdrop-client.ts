@@ -341,4 +341,16 @@ export class XDropClient extends SuiClientBase
         return await this.signAndExecuteTx(tx);
     }
 
+    // === ergonomics ===
+
+    /**
+     * Create a new XDropClient instance with modified parameters
+     * while preserving all other settings from the current instance.
+     */
+    public with(overrides: Partial<ConstructorParameters<typeof XDropClient>[0]>): XDropClient {
+        return new XDropClient({
+            ...this,
+            ...overrides,
+        });
+    }
 }

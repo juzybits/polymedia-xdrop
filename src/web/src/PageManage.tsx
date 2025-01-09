@@ -328,6 +328,7 @@ const CardAddClaims: React.FC<{
             // last moment validation against onchain state
             await Promise.all([
                 // check admin wallet has enough balance
+                // TODO: check also SUI balance for tx fees
                 (async () => {
                     const respBalance = await xdropClient.suiClient.getBalance({
                         owner: currAddr, coinType: xdrop.type_coin,
@@ -358,11 +359,7 @@ const CardAddClaims: React.FC<{
             ]);
 
             // use private key signer if provided
-            const client = !privateKey.val ? xdropClient : new XDropClient({
-                graphClient: xdropClient.graphClient,
-                xdropPkgId: xdropClient.xdropPkgId,
-                suilinkPkgId: xdropClient.suilinkPkgId,
-                suiClient: xdropClient.suiClient,
+            const client = !privateKey.val ? xdropClient : xdropClient.with({
                 signTx: async (tx) => {
                     tx.setSenderIfNotSet(privateKey.val!.toSuiAddress());
                     const txBytes = await tx.build({ client: xdropClient.suiClient });
@@ -448,7 +445,7 @@ function localhostClaimsOrEmpty()
 // `0x0000000000000000000000000000000000000AaA,100
 // 0x1111111111111111111111111111111111111BbB,200
 // ` +
-Array.from({ length: 2000 }, () => {
+Array.from({ length: 1000 }, () => {
         // Generate random Ethereum address (40 hex chars)
         const addr = "0x" + Array.from({ length: 40 }, () =>
             Math.floor(Math.random() * 16).toString(16)
