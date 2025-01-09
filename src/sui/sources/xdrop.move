@@ -83,6 +83,10 @@ public struct EligibleStatus has copy, drop, store {
     claimed: bool,
 }
 
+public struct CleanerCap has key, store {
+    id: UID,
+}
+
 // === events ===
 
 public struct EventShare has drop, copy {
@@ -237,6 +241,37 @@ public fun user_claims<C, N>(
     return coin::take(&mut xdrop.balance, claim.amount, ctx)
 }
 
+// === cleaner functions ===
+
+public fun cleaner_creates_cleaner_cap(
+    _: &CleanerCap,
+    ctx: &mut TxContext,
+): CleanerCap {
+    CleanerCap {
+        id: object::new(ctx),
+    }
+}
+
+public fun cleaner_destroys_cleaner_cap(
+    cap: CleanerCap,
+) {
+    let CleanerCap { id } = cap;
+    object::delete(id);
+}
+
+public fun cleaner_deletes_claims<C, N>(
+    _: &CleanerCap,
+    xdrop: &mut XDrop<C, N>,
+    mut addrs: vector<vector<u8>>,
+) {
+    assert!( xdrop.is_ended(), E_NOT_ENDED );
+    while (addrs.length() > 0) {
+        let addr = addrs.pop_back();
+        let claim = xdrop.claims.remove(addr.to_string());
+        let Claim { .. } = claim;
+    };
+}
+
 // === view functions ===
 
 public fun get_eligible_statuses<C, N>(
@@ -308,6 +343,11 @@ fun init(otw: XDROP, ctx: &mut TxContext)
 {
     let publisher = package::claim(otw, ctx);
     transfer::public_transfer(publisher, ctx.sender());
+
+    let cleaner_cap = CleanerCap {
+        id: object::new(ctx),
+    };
+    transfer::transfer(cleaner_cap, ctx.sender());
 }
 
 // === test functions ===
