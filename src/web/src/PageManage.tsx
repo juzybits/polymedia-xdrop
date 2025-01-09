@@ -9,7 +9,7 @@ import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { CardXDropDetails, XDropDetail } from "./comp/cards";
 import { useXDrop, XDropLoader } from "./comp/loader";
-import { ErrorMsg, ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
+import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
 import { fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
@@ -300,6 +300,7 @@ const CardAddClaims: React.FC<{
     });
 
     const privateKey = useInputPrivateKey({
+        html: { value: import.meta.env.VITE_PRIVATE_KEY ?? "" },
         label: "Admin private key (optional, DYOR):",
         validateValue: (pk) => {
             if (pk.toSuiAddress() !== xdrop.admin) {
@@ -309,7 +310,7 @@ const CardAddClaims: React.FC<{
         },
     });
 
-    const disableSubmit = isWorking || !!textArea.err;
+    const disableSubmit = isWorking || !!textArea.err || !!privateKey.err;
 
     // === functions ===
 
