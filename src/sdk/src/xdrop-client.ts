@@ -92,12 +92,13 @@ export class XDropClient extends SuiClientBase
             return [];
         }
 
+        const MAX_PARALLEL_CALLS = 20;
         const addrsByTx = chunkArray(addrs, MAX_CLAIMS_ADDED_PER_TX);
-        const requiredTxs = addrsByTx.length;
+        const addrsByBatch = chunkArray(addrsByTx, MAX_PARALLEL_CALLS);
 
         const inspectTx = async (txAddrs: string[], txNum: number) =>
         {
-            console.debug(`[fetchEligibleStatuses] inspecting tx ${txNum + 1} of ${requiredTxs}`);
+            console.debug(`[fetchEligibleStatuses] inspecting tx ${txNum + 1} in batch`);
             const tx = new Transaction();
 
             const addrsByFnCall = chunkArray(txAddrs, MAX_ADDRS_PER_FN_CALL);
@@ -121,9 +122,16 @@ export class XDropClient extends SuiClientBase
             return blockReturns.flatMap(txRet => txRet[0].map(retValToEligibleStatus));
         };
 
-        const inspectTxs = addrsByTx.map(inspectTx);
-        const statusesByTx = await Promise.all(inspectTxs);
-        return statusesByTx.flat();
+        const statuses: EligibleStatus[] = [];
+        for (const [batchNum, batchAddrs] of addrsByBatch.entries())
+        {
+            console.debug(`[fetchEligibleStatuses] inspecting batch ${batchNum + 1} of ${addrsByBatch.length}`);
+            const inspectTxs = batchAddrs.map(inspectTx);
+            const statusesByTx = await Promise.all(inspectTxs);
+            statuses.push(...statusesByTx.flat());
+        }
+
+        return statuses;
     }
 
     public async fetchXDrop(
