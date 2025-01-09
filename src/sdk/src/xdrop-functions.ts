@@ -1,6 +1,6 @@
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { ObjectInput, objectArg } from "@polymedia/suitcase-core";
-import { suiLinkNetworkTypeToName, validateAndNormalizeNetworkAddr } from "./suilink";
+import { suiLinkNetworkTypeToName, validateAndNormalizeNetworkAddr } from "./suilink.js";
 
 /**
  * Build transactions for the xdrop::xdrop Sui module.
