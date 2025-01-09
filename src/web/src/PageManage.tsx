@@ -3,7 +3,7 @@ import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { Btn, isLocalhost, ReactSetter, useTextArea } from "@polymedia/suitcase-react";
-import { MAX_CLAIMS_ADDED_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -368,7 +368,7 @@ const CardAddClaims: React.FC<{
 
     // === html ===
 
-    const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_CLAIMS_ADDED_PER_TX);
+    const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_OBJECTS_PER_TX);
 
     return <>
     <div className="card compact">
@@ -421,7 +421,7 @@ function localhostClaimsOrEmpty()
     return (
 `0x0000000000000000000000000000000000000AaA,100
 0x1111111111111111111111111111111111111BbB,200
-` + Array.from({ length: 998 }, () => {
+` + Array.from({ length: 2998 }, () => {
         // Generate random Ethereum address (40 hex chars)
         const addr = "0x" + Array.from({ length: 40 }, () =>
             Math.floor(Math.random() * 16).toString(16)

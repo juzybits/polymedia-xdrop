@@ -39,14 +39,14 @@ import { extractXDropObjCreated } from "./xdrop-txs.js";
  * object_runtime_max_num_cached_objects (reached in get_eligible_statuses)
  * are both 1000.
  */
-export const MAX_CLAIMS_ADDED_PER_TX = 1000;
+export const MAX_OBJECTS_PER_TX = 1000;
 
 /**
  * How many addresses can be passed to a single function call.
  *
  * Maximum function args size is 16384 bytes (`max_pure_argument_size`).
  */
-export const MAX_ADDRS_PER_FN_CALL = 350; // breaks at 381 addresses (2024-11-29)
+export const MAX_ADDRS_PER_FN = 350; // breaks at 381 addresses (2024-11-29)
 
 /**
  * Execute transactions on the XDrop Sui package.
@@ -93,7 +93,7 @@ export class XDropClient extends SuiClientBase
         }
 
         const MAX_PARALLEL_CALLS = 20;
-        const addrsByTx = chunkArray(addrs, MAX_CLAIMS_ADDED_PER_TX);
+        const addrsByTx = chunkArray(addrs, MAX_OBJECTS_PER_TX);
         const addrsByBatch = chunkArray(addrsByTx, MAX_PARALLEL_CALLS);
 
         const inspectTx = async (txAddrs: string[], txNum: number) =>
@@ -101,22 +101,22 @@ export class XDropClient extends SuiClientBase
             console.debug(`[fetchEligibleStatuses] inspecting tx ${txNum + 1} in batch`);
             const tx = new Transaction();
 
-            const addrsByFnCall = chunkArray(txAddrs, MAX_ADDRS_PER_FN_CALL);
-            for (const callAddrs of addrsByFnCall) {
+            const addrsByFn = chunkArray(txAddrs, MAX_ADDRS_PER_FN);
+            for (const fnAddrs of addrsByFn) {
                 XDropModule.get_eligible_statuses(
                     tx,
                     this.xdropPkgId,
                     typeCoin,
                     getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork),
                     xdropId,
-                    callAddrs,
+                    fnAddrs,
                 );
             }
 
             const blockReturns = await devInspectAndGetReturnValues(
                 this.suiClient,
                 tx,
-                Array.from({ length: addrsByFnCall.length }, () => [bcs.vector(EligibleStatusBcs)])
+                Array.from({ length: addrsByFn.length }, () => [bcs.vector(EligibleStatusBcs)])
             );
 
             return blockReturns.flatMap(txRet => txRet[0].map(retValToEligibleStatus));
@@ -293,17 +293,17 @@ export class XDropClient extends SuiClientBase
     {
         const resps: SuiTransactionBlockResponse[] = [];
 
-        const claimsByTx = chunkArray(claims, MAX_CLAIMS_ADDED_PER_TX);
+        const claimsByTx = chunkArray(claims, MAX_OBJECTS_PER_TX);
         for (const [txNum, txClaims] of claimsByTx.entries())
         {
             console.debug(`[adminAddsClaims] submitting tx ${txNum + 1} of ${claimsByTx.length}`);
             const tx = new Transaction();
             tx.setSender(sender);
 
-            const claimsByFnCall = chunkArray(txClaims, MAX_ADDRS_PER_FN_CALL);
-            for (const callClaims of claimsByFnCall)
+            const claimsByFn = chunkArray(txClaims, MAX_ADDRS_PER_FN);
+            for (const fnClaims of claimsByFn)
             {
-                const chunkTotalAmount = callClaims.reduce((sum, c) => sum + c.amount, 0n);
+                const chunkTotalAmount = fnClaims.reduce((sum, c) => sum + c.amount, 0n);
                 XDropModule.admin_adds_claims(
                     tx,
                     this.xdropPkgId,
@@ -311,8 +311,8 @@ export class XDropClient extends SuiClientBase
                     xdrop.type_network,
                     xdrop.id,
                     coinWithBalance({ balance: chunkTotalAmount, type: xdrop.type_coin })(tx),
-                    callClaims.map(c => c.foreignAddr),
-                    callClaims.map(c => c.amount),
+                    fnClaims.map(c => c.foreignAddr),
+                    fnClaims.map(c => c.amount),
                 );
             }
             const resp = await this.dryRunOrSignAndExecute(tx, dryRun, sender);
