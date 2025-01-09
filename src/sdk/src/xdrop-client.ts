@@ -35,7 +35,9 @@ import { extractXDropObjCreated } from "./xdrop-txs.js";
 /**
  * How many claims can be added to an xDrop in a single transaction.
  *
- * A tx can create up to 1000 dynamic object fields (`object_runtime_max_num_store_entries`).
+ * object_runtime_max_num_store_entries (reached in admin_adds_claims) and
+ * object_runtime_max_num_cached_objects (reached in get_eligible_statuses)
+ * are both 1000.
  */
 export const MAX_CLAIMS_ADDED_PER_TX = 1000;
 
@@ -86,23 +88,32 @@ export class XDropClient extends SuiClientBase
         addrs: string[],
     ): Promise<EligibleStatus[]>
     {
+        if (addrs.length === 0) {
+            return [];
+        }
+
         const tx = new Transaction();
 
-        XDropModule.get_eligible_statuses(
-            tx,
-            this.xdropPkgId,
-            typeCoin,
-            getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork),
-            xdropId,
-            addrs,
-        );
+        const addrsByFnCall = chunkArray(addrs, MAX_ADDRS_PER_FN_CALL);
+        for (const callAddrs of addrsByFnCall) {
+            XDropModule.get_eligible_statuses(
+                tx,
+                this.xdropPkgId,
+                typeCoin,
+                getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork),
+                xdropId,
+                callAddrs,
+            );
+        }
 
         const blockReturns = await devInspectAndGetReturnValues(
-            this.suiClient, tx, [ [ bcs.vector(EligibleStatusBcs) ] ]
+            this.suiClient,
+            tx,
+            Array.from({ length: addrsByFnCall.length }, () => [bcs.vector(EligibleStatusBcs)])
         );
 
         // eslint-disable-next-line
-        return blockReturns[0][0].map(retValToEligibleStatus);
+        return blockReturns.flatMap(txRet => txRet[0].map(retValToEligibleStatus));
     }
 
     public async fetchXDrop(
