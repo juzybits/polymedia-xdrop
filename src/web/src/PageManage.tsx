@@ -2,7 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
-import { Btn, isLocalhost, ReactSetter, useTextArea } from "@polymedia/suitcase-react";
+import { Btn, isLocalhost, ReactSetter, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -299,6 +299,10 @@ const CardAddClaims: React.FC<{
         deps: [],
     });
 
+    const privateKey = useInputPrivateKey({
+        label: "Admin private key (optional, DYOR):",
+    });
+
     const disableSubmit = isWorking || !!textArea.err;
 
     // === functions ===
@@ -390,7 +394,10 @@ const CardAddClaims: React.FC<{
         <div className="card-title">Summary:</div>
             <p>▸ {textArea.val.claims.length} addresses</p>
             <p>▸ {fmtBal(textArea.val.totalAmount, decimals, symbol)}</p>
-            {requiredTxs > 1 && <p>⚠️ Requires {requiredTxs} transactions</p>}
+            {requiredTxs > 1 && <>
+                <p>⚠️ Requires {requiredTxs} transactions. You can enter your private key to avoid signing each tx manually. Only enter your PK if you know what you're doing.</p>
+                {privateKey.input}
+            </>}
         </div>
         </>}
 
