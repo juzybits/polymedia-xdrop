@@ -3,7 +3,7 @@ import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { Btn, isLocalhost, ReactSetter, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
-import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropClient, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -357,9 +357,22 @@ const CardAddClaims: React.FC<{
                 })()
             ]);
 
+            // use private key signer if provided
+            const client = !privateKey.val ? xdropClient : new XDropClient({
+                graphClient: xdropClient.graphClient,
+                xdropPkgId: xdropClient.xdropPkgId,
+                suilinkPkgId: xdropClient.suilinkPkgId,
+                suiClient: xdropClient.suiClient,
+                signTx: async (tx) => {
+                    tx.setSenderIfNotSet(privateKey.val!.toSuiAddress());
+                    const txBytes = await tx.build({ client: xdropClient.suiClient });
+                    return privateKey.val!.signTransaction(txBytes);
+                },
+            });
+
             // submit the tx
             console.debug("[onSubmit] submitting tx");
-            const resp = await xdropClient.adminAddsClaims(
+            const resp = await client.adminAddsClaims(
                 currAddr,
                 xdrop,
                 claims,
@@ -432,9 +445,10 @@ function localhostClaimsOrEmpty()
 {
     if (!isLocalhost()) return "";
     return (
-`0x0000000000000000000000000000000000000AaA,100
-0x1111111111111111111111111111111111111BbB,200
-` + Array.from({ length: 2998 }, () => {
+// `0x0000000000000000000000000000000000000AaA,100
+// 0x1111111111111111111111111111111111111BbB,200
+// ` +
+Array.from({ length: 2000 }, () => {
         // Generate random Ethereum address (40 hex chars)
         const addr = "0x" + Array.from({ length: 40 }, () =>
             Math.floor(Math.random() * 16).toString(16)
