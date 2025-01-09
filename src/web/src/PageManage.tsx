@@ -330,19 +330,18 @@ const CardAddClaims: React.FC<{
                 })(),
                 // check for addresses already in xdrop
                 (async () => {
-                    if (xdrop.claims_length > 0) {
-                        console.debug("[onSubmit] checking for existing addresses in xdrop");
-                        const statuses = await xdropClient.fetchEligibleStatuses(
-                            xdrop.type_coin,
-                            xdrop.network_name,
-                            xdrop.id,
-                            claims.map(c => c.foreignAddr),
-                        );
-                        const claimsAndStatus = claims.map((claim, i) => ({ ...claim, status: statuses[i] }));
-                        const existingAddrs = claimsAndStatus.filter(c => c.status.eligible).map(c => c.foreignAddr);
-                        if (existingAddrs.length > 0) {
-                            throw new Error(`Addresses already in xDrop: ${existingAddrs.join(", ")}`);
-                        }
+                    if (xdrop.claims_length === 0) { return; } // no need to check
+                    console.debug("[onSubmit] checking for existing addresses in xdrop");
+                    const statuses = await xdropClient.fetchEligibleStatuses(
+                        xdrop.type_coin,
+                        xdrop.network_name,
+                        xdrop.id,
+                        claims.map(c => c.foreignAddr),
+                    );
+                    const claimsAndStatus = claims.map((claim, i) => ({ ...claim, status: statuses[i] }));
+                    const existingAddrs = claimsAndStatus.filter(c => c.status.eligible).map(c => c.foreignAddr);
+                    if (existingAddrs.length > 0) {
+                        throw new Error(`Addresses already in xDrop: ${existingAddrs.join(", ")}`);
                     }
                 })()
             ]);

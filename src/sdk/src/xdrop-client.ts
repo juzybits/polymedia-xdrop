@@ -18,6 +18,7 @@ import {
     WaitForTxOptions
 } from "@polymedia/suitcase-core";
 import { ERRORS_CODES } from "./config.js";
+import { serialBatchesOfParallelOperations } from "./misc.js";
 import { getSuiLinkNetworkType, getSuiLinkType, LinkNetwork } from "./suilink.js";
 import { XDropModule } from "./xdrop-functions.js";
 import {
@@ -31,6 +32,8 @@ import {
     XDropIdentifier,
 } from "./xdrop-structs.js";
 import { extractXDropObjCreated } from "./xdrop-txs.js";
+
+const MAX_PARALLEL_RPC_CALLS = 20;
 
 /**
  * How many claims can be added to an xDrop in a single transaction.
@@ -88,20 +91,12 @@ export class XDropClient extends SuiClientBase
         addrs: string[],
     ): Promise<EligibleStatus[]>
     {
-        if (addrs.length === 0) {
-            return [];
-        }
-
-        const MAX_PARALLEL_CALLS = 20;
-        const addrsByTx = chunkArray(addrs, MAX_OBJECTS_PER_TX);
-        const addrsByBatch = chunkArray(addrsByTx, MAX_PARALLEL_CALLS);
-
-        const inspectTx = async (txAddrs: string[], txNum: number) =>
+        const inspectTx = async (txAddrs: string[], idx: number) =>
         {
-            console.debug(`[fetchEligibleStatuses] inspecting tx ${txNum + 1} in batch`);
+            console.debug(`[fetchEligibleStatuses] inspecting tx ${idx + 1} in batch`);
             const tx = new Transaction();
-
             const addrsByFn = chunkArray(txAddrs, MAX_ADDRS_PER_FN);
+
             for (const fnAddrs of addrsByFn) {
                 XDropModule.get_eligible_statuses(
                     tx,
@@ -122,16 +117,12 @@ export class XDropClient extends SuiClientBase
             return blockReturns.flatMap(txRet => txRet[0].map(retValToEligibleStatus));
         };
 
-        const statuses: EligibleStatus[] = [];
-        for (const [batchNum, batchAddrs] of addrsByBatch.entries())
-        {
-            console.debug(`[fetchEligibleStatuses] inspecting batch ${batchNum + 1} of ${addrsByBatch.length}`);
-            const inspectTxs = batchAddrs.map(inspectTx);
-            const statusesByTx = await Promise.all(inspectTxs);
-            statuses.push(...statusesByTx.flat());
-        }
+        const addrsByTx = chunkArray(addrs, MAX_OBJECTS_PER_TX);
+        const statusesByTx = await serialBatchesOfParallelOperations(
+            MAX_PARALLEL_RPC_CALLS, addrsByTx, inspectTx.bind(this)
+        );
 
-        return statuses;
+        return statusesByTx.flat();
     }
 
     public async fetchXDrop(
