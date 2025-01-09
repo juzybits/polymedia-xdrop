@@ -311,6 +311,8 @@ const CardAddClaims: React.FC<{
             setIsWorking(true);
             setSubmitRes({ ok: undefined });
 
+            // check admin wallet has enough balance
+
             const respBalance = await xdropClient.suiClient.getBalance({
                 owner: currAddr, coinType: xdrop.type_coin,
             });

@@ -251,6 +251,7 @@ export class XDropClient extends SuiClientBase
         sender: string,
         xdrop: XDropIdentifier,
         claims: { foreignAddr: string; amount: bigint }[],
+        dryRun?: boolean,
     ): Promise<SuiTransactionBlockResponse[]>
     {
         const resps: SuiTransactionBlockResponse[] = [];
@@ -282,7 +283,7 @@ export class XDropClient extends SuiClientBase
                     callClaims.map(c => c.amount),
                 );
             }
-            const resp = await this.signAndExecuteTx(tx);
+            const resp = await this.dryRunOrSignAndExecute(tx, dryRun, sender);
             resps.push(resp);
         }
 
