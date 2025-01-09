@@ -88,41 +88,40 @@ export class XDropClient extends SuiClientBase
         addrs: string[],
     ): Promise<EligibleStatus[]>
     {
-        const statuses: EligibleStatus[] = [];
         if (addrs.length === 0) {
-            return statuses;
+            return [];
         }
 
         const addrsByTx = chunkArray(addrs, MAX_CLAIMS_ADDED_PER_TX);
-        for (const [txNum, txAddrs] of addrsByTx.entries())
-        {
-            console.debug(`[fetchEligibleStatuses] inspecting tx ${txNum + 1} of ${addrsByTx.length}`);
-            const tx = new Transaction();
 
-            const addrsByFnCall = chunkArray(txAddrs, MAX_ADDRS_PER_FN_CALL);
-            for (const callAddrs of addrsByFnCall) {
-                XDropModule.get_eligible_statuses(
+        const allStatuses = await Promise.all(addrsByTx.map(
+            async (txAddrs, txNum) => {
+                console.debug(`[fetchEligibleStatuses] inspecting tx ${txNum + 1} of ${addrsByTx.length}`);
+                const tx = new Transaction();
+
+                const addrsByFnCall = chunkArray(txAddrs, MAX_ADDRS_PER_FN_CALL);
+                for (const callAddrs of addrsByFnCall) {
+                    XDropModule.get_eligible_statuses(
+                        tx,
+                        this.xdropPkgId,
+                        typeCoin,
+                        getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork),
+                        xdropId,
+                        callAddrs,
+                    );
+                }
+
+                const blockReturns = await devInspectAndGetReturnValues(
+                    this.suiClient,
                     tx,
-                    this.xdropPkgId,
-                    typeCoin,
-                    getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork),
-                    xdropId,
-                    callAddrs,
+                    Array.from({ length: addrsByFnCall.length }, () => [bcs.vector(EligibleStatusBcs)])
                 );
-            }
 
-            const blockReturns = await devInspectAndGetReturnValues(
-                this.suiClient,
-                tx,
-                Array.from({ length: addrsByFnCall.length }, () => [bcs.vector(EligibleStatusBcs)])
-            );
+                return blockReturns.flatMap(txRet => txRet[0].map(retValToEligibleStatus));
+            })
+        );
 
-            for (const txRet of blockReturns) {
-                statuses.push(...txRet[0].map(retValToEligibleStatus)); // eslint-disable-line
-            }
-        }
-
-        return statuses;
+        return allStatuses.flat();
     }
 
     public async fetchXDrop(
