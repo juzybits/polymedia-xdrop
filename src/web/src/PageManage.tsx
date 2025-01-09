@@ -306,27 +306,48 @@ const CardAddClaims: React.FC<{
     const onSubmit = async () =>
     {
         if (disableSubmit) { return; }
+        if (!textArea.val) { throw new Error("input has no value (please report this bug)"); }
 
         try {
             setIsWorking(true);
             setSubmitRes({ ok: undefined });
 
-            // check admin wallet has enough balance
+            const { claims, totalAmount } = textArea.val;
 
+            // check admin wallet has enough balance
+            console.debug("[onSubmit] checking admin wallet balance");
             const respBalance = await xdropClient.suiClient.getBalance({
                 owner: currAddr, coinType: xdrop.type_coin,
             });
             const balance = BigInt(respBalance.totalBalance);
-            if (textArea.val!.totalAmount > balance) {
+            if (totalAmount > balance) {
                 throw new Error(`Insufficient balance: `
-                    + `need ${fmtBal(textArea.val!.totalAmount, decimals, symbol)}, `
+                    + `need ${fmtBal(totalAmount, decimals, symbol)}, `
                     + `have ${fmtBal(balance, decimals, symbol)}`);
             }
 
+            // check for addresses already in xdrop
+            if (xdrop.claims_length > 0) {
+                console.debug("[onSubmit] checking for existing addresses in xdrop");
+                const statuses = await xdropClient.fetchEligibleStatuses(
+                    xdrop.type_coin,
+                    xdrop.network_name,
+                    xdrop.id,
+                    claims.map(c => c.foreignAddr),
+                );
+                const claimsAndStatus = claims.map((claim, i) => ({ ...claim, status: statuses[i] }));
+                const existingAddrs = claimsAndStatus.filter(c => c.status.eligible).map(c => c.foreignAddr);
+                if (existingAddrs.length > 0) {
+                    throw new Error(`Addresses already in xDrop: ${existingAddrs.join(", ")}`);
+                }
+            }
+
+            // submit the tx
+            console.debug("[onSubmit] submitting tx");
             const resp = await xdropClient.adminAddsClaims(
                 currAddr,
                 xdrop,
-                textArea.val!.claims,
+                claims,
             );
             console.debug("[onSubmit] okay:", resp);
             setSubmitRes({ ok: true });
@@ -392,7 +413,10 @@ const CardNotAdmin: React.FC<{
 function localhostClaimsOrEmpty()
 {
     if (!isLocalhost()) return "";
-    return Array.from({ length: 1001 }, () => {
+    return (
+`0x0000000000000000000000000000000000000AaA,100
+0x1111111111111111111111111111111111111BbB,200
+` + Array.from({ length: 998 }, () => {
         // Generate random Ethereum address (40 hex chars)
         const addr = "0x" + Array.from({ length: 40 }, () =>
             Math.floor(Math.random() * 16).toString(16)
@@ -400,5 +424,5 @@ function localhostClaimsOrEmpty()
         // Random amount between 1 and 100
         const amount = Math.random() * 100 + 1;
         return `${addr},${amount}`;
-    }).join("\n");
+    }).join("\n"));
 }
