@@ -93,35 +93,37 @@ export class XDropClient extends SuiClientBase
         }
 
         const addrsByTx = chunkArray(addrs, MAX_CLAIMS_ADDED_PER_TX);
+        const requiredTxs = addrsByTx.length;
 
-        const allStatuses = await Promise.all(addrsByTx.map(
-            async (txAddrs, txNum) => {
-                console.debug(`[fetchEligibleStatuses] inspecting tx ${txNum + 1} of ${addrsByTx.length}`);
-                const tx = new Transaction();
+        const inspectTx = async (txAddrs: string[], txNum: number) =>
+        {
+            console.debug(`[fetchEligibleStatuses] inspecting tx ${txNum + 1} of ${requiredTxs}`);
+            const tx = new Transaction();
 
-                const addrsByFnCall = chunkArray(txAddrs, MAX_ADDRS_PER_FN_CALL);
-                for (const callAddrs of addrsByFnCall) {
-                    XDropModule.get_eligible_statuses(
-                        tx,
-                        this.xdropPkgId,
-                        typeCoin,
-                        getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork),
-                        xdropId,
-                        callAddrs,
-                    );
-                }
-
-                const blockReturns = await devInspectAndGetReturnValues(
-                    this.suiClient,
+            const addrsByFnCall = chunkArray(txAddrs, MAX_ADDRS_PER_FN_CALL);
+            for (const callAddrs of addrsByFnCall) {
+                XDropModule.get_eligible_statuses(
                     tx,
-                    Array.from({ length: addrsByFnCall.length }, () => [bcs.vector(EligibleStatusBcs)])
+                    this.xdropPkgId,
+                    typeCoin,
+                    getSuiLinkNetworkType(this.suilinkPkgId, linkNetwork),
+                    xdropId,
+                    callAddrs,
                 );
+            }
 
-                return blockReturns.flatMap(txRet => txRet[0].map(retValToEligibleStatus));
-            })
-        );
+            const blockReturns = await devInspectAndGetReturnValues(
+                this.suiClient,
+                tx,
+                Array.from({ length: addrsByFnCall.length }, () => [bcs.vector(EligibleStatusBcs)])
+            );
 
-        return allStatuses.flat();
+            return blockReturns.flatMap(txRet => txRet[0].map(retValToEligibleStatus));
+        };
+
+        const inspectTxs = addrsByTx.map(inspectTx);
+        const statusesByTx = await Promise.all(inspectTxs);
+        return statusesByTx.flat();
     }
 
     public async fetchXDrop(
