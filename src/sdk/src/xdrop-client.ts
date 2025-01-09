@@ -34,9 +34,17 @@ import { extractXDropObjCreated } from "./xdrop-txs.js";
 
 /**
  * How many claims can be added to an xDrop in a single transaction.
- * @see XDropClient.adminAddsClaims
+ *
+ * A tx can create up to 1000 dynamic object fields (`object_runtime_max_num_store_entries`).
  */
 export const MAX_CLAIMS_ADDED_PER_TX = 1000;
+
+/**
+ * How many addresses can be passed to a single function call.
+ *
+ * Maximum function args size is 16384 bytes (`max_pure_argument_size`).
+ */
+export const MAX_ADDRS_PER_FN_CALL = 350; // breaks at 381 addresses (2024-11-29)
 
 /**
  * Execute transactions on the XDrop Sui package.
@@ -256,19 +264,14 @@ export class XDropClient extends SuiClientBase
     {
         const resps: SuiTransactionBlockResponse[] = [];
 
-        // Create up to 1000 dynamic object fields in 1 tx (`object_runtime_max_num_store_entries`);
-        const maxClaimsPerTx = MAX_CLAIMS_ADDED_PER_TX;
-        // Function args size must be under 16384 bytes (`SizeLimitExceeded`/ `maximum pure argument size`)
-        const maxClaimsPerFnCall = 350; // breaks above 380 (devnet, 2024-11-29)
-
-        const claimsByTx = chunkArray(claims, maxClaimsPerTx);
+        const claimsByTx = chunkArray(claims, MAX_CLAIMS_ADDED_PER_TX);
         for (const [txNum, txClaims] of claimsByTx.entries())
         {
             console.debug(`[adminAddsClaims] starting tx ${txNum + 1} of ${claimsByTx.length}`);
             const tx = new Transaction();
             tx.setSender(sender);
 
-            const claimsByFnCall = chunkArray(txClaims, maxClaimsPerFnCall);
+            const claimsByFnCall = chunkArray(txClaims, MAX_ADDRS_PER_FN_CALL);
             for (const callClaims of claimsByFnCall)
             {
                 const chunkTotalAmount = callClaims.reduce((sum, c) => sum + c.amount, 0n);
