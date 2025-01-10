@@ -83,6 +83,7 @@ public struct EligibleStatus has copy, drop, store {
     claimed: bool,
 }
 
+/// Allows removing entries from XDrop.claims after an XDrop has ended.
 public struct CleanerCap has key, store {
     id: UID,
 }
@@ -93,6 +94,19 @@ public struct EventShare has drop, copy {
     id: address,
     type_coin: AsciiString,
     type_network: AsciiString,
+}
+
+// === initialization ===
+
+fun init(otw: XDROP, ctx: &mut TxContext)
+{
+    let publisher = package::claim(otw, ctx);
+    transfer::public_transfer(publisher, ctx.sender());
+
+    let cleaner_cap = CleanerCap {
+        id: object::new(ctx),
+    };
+    transfer::transfer(cleaner_cap, ctx.sender());
 }
 
 // === admin functions ===
@@ -250,8 +264,8 @@ public fun cleaner_deletes_claims<C, N>(
 ) {
     assert!( xdrop.is_ended(), E_NOT_ENDED );
     while (addrs.length() > 0) {
-        let addr = addrs.pop_back();
-        let claim = xdrop.claims.remove(addr.to_string());
+        let addr = addrs.pop_back().to_string();
+        let claim = xdrop.claims.remove(addr);
         let Claim { .. } = claim;
     };
 }
@@ -336,19 +350,6 @@ public fun amount_unclaimed(stats: &Stats): u64 { stats.amount_unclaimed }
 public fun eligible(status: &EligibleStatus): bool { status.eligible }
 public fun claimed(status: &EligibleStatus): bool { status.claimed }
 public fun amount(status: &EligibleStatus): u64 { status.amount }
-
-// === initialization ===
-
-fun init(otw: XDROP, ctx: &mut TxContext)
-{
-    let publisher = package::claim(otw, ctx);
-    transfer::public_transfer(publisher, ctx.sender());
-
-    let cleaner_cap = CleanerCap {
-        id: object::new(ctx),
-    };
-    transfer::transfer(cleaner_cap, ctx.sender());
-}
 
 // === test functions ===
 

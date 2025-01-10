@@ -506,3 +506,5 @@ fun test_init_for_testing()
     xdrop::init_for_testing(runner.scen.ctx());
     destroy(runner);
 }
+
+// TODO: write cleaner tests
