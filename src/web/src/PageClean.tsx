@@ -67,7 +67,7 @@ const CardClean: React.FC<{
     {
         if (disableSubmit) { return; }
 
-        const first100Addrs = claimsToClean.slice(0, 100).map(claim => claim[0]);
+        const foreignAddrs = claimsToClean.map(claim => claim[0]); // TODO: fetch
 
         try {
             setIsWorking(true);
@@ -75,9 +75,9 @@ const CardClean: React.FC<{
 
             console.debug("[onSubmit] submitting tx");
             const resp = await xdropClient.cleanerDeletesClaims(
-                cleanerCapId,
+                cleanerCapId, // TODO: fetch
                 xdrop,
-                first100Addrs,
+                foreignAddrs,
             );
 
             console.debug("[onSubmit] okay:", resp);

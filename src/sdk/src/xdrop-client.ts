@@ -283,7 +283,6 @@ export class XDropClient extends SuiClientBase
     ): Promise<SuiTransactionBlockResponse[]>
     {
         const resps: SuiTransactionBlockResponse[] = [];
-
         const claimsByTx = chunkArray(claims, MAX_OBJECTS_PER_TX);
         for (const [txNum, txClaims] of claimsByTx.entries())
         {
@@ -309,7 +308,6 @@ export class XDropClient extends SuiClientBase
             const resp = await this.dryRunOrSignAndExecute(tx, dryRun, sender);
             resps.push(resp);
         }
-
         return resps;
     }
 
@@ -345,13 +343,24 @@ export class XDropClient extends SuiClientBase
         cleanerCap: string,
         xdrop: XDropIdentifier,
         addrs: string[],
-    ): Promise<SuiTransactionBlockResponse>
+    ): Promise<SuiTransactionBlockResponse[]>
     {
-        const tx = new Transaction();
-        XDropModule.cleaner_deletes_claims(
-            tx, this.xdropPkgId, xdrop.type_coin, xdrop.type_network, cleanerCap, xdrop.id, addrs
-        );
-        return await this.signAndExecuteTx(tx);
+        const resps: SuiTransactionBlockResponse[] = [];
+        const addrsByTx = chunkArray(addrs, MAX_OBJECTS_PER_TX);
+        for (const [txNum, txAddrs] of addrsByTx.entries())
+        {
+            console.debug(`[cleanerDeletesClaims] submitting tx ${txNum + 1} of ${addrsByTx.length}`);
+            const tx = new Transaction();
+            const claimsByFn = chunkArray(txAddrs, MAX_ADDRS_PER_FN);
+            for (const fnAddrs of claimsByFn) {
+                XDropModule.cleaner_deletes_claims(
+                    tx, this.xdropPkgId, xdrop.type_coin, xdrop.type_network, cleanerCap, xdrop.id, fnAddrs
+                );
+            }
+            const resp = await this.signAndExecuteTx(tx);
+            resps.push(resp);
+        }
+        return resps;
     }
 
     // === ergonomics ===
