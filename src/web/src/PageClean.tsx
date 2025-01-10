@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
-import { XDropLoader } from "./comp/loader";
+import { Loader, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 import { claimsToClean, cleanerCapId } from "./PageClean-dev-data";
 import { PageNotFound } from "./PageNotFound";
@@ -18,8 +18,8 @@ export const PageClean: React.FC = () =>
 
     const { header, xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
-    const fetchedXDropAndCoinMeta = useXDrop(xdropId);
-    const fetchedCleanerCapId = useFetch(
+    const fetchedXDrop = useXDrop(xdropId);
+    const fetchedCap = useFetch(
         async () => !currAcct ? undefined : xdropClient.fetchOneCleanerCapId(currAcct.address),
         [xdropClient, currAcct],
     );
@@ -33,14 +33,23 @@ export const PageClean: React.FC = () =>
                     Clean xDrop
                 </div>
 
-                <XDropLoader fetched={fetchedXDropAndCoinMeta} requireWallet={true}>
+                <XDropLoader fetched={fetchedXDrop} requireWallet={true}>
                 {(xdrop, _coinMeta) => <>
-                    <CardXDropDetails xdrop={xdrop} extraDetails={<XDropStats xdrop={xdrop} coinMeta={_coinMeta} />} />
-                    <CardClean
+
+                    <CardXDropDetails
                         xdrop={xdrop}
-                        fetchedCleanerCapId={fetchedCleanerCapId}
-                        refetch={fetchedXDropAndCoinMeta.refetch}
+                        extraDetails={<XDropStats xdrop={xdrop} coinMeta={_coinMeta} />}
                     />
+
+                    <Loader name="Cleaner Cap" fetcher={fetchedCap}>
+                    {cleanerCapId =>
+                        <CardClean
+                            xdrop={xdrop}
+                            cleanerCapId={cleanerCapId}
+                            refetch={fetchedXDrop.refetch}
+                    />}
+                    </Loader>
+
                 </>}
                 </XDropLoader>
 
@@ -51,11 +60,11 @@ export const PageClean: React.FC = () =>
 
 const CardClean: React.FC<{
     xdrop: XDrop;
-    fetchedCleanerCapId: UseFetchResult<string | null>;
+    cleanerCapId: string;
     refetch: () => Promise<void>;
 }> = ({
     xdrop,
-    fetchedCleanerCapId,
+    cleanerCapId,
     refetch,
 }) =>
 {
@@ -63,7 +72,7 @@ const CardClean: React.FC<{
 
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    const disableSubmit = isWorking || !!fetchedCleanerCapId.isLoading || !!fetchedCleanerCapId.err;
+    const disableSubmit = isWorking;
 
     const onSubmit = async () =>
     {
@@ -77,7 +86,7 @@ const CardClean: React.FC<{
 
             console.debug("[onSubmit] submitting tx");
             const resp = await xdropClient.cleanerDeletesClaims(
-                fetchedCleanerCapId.data!,
+                cleanerCapId,
                 xdrop,
                 foreignAddrs,
             );
@@ -98,7 +107,7 @@ const CardClean: React.FC<{
         {/* <div className="card-title"></div> */}
 
         <div className="card-description">
-            {JSON.stringify(fetchedCleanerCapId)}
+            {JSON.stringify(cleanerCapId)}
         </div>
 
         <div className="card-description">
