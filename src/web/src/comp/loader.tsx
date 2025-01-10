@@ -23,7 +23,7 @@ export const XDropLoader: React.FC<{
     }
 
     if (fetched.isLoading || fetched.data === undefined) {
-        return <CardSpinner className="compact" />;
+        return <CardSpinner />;
     }
 
     const { xdrop, coinMeta } = fetched.data;

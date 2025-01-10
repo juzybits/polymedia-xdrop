@@ -8,9 +8,9 @@ import { useAppContext } from "../App";
 export const CardSpinner: React.FC<{
     className?: string;
 }   > = ({
-    className,
+    className = "compact",
 }) => {
-    return <div className={`card ${className ?? ""}`}>
+    return <div className={`card ${className}`}>
         <FullCardMsg>
             <div className="card-spinner" />
         </FullCardMsg>

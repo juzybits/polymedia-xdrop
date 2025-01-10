@@ -48,13 +48,13 @@ const ListXdrops: React.FC<{
     }
     if (xdrops.page.length === 0) {
         return xdrops.isLoading
-            ? <CardSpinner className="compact" />
+            ? <CardSpinner />
             : <CardWithMsg>No auctions yet</CardWithMsg>;
     }
 
     return <>
         <div ref={listRef} className={`card-list ${xdrops.isLoading ? "loading" : ""}`}>
-            {xdrops.isLoading && <CardSpinner className="compact" />}
+            {xdrops.isLoading && <CardSpinner />}
             {xdrops.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
                     button={<Link to={`/manage/${x.id}`} className="btn">MANAGE</Link>}
