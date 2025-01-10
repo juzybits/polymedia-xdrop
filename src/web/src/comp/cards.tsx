@@ -17,7 +17,7 @@ export const CardSpinner: React.FC<{
     </div>;
 };
 
-export const CardWithMsg: React.FC<{
+export const CardMsg: React.FC<{
     className?: string;
     children: React.ReactNode;
 }> = ({
@@ -31,7 +31,7 @@ export const CardWithMsg: React.FC<{
     </div>;
 };
 
-export const FullCardMsg: React.FC<{
+const FullCardMsg: React.FC<{
     children: React.ReactNode;
 }> = ({
     children,

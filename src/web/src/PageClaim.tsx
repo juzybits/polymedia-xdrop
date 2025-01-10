@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { PageNotFound } from "./PageNotFound";
-import { CardSpinner, CardWithMsg } from "./comp/cards";
+import { CardSpinner, CardMsg } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
@@ -251,7 +251,7 @@ const WidgetClaim: React.FC<{
     // === html ===
 
     if (err) {
-        return <CardWithMsg>{err}</CardWithMsg>;
+        return <CardMsg>{err}</CardMsg>;
     } else if (isLoading) {
         return <CardSpinner />;
     }

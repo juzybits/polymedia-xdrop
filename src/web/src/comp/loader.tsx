@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { XDrop } from "@polymedia/xdrop-sdk";
-import { CardSpinner, CardWithMsg } from "./cards";
+import { CardSpinner, CardMsg } from "./cards";
 import { ConnectToGetStarted } from "./connect";
 import { UseXDropResult } from "./hooks";
 
@@ -17,9 +17,7 @@ export const XDropLoader: React.FC<{
     const currAcct = useCurrentAccount();
 
     if (fetched.err) {
-        return <CardWithMsg>
-            {fetched.err}
-        </CardWithMsg>;
+        return <CardMsg>{fetched.err}</CardMsg>;
     }
 
     if (fetched.isLoading || fetched.data === undefined) {
@@ -29,9 +27,9 @@ export const XDropLoader: React.FC<{
     const { xdrop, coinMeta } = fetched.data;
 
     if (xdrop === null || coinMeta === null) {
-        return <CardWithMsg>
+        return <CardMsg>
             {xdrop === null ? "xDrop not found." : "Coin metadata not found."}
-        </CardWithMsg>;
+        </CardMsg>;
     }
 
     if (requireWallet && !currAcct) {
