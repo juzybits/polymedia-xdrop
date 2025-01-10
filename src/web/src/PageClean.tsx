@@ -1,14 +1,13 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Btn, useFetch, UseFetchResult } from "@polymedia/suitcase-react";
+import { Btn, useFetch } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardXDropDetails, XDropStats } from "./comp/cards";
+import { CardMsg, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { Loader, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
-import { claimsToClean, cleanerCapId } from "./PageClean-dev-data";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageClean: React.FC = () =>
@@ -72,17 +71,18 @@ const CardClean: React.FC<{
 
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    const disableSubmit = isWorking;
+    const disableSubmit = isWorking || !xdrop.is_ended || xdrop.claims.size === 0;
 
     const onSubmit = async () =>
     {
         if (disableSubmit) { return; }
 
-        const foreignAddrs = claimsToClean.map(claim => claim[0]); // TODO: fetch
-
         try {
             setIsWorking(true);
             setSubmitRes({ ok: undefined });
+
+            console.debug("[onSubmit] fetching claim addrs");
+            const foreignAddrs = await xdropClient.fetchAllClaimAddrs(xdrop.claims.id, true);
 
             console.debug("[onSubmit] submitting tx");
             const resp = await xdropClient.cleanerDeletesClaims(
@@ -102,16 +102,19 @@ const CardClean: React.FC<{
         }
     };
 
+    if (!xdrop.is_ended) {
+        return <CardMsg>XDrop has not ended</CardMsg>;
+    }
+    if (xdrop.claims.size === 0) {
+        return <CardMsg>Already clean</CardMsg>;
+    }
+
     return <div className="card compact">
 
         {/* <div className="card-title"></div> */}
 
         <div className="card-description">
-            {JSON.stringify(cleanerCapId)}
-        </div>
-
-        <div className="card-description">
-            <Btn disabled={disableSubmit} onClick={onSubmit}>CLEAN</Btn>
+            <Btn disabled={disableSubmit} onClick={onSubmit}>CLEAN ALL</Btn>
         </div>
 
         <ResultMsg res={submitRes} />

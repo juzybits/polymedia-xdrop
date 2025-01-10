@@ -10,6 +10,7 @@ import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import {
     chunkArray,
     devInspectAndGetReturnValues,
+    fetchAllDynamicFields,
     ObjChangeKind,
     PaginatedResponse,
     SignTransaction,
@@ -85,27 +86,19 @@ export class XDropClient extends SuiClientBase
 
     // === data fetching ===
 
-    public async fetchClaimAddrs(
+    public async fetchAllClaimAddrs(
         claimTableId: string,
-        cursor: string | null | undefined,
-        limit?: number | null | undefined,
-    ): Promise<PaginatedResponse<string, string | null>>
+        verbose = false,
+    ): Promise<string[]>
     {
-        const dFieldPage = await this.suiClient.getDynamicFields({
-            parentId: claimTableId, cursor, limit,
-        });
+        const fieldInfos = await fetchAllDynamicFields(this.suiClient, claimTableId, 0, verbose);
         const addrs: string[] = [];
-        for (const dof of dFieldPage.data) {
+        for (const dof of fieldInfos) {
             if (dof.objectType === `${this.xdropPkgId}::xdrop::Claim`) {
                 addrs.push(String(dof.name.value));
             }
         }
-
-        return {
-            data: addrs,
-            hasNextPage: dFieldPage.hasNextPage,
-            nextCursor: dFieldPage.nextCursor,
-        };
+        return addrs;
     }
 
     public async fetchOneCleanerCapId(
