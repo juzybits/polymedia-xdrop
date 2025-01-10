@@ -21,10 +21,10 @@ export const CardWithMsg: React.FC<{
     className?: string;
     children: React.ReactNode;
 }> = ({
-    className,
+    className = "compact",
     children,
 }) => {
-    return <div className={`card break-any ${className ?? ""}`}>
+    return <div className={`card break-any ${className}`}>
         <FullCardMsg>
             {children}
         </FullCardMsg>

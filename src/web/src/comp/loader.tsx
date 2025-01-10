@@ -17,7 +17,7 @@ export const XDropLoader: React.FC<{
     const currAcct = useCurrentAccount();
 
     if (fetched.err) {
-        return <CardWithMsg className="compact">
+        return <CardWithMsg>
             {fetched.err}
         </CardWithMsg>;
     }
@@ -29,7 +29,7 @@ export const XDropLoader: React.FC<{
     const { xdrop, coinMeta } = fetched.data;
 
     if (xdrop === null || coinMeta === null) {
-        return <CardWithMsg className="compact">
+        return <CardWithMsg>
             {xdrop === null ? "xDrop not found." : "Coin metadata not found."}
         </CardWithMsg>;
     }

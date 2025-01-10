@@ -251,7 +251,7 @@ const WidgetClaim: React.FC<{
     // === html ===
 
     if (err) {
-        return <CardWithMsg className="compact">{err}</CardWithMsg>;
+        return <CardWithMsg>{err}</CardWithMsg>;
     } else if (isLoading) {
         return <CardSpinner />;
     }
