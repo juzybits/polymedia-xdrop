@@ -174,7 +174,60 @@ export const XDropModule =
         });
     },
 
-    // === devinspect functions ===
+    // === cleaner functions ===
+
+    cleaner_creates_cleaner_cap: (
+        tx: Transaction,
+        packageId: string,
+        cleanerCap: ObjectInput,
+    ): TransactionResult =>
+    {
+        return tx.moveCall({
+            target: `${packageId}::xdrop::cleaner_creates_cleaner_cap`,
+            typeArguments: [],
+            arguments: [
+                objectArg(tx, cleanerCap),
+            ],
+        });
+    },
+
+    cleaner_destroys_cleaner_cap: (
+        tx: Transaction,
+        packageId: string,
+        cleanerCap: ObjectInput,
+    ): TransactionResult =>
+    {
+        return tx.moveCall({
+            target: `${packageId}::xdrop::cleaner_destroys_cleaner_cap`,
+            typeArguments: [],
+            arguments: [
+                objectArg(tx, cleanerCap),
+            ],
+        });
+    },
+
+    cleaner_deletes_claims: (
+        tx: Transaction,
+        packageId: string,
+        type_coin: string,
+        type_network: string,
+        cleanerCap: ObjectInput,
+        xdrop: ObjectInput,
+        addrs: string[],
+    ): TransactionResult =>
+    {
+        return tx.moveCall({
+            target: `${packageId}::xdrop::cleaner_deletes_claims`,
+            typeArguments: [ type_coin, type_network ],
+            arguments: [
+                objectArg(tx, cleanerCap),
+                objectArg(tx, xdrop),
+                tx.pure.vector("string", addrs),
+            ],
+        });
+    },
+
+    // === view functions ===
 
     get_eligible_statuses: (
         tx: Transaction,

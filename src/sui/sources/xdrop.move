@@ -243,6 +243,19 @@ public fun user_claims<C, N>(
 
 // === cleaner functions ===
 
+public fun cleaner_deletes_claims<C, N>(
+    _: &CleanerCap,
+    xdrop: &mut XDrop<C, N>,
+    mut addrs: vector<vector<u8>>,
+) {
+    assert!( xdrop.is_ended(), E_NOT_ENDED );
+    while (addrs.length() > 0) {
+        let addr = addrs.pop_back();
+        let claim = xdrop.claims.remove(addr.to_string());
+        let Claim { .. } = claim;
+    };
+}
+
 public fun cleaner_creates_cleaner_cap(
     _: &CleanerCap,
     ctx: &mut TxContext,
@@ -257,35 +270,6 @@ public fun cleaner_destroys_cleaner_cap(
 ) {
     let CleanerCap { id } = cap;
     object::delete(id);
-}
-
-public fun cleaner_deletes_claims_pop<C, N>(
-    _: &CleanerCap,
-    xdrop: &mut XDrop<C, N>,
-    mut addrs: vector<vector<u8>>,
-) {
-    assert!( xdrop.is_ended(), E_NOT_ENDED );
-    while (addrs.length() > 0) {
-        let addr = addrs.pop_back();
-        let claim = xdrop.claims.remove(addr.to_string());
-        let Claim { .. } = claim;
-    };
-}
-
-public fun cleaner_deletes_claims_idx<C, N>(
-    _: &CleanerCap,
-    xdrop: &mut XDrop<C, N>,
-    addrs: vector<vector<u8>>,
-) {
-    assert!( xdrop.is_ended(), E_NOT_ENDED );
-    let mut i = 0;
-    let len = addrs.length();
-    while (i < len) {
-        let addr = (*addrs.borrow(i)).to_string();
-        let claim = xdrop.claims.remove(addr);
-        let Claim { .. } = claim;
-        i = i + 1;
-    };
 }
 
 // === view functions ===
