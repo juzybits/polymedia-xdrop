@@ -343,7 +343,7 @@ const CardAddClaims: React.FC<{
                 })(),
                 // check for addresses already in xdrop
                 (async () => {
-                    if (xdrop.claims_length === 0) { return; } // no need to check
+                    if (xdrop.claims.size === 0) { return; } // no need to check
                     console.debug("[onSubmit] checking for existing addresses in xdrop");
                     const statuses = await xdropClient.fetchEligibleStatuses(
                         xdrop.type_coin,
@@ -442,12 +442,11 @@ const CardNotAdmin: React.FC<{
 function localhostClaimsOrEmpty()
 {
     if (!isLocalhost()) return "";
-    return claimsToClean.map(claim => claim.join(",")).join("\n");
     return (
 // `0x0000000000000000000000000000000000000AaA,100
 // 0x1111111111111111111111111111111111111BbB,200
 // ` +
-Array.from({ length: 1000 }, () => {
+Array.from({ length: 2000 }, () => {
         // Generate random Ethereum address (40 hex chars)
         const addr = "0x" + Array.from({ length: 40 }, () =>
             Math.floor(Math.random() * 16).toString(16)

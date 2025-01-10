@@ -15,7 +15,7 @@ export type XDrop = {
     admin: string;
     status: XDropStatus;
     balance: bigint;
-    claims_length: number;
+    claims: { id: string, size: number };
     stats: XDropStats;
     // helpers
     is_open: boolean;
@@ -101,7 +101,10 @@ export function objResToXDrop(
         admin: fields.admin,
         status: status,
         balance: BigInt(fields.balance),
-        claims_length: Number(fields.claims.fields.size),
+        claims: {
+            id: fields.claims.fields.id.id,
+            size: Number(fields.claims.fields.size),
+        },
         stats: {
             addrs_claimed: Number(fields.stats.fields.addrs_claimed),
             addrs_unclaimed: Number(fields.stats.fields.addrs_unclaimed),

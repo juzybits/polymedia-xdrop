@@ -1,8 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Transaction } from "@mysten/sui/transactions";
 import { Btn } from "@polymedia/suitcase-react";
-import { XDropIdentifier, XDropModule } from "@polymedia/xdrop-sdk";
-import React, { useState } from "react";
+import { XDrop, XDropIdentifier } from "@polymedia/xdrop-sdk";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { useXDrop, XDropLoader } from "./comp/loader";
@@ -46,7 +45,7 @@ export const PageClean: React.FC = () =>
 };
 
 const CardClean: React.FC<{
-    xdrop: XDropIdentifier;
+    xdrop: XDrop;
     cleanerCapId: string;
     currAddr: string;
     refetch: () => Promise<void>;
