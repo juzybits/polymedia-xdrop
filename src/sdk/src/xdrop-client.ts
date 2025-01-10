@@ -11,6 +11,7 @@ import {
     chunkArray,
     devInspectAndGetReturnValues,
     ObjChangeKind,
+    PaginatedResponse,
     SignTransaction,
     SuiClientBase,
     TransferModule,
@@ -88,7 +89,8 @@ export class XDropClient extends SuiClientBase
         claimTableId: string,
         cursor: string | null | undefined,
         limit?: number | null | undefined,
-    ) {
+    ): Promise<PaginatedResponse<string, string | null>>
+    {
         const dFieldPage = await this.suiClient.getDynamicFields({
             parentId: claimTableId, cursor, limit,
         });
@@ -104,6 +106,20 @@ export class XDropClient extends SuiClientBase
             hasNextPage: dFieldPage.hasNextPage,
             nextCursor: dFieldPage.nextCursor,
         };
+    }
+
+    public async fetchOneCleanerCapId(
+        owner: string,
+    ): Promise<string | null> {
+        const resp = await this.suiClient.getOwnedObjects({
+            owner,
+            options: { showContent: true },
+            filter: { StructType: `${this.xdropPkgId}::xdrop::CleanerCap` },
+        });
+        for (const objRes of resp.data) {
+            return objRes.data!.objectId;
+        }
+        return null;
     }
 
     public async fetchEligibleStatuses(
