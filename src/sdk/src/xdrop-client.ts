@@ -84,6 +84,28 @@ export class XDropClient extends SuiClientBase
 
     // === data fetching ===
 
+    public async fetchClaimAddrs(
+        claimTableId: string,
+        cursor: string | null | undefined,
+        limit?: number | null | undefined,
+    ) {
+        const dFieldPage = await this.suiClient.getDynamicFields({
+            parentId: claimTableId, cursor, limit,
+        });
+        const addrs: string[] = [];
+        for (const dof of dFieldPage.data) {
+            if (dof.objectType === `${this.xdropPkgId}::xdrop::Claim`) {
+                addrs.push(String(dof.name.value));
+            }
+        }
+
+        return {
+            data: addrs,
+            hasNextPage: dFieldPage.hasNextPage,
+            nextCursor: dFieldPage.nextCursor,
+        };
+    }
+
     public async fetchEligibleStatuses(
         typeCoin: string,
         linkNetwork: LinkNetwork,
@@ -148,8 +170,8 @@ export class XDropClient extends SuiClientBase
 
     public async fetchXDropsCreated(
         sender: string,
-        limit: number,
         cursor: string | null | undefined,
+        limit: number,
     ) {
         const result = await this.graphClient.query({
             query: graphql(`

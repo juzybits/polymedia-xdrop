@@ -7,7 +7,7 @@ import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropClient
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardXDropDetails, XDropDetail } from "./comp/cards";
+import { CardXDropDetails, XDropStats, XDropDetail } from "./comp/cards";
 import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
 import { fmtBal } from "./lib/helpers";
@@ -143,14 +143,7 @@ export const PageManage: React.FC = () =>
                     return <>
                         <CardXDropDetails xdrop={xdrop}
                             title="xDrop Details"
-                            extraDetails={<>
-                                <XDropDetail label="Balance claimed/unclaimed:"
-                                    val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / `
-                                       + `${formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")}`} />
-                                <XDropDetail label="Addresses claimed/unclaimed:"
-                                    val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
-                                {/* <XDropDetail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} /> */}
-                            </>}
+                            extraDetails={<XDropStats xdrop={xdrop} coinMeta={coinMeta} />}
                             button={<Link to={`/claim/${xdrop.id}`} className="btn">VIEW CLAIM PAGE</Link>}
                          />
 

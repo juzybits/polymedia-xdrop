@@ -1,3 +1,5 @@
+import { CoinMetadata } from "@mysten/sui/client";
+import { formatBalance } from "@polymedia/suitcase-core";
 import { LinkToExplorer } from "@polymedia/suitcase-react";
 import { XDrop, XDropStatus } from "@polymedia/xdrop-sdk";
 import React from "react";
@@ -69,6 +71,23 @@ export const CardXDropDetails: React.FC<{
             </div>}
         </div>
     );
+};
+
+export const XDropStats: React.FC<{
+    xdrop: XDrop;
+    coinMeta: CoinMetadata;
+}> = ({
+    xdrop,
+    coinMeta,
+}) => {
+    return <>
+        <XDropDetail label="Balance claimed/unclaimed:"
+            val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / `
+            + `${formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")}`} />
+        <XDropDetail label="Addresses claimed/unclaimed:"
+            val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
+        {/* <XDropDetail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} /> */}
+    </>;
 };
 
 export const XDropDetail: React.FC<{

@@ -1,9 +1,10 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Btn } from "@polymedia/suitcase-react";
-import { XDrop, XDropIdentifier } from "@polymedia/xdrop-sdk";
+import { XDrop } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
+import { CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 import { claimsToClean, cleanerCapId } from "./PageClean-dev-data";
@@ -28,15 +29,15 @@ export const PageClean: React.FC = () =>
                 </div>
 
                 <XDropLoader fetched={fetched} requireWallet={true}>
-                {(xdrop, _coinMeta) =>
-                {
-                    return <CardClean
+                {(xdrop, _coinMeta) => <>
+                    <CardXDropDetails xdrop={xdrop} extraDetails={<XDropStats xdrop={xdrop} coinMeta={_coinMeta} />} />
+                    <CardClean
                         xdrop={xdrop}
                         cleanerCapId={cleanerCapId}
                         currAddr={currAcct!.address}
                         refetch={fetched.refetch}
-                    />;
-                }}
+                    />
+                </>}
                 </XDropLoader>
 
             </div>
