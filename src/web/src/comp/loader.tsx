@@ -1,39 +1,18 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
-import { getCoinMeta } from "@polymedia/coinmeta";
-import { useFetch, UseFetchResult } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
-import { useAppContext } from "../App";
 import { CardSpinner, CardWithMsg } from "./cards";
 import { ConnectToGetStarted } from "./connect";
+import { UseXDropResult } from "./hooks";
 
-export type UseXDropResult = UseFetchResult<{
-    xdrop: XDrop | null;
-    coinMeta: CoinMetadata | null;
-}>;
-
-export type XDropLoaderProps = {
+export const XDropLoader: React.FC<{
     fetched: UseXDropResult;
     requireWallet: boolean;
     children: (xdrop: XDrop, coinMeta: CoinMetadata) => React.ReactNode;
-};
-
-export function useXDrop(
-    xdropId: string,
-): UseXDropResult {
-    const { xdropClient } = useAppContext();
-    return useFetch(async () => {
-        const xdrop = await xdropClient.fetchXDrop(xdropId);
-        const coinMeta = !xdrop ? null
-            : await getCoinMeta(xdropClient.suiClient, xdrop.type_coin);
-        return { xdrop, coinMeta };
-    }, [xdropClient, xdropId]);
-}
-
-export const XDropLoader: React.FC<XDropLoaderProps> = ({
+}> = ({
     fetched,
     requireWallet,
-    children
+    children,
 }) => {
     const currAcct = useCurrentAccount();
 

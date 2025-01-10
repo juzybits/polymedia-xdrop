@@ -1,18 +1,18 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
+import { shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { Btn, isLocalhost, ReactSetter, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
-import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropClient, XDropModule } from "@polymedia/xdrop-sdk";
+import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardXDropDetails, XDropStats, XDropDetail } from "./comp/cards";
-import { useXDrop, XDropLoader } from "./comp/loader";
+import { CardXDropDetails, XDropStats } from "./comp/cards";
+import { useXDrop } from "./comp/hooks";
+import { XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
 import { fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
-import { claimsToClean } from "./PageClean-dev-data";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
 
@@ -22,7 +22,7 @@ export const PageManage: React.FC = () =>
     const { xdropId } = useParams();
     if (!xdropId) return <PageNotFound />;
 
-    const { header, isWorking, setIsWorking, explorer, network, xdropClient } = useAppContext();
+    const { header, isWorking, setIsWorking, xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
     const fetched = useXDrop(xdropId);
 

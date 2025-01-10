@@ -1,11 +1,12 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Btn } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { CardXDropDetails, XDropStats } from "./comp/cards";
-import { useXDrop, XDropLoader } from "./comp/loader";
+import { useXDrop } from "./comp/hooks";
+import { XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 import { claimsToClean, cleanerCapId } from "./PageClean-dev-data";
 import { PageNotFound } from "./PageNotFound";

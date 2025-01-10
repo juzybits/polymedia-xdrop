@@ -1,6 +1,6 @@
-import { useCurrentAccount, useCurrentWallet, useDisconnectWallet, useWallets } from "@mysten/dapp-kit";
+import { useCurrentAccount, useDisconnectWallet, useWallets } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
-import { formatBalance, NetworkName, shortenAddress } from "@polymedia/suitcase-core";
+import { NetworkName, shortenAddress } from "@polymedia/suitcase-core";
 import { Btn, LinkExternal, useFetch } from "@polymedia/suitcase-react";
 import { LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
@@ -9,7 +9,8 @@ import { useAppContext } from "./App";
 import { PageNotFound } from "./PageNotFound";
 import { CardSpinner, CardWithMsg } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
-import { useXDrop, XDropLoader } from "./comp/loader";
+import { useXDrop } from "./comp/hooks";
+import { XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 import { fmtBal } from "./lib/helpers";
 

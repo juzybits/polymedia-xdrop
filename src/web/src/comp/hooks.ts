@@ -1,0 +1,22 @@
+import { CoinMetadata } from "@mysten/sui/client";
+import { getCoinMeta } from "@polymedia/coinmeta";
+import { useFetch, UseFetchResult } from "@polymedia/suitcase-react";
+import { XDrop } from "@polymedia/xdrop-sdk";
+import { useAppContext } from "../App";
+
+export type UseXDropResult = UseFetchResult<{
+    xdrop: XDrop | null;
+    coinMeta: CoinMetadata | null;
+}>;
+
+export function useXDrop(
+    xdropId: string,
+): UseXDropResult {
+    const { xdropClient } = useAppContext();
+    return useFetch(async () => {
+        const xdrop = await xdropClient.fetchXDrop(xdropId);
+        const coinMeta = !xdrop ? null
+            : await getCoinMeta(xdropClient.suiClient, xdrop.type_coin);
+        return { xdrop, coinMeta };
+    }, [xdropClient, xdropId]);
+}
