@@ -1,5 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Btn } from "@polymedia/suitcase-react";
+import { Btn, useFetch, UseFetchResult } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
@@ -16,9 +16,13 @@ export const PageClean: React.FC = () =>
     const { xdropId } = useParams();
     if (!xdropId) return <PageNotFound />;
 
-    const { header } = useAppContext();
+    const { header, xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
-    const fetched = useXDrop(xdropId);
+    const fetchedXDropAndCoinMeta = useXDrop(xdropId);
+    const fetchedCleanerCapId = useFetch(
+        async () => !currAcct ? undefined : xdropClient.fetchOneCleanerCapId(currAcct.address),
+        [xdropClient, currAcct],
+    );
 
     return <>
         {header}
@@ -29,14 +33,13 @@ export const PageClean: React.FC = () =>
                     Clean xDrop
                 </div>
 
-                <XDropLoader fetched={fetched} requireWallet={true}>
+                <XDropLoader fetched={fetchedXDropAndCoinMeta} requireWallet={true}>
                 {(xdrop, _coinMeta) => <>
                     <CardXDropDetails xdrop={xdrop} extraDetails={<XDropStats xdrop={xdrop} coinMeta={_coinMeta} />} />
                     <CardClean
                         xdrop={xdrop}
-                        cleanerCapId={cleanerCapId}
-                        currAddr={currAcct!.address}
-                        refetch={fetched.refetch}
+                        fetchedCleanerCapId={fetchedCleanerCapId}
+                        refetch={fetchedXDropAndCoinMeta.refetch}
                     />
                 </>}
                 </XDropLoader>
@@ -48,13 +51,11 @@ export const PageClean: React.FC = () =>
 
 const CardClean: React.FC<{
     xdrop: XDrop;
-    cleanerCapId: string;
-    currAddr: string;
+    fetchedCleanerCapId: UseFetchResult<string | null>;
     refetch: () => Promise<void>;
 }> = ({
     xdrop,
-    cleanerCapId,
-    currAddr,
+    fetchedCleanerCapId,
     refetch,
 }) =>
 {
@@ -62,7 +63,7 @@ const CardClean: React.FC<{
 
     const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
-    const disableSubmit = isWorking;
+    const disableSubmit = isWorking || !!fetchedCleanerCapId.isLoading || !!fetchedCleanerCapId.err;
 
     const onSubmit = async () =>
     {
@@ -76,7 +77,7 @@ const CardClean: React.FC<{
 
             console.debug("[onSubmit] submitting tx");
             const resp = await xdropClient.cleanerDeletesClaims(
-                cleanerCapId, // TODO: fetch
+                fetchedCleanerCapId.data!,
                 xdrop,
                 foreignAddrs,
             );
@@ -95,6 +96,10 @@ const CardClean: React.FC<{
     return <div className="card compact">
 
         {/* <div className="card-title"></div> */}
+
+        <div className="card-description">
+            {JSON.stringify(fetchedCleanerCapId)}
+        </div>
 
         <div className="card-description">
             <Btn disabled={disableSubmit} onClick={onSubmit}>CLEAN</Btn>
