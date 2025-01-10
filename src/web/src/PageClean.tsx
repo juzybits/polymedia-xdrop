@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
-import { addressesToClean, cleanerCapId } from "./PageClean-dev-data";
+import { claimsToClean, cleanerCapId } from "./PageClean-dev-data";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageClean: React.FC = () =>
@@ -67,25 +67,18 @@ const CardClean: React.FC<{
     {
         if (disableSubmit) { return; }
 
-        const first100Addrs = addressesToClean.slice(0, 100); // TODO: support up to the limit per PTB in xdropClient
+        const first100Addrs = claimsToClean.slice(0, 100).map(claim => claim[0]);
 
         try {
             setIsWorking(true);
             setSubmitRes({ ok: undefined });
 
             console.debug("[onSubmit] submitting tx");
-
-            const tx = new Transaction();
-            XDropModule.cleaner_deletes_claims(
-                tx,
-                xdropClient.xdropPkgId,
-                xdrop.type_coin,
-                xdrop.type_network,
+            const resp = await xdropClient.cleanerDeletesClaims(
                 cleanerCapId,
-                xdrop.id,
+                xdrop,
                 first100Addrs,
             );
-            const resp = await xdropClient.signAndExecuteTx(tx);
 
             console.debug("[onSubmit] okay:", resp);
             setSubmitRes({ ok: true });

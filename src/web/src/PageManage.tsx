@@ -12,6 +12,7 @@ import { useXDrop, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
 import { fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
+import { claimsToClean } from "./PageClean-dev-data";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
 
@@ -441,6 +442,7 @@ const CardNotAdmin: React.FC<{
 function localhostClaimsOrEmpty()
 {
     if (!isLocalhost()) return "";
+    return claimsToClean.map(claim => claim.join(",")).join("\n");
     return (
 // `0x0000000000000000000000000000000000000AaA,100
 // 0x1111111111111111111111111111111111111BbB,200

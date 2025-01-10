@@ -341,6 +341,19 @@ export class XDropClient extends SuiClientBase
         return await this.signAndExecuteTx(tx);
     }
 
+    public async cleanerDeletesClaims(
+        cleanerCap: string,
+        xdrop: XDropIdentifier,
+        addrs: string[],
+    ): Promise<SuiTransactionBlockResponse>
+    {
+        const tx = new Transaction();
+        XDropModule.cleaner_deletes_claims(
+            tx, this.xdropPkgId, xdrop.type_coin, xdrop.type_network, cleanerCap, xdrop.id, addrs
+        );
+        return await this.signAndExecuteTx(tx);
+    }
+
     // === ergonomics ===
 
     /**
