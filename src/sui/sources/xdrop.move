@@ -1,4 +1,4 @@
-module xdrop::xdrop;
+module xdrop::xdrop; // TODO check if graphql transactionBlocks() can do function + sender (prob can but won't have coin type)
 
 // === imports ===
 
@@ -265,6 +265,7 @@ public fun cleaner_deletes_claims<C, N>(
     assert!( xdrop.is_ended(), E_NOT_ENDED );
     while (addrs.length() > 0) {
         let addr = addrs.pop_back().to_string();
+        assert!( xdrop.claims.contains(addr), E_ADDRESS_NOT_FOUND );
         let claim = xdrop.claims.remove(addr);
         let Claim { .. } = claim;
     };

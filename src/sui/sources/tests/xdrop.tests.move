@@ -6,13 +6,11 @@ use sui::{
     test_scenario::{Self as scen, Scenario},
     test_utils::{assert_eq, destroy},
 };
-
 use suilink::{
     ethereum::{Self, Ethereum},
     suilink::{SuiLink},
 };
-
-use xdrop::xdrop::{Self, XDrop, EligibleStatus};
+use xdrop::xdrop::{Self, XDrop, CleanerCap, EligibleStatus};
 use xdrop::devcoin::{Self, DEVCOIN};
 
 // === addresses ===
@@ -21,6 +19,7 @@ const ADMIN: address = @0xaa1;
 const ADMIN_2: address = @0xaa2;
 const USER_1: address = @0xee1;
 const USER_2: address = @0xee2;
+const CLEANER: address = @0xee3;
 const USER_1_ETH: vector<u8> = b"ethereum address 1";
 const USER_2_ETH: vector<u8> = b"ethereum address 2";
 const RANDO_ETH: vector<u8> = b"ethereum rando";
@@ -38,12 +37,17 @@ fun begin(
 ): TestRunner
 {
     let mut scen = scen::begin(sender);
+    xdrop::init_for_testing(scen.ctx());
     devcoin::init_for_testing(scen.ctx());
-    scen.next_tx(sender);
-    let supply = scen.take_from_sender<Coin<DEVCOIN>>();
 
+    scen.next_tx(sender);
+
+    let cleaner_cap = scen.take_from_sender<CleanerCap>();
+    transfer::public_transfer(cleaner_cap, CLEANER);
+
+    let supply = scen.take_from_sender<Coin<DEVCOIN>>();
     let xdrop = xdrop::new<DEVCOIN, Ethereum>(scen.ctx());
-    let mut runner = TestRunner { scen, supply,xdrop };
+    let mut runner = TestRunner { scen, supply, xdrop };
 
     runner.dev_link_ethereum(USER_1, USER_1_ETH); // changes next_tx(sender)
     runner.dev_link_ethereum(USER_2, USER_2_ETH);
@@ -144,6 +148,17 @@ fun user_claims(
     runner.scen.next_tx(sender);
     let coin_claimed = runner.xdrop.user_claims(link, runner.scen.ctx());
     transfer::public_transfer(coin_claimed, sender);
+}
+
+fun cleaner_deletes_claims(
+    runner: &mut TestRunner,
+    sender: address,
+    addrs: vector<vector<u8>>,
+) {
+    runner.scen.next_tx(sender);
+    let cleaner_cap = runner.scen.take_from_sender<CleanerCap>();
+    xdrop::cleaner_deletes_claims(&cleaner_cap, &mut runner.xdrop, addrs);
+    runner.scen.return_to_sender(cleaner_cap);
 }
 
 // === asserts ===
@@ -497,14 +512,78 @@ fun test_user_claims_e_already_claimed()
     destroy(link);
 }
 
-// === tests: 100% coverage ===
+// === tests: cleaner ===
+
+#[test]
+fun test_cleaner_deletes_claims()
+{
+    let mut runner = begin(ADMIN);
+
+    runner.admin_adds_claims(ADMIN, vector[USER_1_ETH, USER_2_ETH], vector[100, 200]);
+    assert_eq( runner.xdrop.claims().length(), 2 );
+
+    runner.admin_ends_xdrop(ADMIN);
+    runner.cleaner_deletes_claims(CLEANER, vector[USER_1_ETH, USER_2_ETH]);
+    assert_eq( runner.xdrop.claims().length(), 0 );
+
+    destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_NOT_ENDED)]
+fun test_cleaner_deletes_claims_e_not_ended()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_adds_claims(ADMIN, vector[USER_1_ETH], vector[100]);
+    runner.cleaner_deletes_claims(CLEANER, vector[USER_1_ETH]);
+    destroy(runner);
+}
+
+#[test, expected_failure(abort_code = xdrop::E_ADDRESS_NOT_FOUND)]
+fun test_cleaner_deletes_claims_e_address_not_found()
+{
+    let mut runner = begin(ADMIN);
+    runner.admin_ends_xdrop(ADMIN);
+    runner.cleaner_deletes_claims(CLEANER, vector[USER_1_ETH]);
+    destroy(runner);
+}
+
+#[test]
+fun test_cleaner_creates_cleaner_cap()
+{
+    let mut runner = begin(ADMIN);
+
+    runner.scen.next_tx(CLEANER);
+    let cap = runner.scen.take_from_sender<CleanerCap>();
+    let cap_2 = xdrop::cleaner_creates_cleaner_cap(&cap, runner.scen.ctx());
+
+    destroy(runner);
+    destroy(cap);
+    destroy(cap_2);
+}
+
+#[test]
+fun test_cleaner_destroys_cleaner_cap()
+{
+    let mut runner = begin(ADMIN);
+
+    runner.scen.next_tx(CLEANER);
+    let cap = runner.scen.take_from_sender<CleanerCap>();
+    xdrop::cleaner_destroys_cleaner_cap(cap);
+
+    destroy(runner);
+}
+
+// === tests: init ===
 
 #[test]
 fun test_init_for_testing()
 {
     let mut runner = begin(ADMIN);
     xdrop::init_for_testing(runner.scen.ctx());
-    destroy(runner);
-}
 
-// TODO: write cleaner tests
+    runner.scen.next_tx(ADMIN);
+    let cleaner_cap = runner.scen.take_from_sender<CleanerCap>();
+
+    destroy(runner);
+    destroy(cleaner_cap);
+}

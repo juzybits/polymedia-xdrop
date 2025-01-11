@@ -1,5 +1,3 @@
-// TODO: move to @polymedia/suitcase-core
-
 import { chunkArray } from "@polymedia/suitcase-core";
 
 /**
@@ -11,7 +9,7 @@ import { chunkArray } from "@polymedia/suitcase-core";
  * @param operation Function to process each input
  * @returns Array of results for each batch
  */
-export async function serialBatchesOfParallelOperations<Input, Output>(
+export async function serialBatchesOfParallelOperations<Input, Output>( // TODO: move to @polymedia/suitcase-core
     batchSize: number,
     inputs: Input[],
     operation: (input: Input, idx: number) => Promise<Output>,
