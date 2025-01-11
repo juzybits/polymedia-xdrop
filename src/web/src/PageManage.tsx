@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
+import { formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { Btn, isLocalhost, ReactSetter, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
@@ -305,6 +305,7 @@ const CardAddClaims: React.FC<{
     });
 
     const disableSubmit = isWorking || !!textArea.err || !!privateKey.err;
+    const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_OBJECTS_PER_TX);
 
     // === functions ===
 
@@ -321,22 +322,47 @@ const CardAddClaims: React.FC<{
 
             // last moment validation against onchain state
             await Promise.all([
-                // check admin wallet has enough balance
-                // TODO: check also SUI balance for tx fees
+                // check wallet has enough `type_coin` to fund the claims
                 (async () => {
                     const respBalance = await xdropClient.suiClient.getBalance({
                         owner: currAddr, coinType: xdrop.type_coin,
                     });
                     const balance = BigInt(respBalance.totalBalance);
-                    if (totalAmount > balance) {
-                        throw new Error(`Insufficient balance: `
-                            + `need ${fmtBal(totalAmount, decimals, symbol)}, `
-                            + `have ${fmtBal(balance, decimals, symbol)}`);
+                    if (balance <= totalAmount) {
+                        throw new Error("Insufficient balance to fund the claims: "
+                            + `you need ${fmtBal(totalAmount, decimals, symbol)}, `
+                            + `but only have ${fmtBal(balance, decimals, symbol)}`);
                     }
+                    console.debug(`[onSubmit] ${symbol} balance is enough: ${formatBalance(totalAmount, decimals, "compact")} <= ${formatBalance(balance, decimals, "compact")}`);
+                })(),
+                // check wallet has enough SUI for tx fees. TODO: add totalAmount if type_coin is SUI.
+                (async () => {
+                    if (requiredTxs <= 1)
+                        return;
+
+                    const firstTxClaims = claims.slice(0, MAX_OBJECTS_PER_TX);
+                    const [respBalance, respsInspect] = await Promise.all([
+                        xdropClient.suiClient.getBalance({ owner: currAddr }),
+                        xdropClient.adminAddsClaims(currAddr, xdrop, firstTxClaims, true)
+                    ]);
+
+                    const suiBalance = BigInt(respBalance.totalBalance);
+                    const gas = respsInspect[0].effects!.gasUsed;
+                    const feePerTx = BigInt(gas.computationCost) + BigInt(gas.storageCost) - BigInt(gas.storageRebate);
+                    const feeTotal = (feePerTx * BigInt(claims.length)) / BigInt(MAX_OBJECTS_PER_TX);
+                    const feeWithMargin = feeTotal + 100_000_000n; // add 0.1 SUI for safety margin
+
+                    if (suiBalance < feeWithMargin) {
+                        throw new Error(`Insufficient balance for transaction fees: `
+                            + `you need ${fmtBal(feeWithMargin, 9, "SUI")}, `
+                            + `but only have ${fmtBal(suiBalance, 9, "SUI")}`);
+                    }
+                    console.debug(`[onSubmit] SUI balance is enough: ${fmtBal(feeWithMargin, 9, "SUI")} < ${fmtBal(suiBalance, 9, "SUI")}`);
                 })(),
                 // check for addresses already in xdrop
                 (async () => {
-                    if (xdrop.claims.size === 0) { return; } // no need to check
+                    if (xdrop.claims.size === 0)
+                        return;
                     console.debug("[onSubmit] checking for existing addresses in xdrop");
                     const statuses = await xdropClient.fetchEligibleStatuses(
                         xdrop.type_coin,
@@ -363,12 +389,8 @@ const CardAddClaims: React.FC<{
 
             // submit the tx
             console.debug("[onSubmit] submitting tx");
-            const resp = await client.adminAddsClaims(
-                currAddr,
-                xdrop,
-                claims,
-            );
-            console.debug("[onSubmit] okay:", resp);
+            const resps = await client.adminAddsClaims(currAddr, xdrop, claims);
+            console.debug("[onSubmit] okay:", resps);
             setSubmitRes({ ok: true });
             refetch();
             setShowSuccess(true);
@@ -381,8 +403,6 @@ const CardAddClaims: React.FC<{
     };
 
     // === html ===
-
-    const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_OBJECTS_PER_TX);
 
     return <Card>
         <div className="card-title">
@@ -436,7 +456,7 @@ function localhostClaimsOrEmpty()
 // `0x0000000000000000000000000000000000000AaA,100
 // 0x1111111111111111111111111111111111111BbB,200
 // ` +
-Array.from({ length: 1000 }, () => {
+Array.from({ length: 1500 }, () => {
         // Generate random Ethereum address (40 hex chars)
         const addr = "0x" + Array.from({ length: 40 }, () =>
             Math.floor(Math.random() * 16).toString(16)
