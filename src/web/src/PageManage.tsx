@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
+import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { Btn, isLocalhost, ReactSetter, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
@@ -33,6 +33,11 @@ export const PageManage: React.FC = () =>
         const id = setTimeout(() => { setShowSuccess(false); }, 2000);
         return () => clearTimeout(id);
     }, [showSuccess]);
+
+    useEffect(() => {
+        if (!fetched.data?.xdrop) return;
+        console.debug("[useEffect] xdrop:", JSON.stringify(fetched.data.xdrop, null, 2));
+    }, [fetched.data?.xdrop]);
 
     const disableSubmit = isWorking || !currAcct;
     const onSubmitAction = async (action: AdminAction) => {
@@ -306,6 +311,7 @@ const CardAddClaims: React.FC<{
 
     const disableSubmit = isWorking || !!textArea.err || !!privateKey.err;
     const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_OBJECTS_PER_TX);
+    const isSuiXDrop = "0x2::sui::SUI" === removeAddressLeadingZeros(xdrop.type_coin);
 
     // === functions ===
 
@@ -324,6 +330,8 @@ const CardAddClaims: React.FC<{
             await Promise.all([
                 // check wallet has enough `type_coin` to fund the claims
                 (async () => {
+                    if (isSuiXDrop) // checked along with gas below
+                        return;
                     const respBalance = await xdropClient.suiClient.getBalance({
                         owner: currAddr, coinType: xdrop.type_coin,
                     });
@@ -335,9 +343,9 @@ const CardAddClaims: React.FC<{
                     }
                     console.debug(`[onSubmit] ${symbol} balance is enough: ${totalAmount} <= ${balance}`);
                 })(),
-                // check wallet has enough SUI for tx fees. TODO: add totalAmount if type_coin is SUI.
+                // check wallet has enough SUI for tx fees (+ totalAmount if isSuiXDrop)
                 (async () => {
-                    if (requiredTxs <= 1)
+                    if (!isSuiXDrop && requiredTxs <= 1)
                         return;
 
                     const firstTxClaims = claims.slice(0, MAX_OBJECTS_PER_TX);
@@ -350,14 +358,15 @@ const CardAddClaims: React.FC<{
                     const gas = respsInspect[0].effects!.gasUsed;
                     const feePerTx = BigInt(gas.computationCost) + BigInt(gas.storageCost) - BigInt(gas.storageRebate);
                     const feeTotal = (feePerTx * BigInt(claims.length)) / BigInt(MAX_OBJECTS_PER_TX);
-                    const feeWithMargin = feeTotal + 100_000_000n; // add 0.1 SUI for safety margin
+                    const suiTotal = isSuiXDrop ? feeTotal + totalAmount : feeTotal;
+                    const totalWithMargin = suiTotal + 100_000_000n; // add 0.1 SUI for safety margin
 
-                    if (suiBalance < feeWithMargin) {
-                        throw new Error(`Insufficient balance for transaction fees: `
-                            + `you need ${fmtBal(feeWithMargin, 9, "SUI")}, `
+                    if (suiBalance < totalWithMargin) {
+                        throw new Error(`Insufficient balance${isSuiXDrop ? "" : " for transaction fees"}: `
+                            + `you need ${fmtBal(totalWithMargin, 9, "SUI")}, `
                             + `but only have ${fmtBal(suiBalance, 9, "SUI")}`);
                     }
-                    console.debug(`[onSubmit] SUI balance is enough: ${feeTotal} < ${suiBalance}`);
+                    console.debug(`[onSubmit] SUI balance is enough: ${suiTotal} < ${suiBalance}`);
                 })(),
                 // check for addresses already in xdrop
                 (async () => {
