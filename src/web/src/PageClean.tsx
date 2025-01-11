@@ -113,7 +113,7 @@ const CardClean: React.FC<{
 
         {/* <div className="card-title"></div> */}
 
-        <div className="card-description">
+        <div className="card-desc">
             <Btn disabled={disableSubmit} onClick={onSubmit}>CLEAN ALL</Btn>
         </div>
 

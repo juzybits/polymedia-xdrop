@@ -63,7 +63,7 @@ export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
                 {extraDetails}
             </div>
             {button &&
-            <div className="card-description">
+            <div className="card-desc">
                 {button}
             </div>}
         </div>

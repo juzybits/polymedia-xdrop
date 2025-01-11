@@ -193,10 +193,10 @@ const CardAction: React.FC<{
             <div className="card-title">
                 <p>{a.title}</p>
             </div>
-            <div className="card-description">
+            <div className="card-desc">
                 <p>{a.info}</p>
             </div>
-            <div className="card-description">
+            <div className="card-desc">
                 <Btn disabled={disableBtn} onClick={a.submit}
                     className={a.btnTxt === "END" ? "red" : ""}
                 >
@@ -389,17 +389,17 @@ const CardAddClaims: React.FC<{
             <p>Add Claims</p>
         </div>
 
-        <div className="card-description">
+        <div className="card-desc">
             <p>Enter 1 claim per line as follows:</p>
             <p>{xdrop.network_name.toUpperCase()}_ADDRESS,{symbol}_AMOUNT</p>
         </div>
 
-        <div className="card-description">
+        <div className="card-desc">
             {textArea.input}
         </div>
 
         {textArea.val && <>
-        <div className="card-description">
+        <div className="card-desc">
         <div className="card-title">Summary:</div>
             <p>▸ {textArea.val.claims.length} addresses</p>
             <p>▸ {fmtBal(textArea.val.totalAmount, decimals, symbol)}</p>
@@ -410,7 +410,7 @@ const CardAddClaims: React.FC<{
         </div>
         </>}
 
-        <div className="card-description">
+        <div className="card-desc">
             <Btn disabled={disableSubmit} onClick={onSubmit}>ADD CLAIMS</Btn>
         </div>
         <ResultMsg res={submitRes} />
@@ -424,7 +424,7 @@ const CardNotAdmin: React.FC<{
 }) => {
     return <Card>
         <div className="card-title">Not admin</div>
-        <div className="card-description">You are not the admin of this xDrop.
+        <div className="card-desc">You are not the admin of this xDrop.
             Log in as {shortenAddress(xdrop.admin)} to manage this xDrop.</div>
     </Card>;
 };

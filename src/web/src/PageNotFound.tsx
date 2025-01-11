@@ -16,7 +16,7 @@ export const PageNotFound: React.FC = () =>
             </div>
 
             <Card>
-                <div className="card-description center-text">
+                <div className="card-desc center-text">
                     <p>
                         This page does not exist.
                     </p>

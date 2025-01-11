@@ -48,7 +48,7 @@ export const PageClaim: React.FC = () =>
                             <div className="card-title center-element">
                                 {coinMeta.symbol} xDrop ended
                             </div>
-                            <div className="card-description">
+                            <div className="card-desc">
                                 <p className="text-orange">Claims are no longer possible.</p>
                             </div>
                         </Card>
@@ -63,11 +63,11 @@ export const PageClaim: React.FC = () =>
                             </div>
 
                             {hasWallet ?
-                                <div className="card-description">
+                                <div className="card-desc">
                                     <p>✅ Your Sui wallet is installed and ready.</p>
                                 </div>
                             : <>
-                                <div className="card-description">
+                                <div className="card-desc">
                                     <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
                                 </div>
                                 <div className="center-element">
@@ -82,10 +82,10 @@ export const PageClaim: React.FC = () =>
                             </div>
 
                             {custom?.step2?.(xdrop, coinMeta) ?? <>
-                                <div className="card-description">
+                                <div className="card-desc">
                                     <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
                                 </div>
-                                <div className="card-description">
+                                <div className="card-desc">
                                     <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
                                 </div>
                             </>}
@@ -128,7 +128,7 @@ const CardClaim: React.FC<{
 
             {!currAcct ? (
                 <>
-                    <div className="card-description">
+                    <div className="card-desc">
                         Connect your Sui wallet to claim.
                     </div>
                     <div className="center-element">
@@ -137,7 +137,7 @@ const CardClaim: React.FC<{
                 </>
             ) : (
                 <>
-                    <div className="card-description">
+                    <div className="card-desc">
                         <p>You are connected as {shortenAddress(currAcct.address)} (<a onClick={() => disconnect()}>disconnect</a>).</p>
                     </div>
                     <WidgetClaim
@@ -257,7 +257,7 @@ const WidgetClaim: React.FC<{
     }
 
     return <>
-        <div className="card-description">
+        <div className="card-desc">
             <div className="card-list slim-list">
                 {(() => {
                     if (!hasAnyLinks) {
@@ -282,7 +282,7 @@ const WidgetClaim: React.FC<{
         {hasEligibleLinks && <>
             <div className="center-element">
                 {!xdrop.is_open ?
-                    <div className="card-description">
+                    <div className="card-desc">
                         <p className="text-orange">Claims are not open yet.</p>
                     </div>
                 : <Btn disabled={disableSubmit} onClick={onSubmit}>CLAIM ALL</Btn>
@@ -346,16 +346,16 @@ type CustomXDropConfig = {
 type CustomStep = (xdrop: XDrop, coinMeta: CoinMetadata) => React.ReactNode;
 
 const step2Migration: CustomStep = (xdrop, coinMeta) => <>
-    <div className="card-description">
+    <div className="card-desc">
         <p>Prove that you own {coinMeta.symbol} on {xdrop.network_name} by linking your {xdrop.network_name} address to your Sui wallet.</p>
     </div>
-    <div className="card-description">
+    <div className="card-desc">
         <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
     </div>
 </>;
 
 const step3Migration: CustomStep = (xdrop, coinMeta) => <>
-    <div className="card-description">
+    <div className="card-desc">
         <p>You'll receive the same amount of {coinMeta.symbol} on Sui as you have in your {xdrop.network_name} address.</p>
     </div>
 </>;

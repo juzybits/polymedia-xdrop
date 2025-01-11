@@ -81,7 +81,7 @@ export const PageDevLink: React.FC = () =>
                 <div className="card-title">
                     <p>Config:</p>
                 </div>
-                <div className="card-description">
+                <div className="card-desc">
                     <p>Link Network: Ethereum</p>
                     <p>Linked Addresses: <pre>{JSON.stringify(linkedForeignAddrs, null, 2)}</pre></p>
                 </div>

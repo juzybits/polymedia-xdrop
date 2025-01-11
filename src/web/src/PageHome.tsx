@@ -37,14 +37,14 @@ const SectionHowItWorks: React.FC = () =>
         <div className="page-section">
             <div className="page-title">How it works</div>
             <Card>
-                <div className="card-description">
+                <div className="card-desc">
                     <p>
                         1. Admin creates a Sui xDrop and specifies which Ethereum or Solana addresses can claim coins.
                     </p>
                 </div>
             </Card>
             <Card>
-                <div className="card-description">
+                <div className="card-desc">
                     <p>
                         2. Users verify their Ethereum or Solana address via SuiLink and can then claim coins on Sui.
                     </p>
@@ -85,7 +85,7 @@ const SectionHowItWorks: React.FC = () =>
 //         <div className="page-section">
 //             <div className="page-title">Create xDrop</div>
 //             <Card>
-//                 <div className="card-description">
+//                 <div className="card-desc">
 //                     <p>
 //                         Create your own xDrop to distribute coins to your community. Contact @juzybits on X or Telegram.
 //                     </p>
