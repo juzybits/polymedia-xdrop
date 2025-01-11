@@ -3,7 +3,7 @@ import { BtnPrevNext, isLocalhost, useFetchAndPaginate } from "@polymedia/suitca
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardSpinner, CardMsg, CardXDropDetails, XDropDetail } from "./comp/cards";
+import { CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 
 export const PageUser: React.FC = () =>
@@ -49,7 +49,7 @@ const ListXdrops: React.FC<{
     if (xdrops.page.length === 0) {
         return xdrops.isLoading
             ? <CardSpinner />
-            : <CardMsg>No auctions yet</CardMsg>;
+            : <CardMsg>You haven't created any xDrops</CardMsg>;
     }
 
     return <>

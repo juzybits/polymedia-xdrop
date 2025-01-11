@@ -5,10 +5,17 @@ import { XDrop, XDropStatus } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useAppContext } from "../App";
 
-export const CardSpinner: React.FC<{
+export const Card = ({ className = "compact", children }: {
     className?: string;
-}   > = ({
-    className = "compact",
+    children: React.ReactNode;
+}) => {
+    return <div className={`card ${className}`}>
+        {children}
+    </div>;
+};
+
+export const CardSpinner = ({ className = "compact" }: {
+    className?: string;
 }) => {
     return <div className={`card ${className}`}>
         <FullCardMsg>
@@ -17,12 +24,9 @@ export const CardSpinner: React.FC<{
     </div>;
 };
 
-export const CardMsg: React.FC<{
+export const CardMsg = ({ className = "compact", children }: {
     className?: string;
     children: React.ReactNode;
-}> = ({
-    className = "compact",
-    children,
 }) => {
     return <div className={`card break-any ${className}`}>
         <FullCardMsg>
@@ -31,10 +35,8 @@ export const CardMsg: React.FC<{
     </div>;
 };
 
-const FullCardMsg: React.FC<{
+const FullCardMsg = ({ children }: {
     children: React.ReactNode;
-}> = ({
-    children,
 }) => {
     return <div className="full-card-message">
         <div className="msg">
@@ -43,16 +45,11 @@ const FullCardMsg: React.FC<{
     </div>;
 };
 
-export const CardXDropDetails: React.FC<{
+export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
     xdrop: XDrop;
     title?: React.ReactNode;
     extraDetails?: React.ReactNode;
     button?: React.ReactNode;
-}> = ({
-    xdrop,
-    title,
-    extraDetails,
-    button,
 }) => {
     const { explorer, network } = useAppContext();
     return (
@@ -73,12 +70,9 @@ export const CardXDropDetails: React.FC<{
     );
 };
 
-export const XDropStats: React.FC<{
+export const XDropStats = ({ xdrop, coinMeta }: {
     xdrop: XDrop;
     coinMeta: CoinMetadata;
-}> = ({
-    xdrop,
-    coinMeta,
 }) => {
     return <>
         <XDropDetail label="Balance claimed/unclaimed:"
@@ -90,12 +84,9 @@ export const XDropStats: React.FC<{
     </>;
 };
 
-export const XDropDetail: React.FC<{
+export const XDropDetail = ({ label, val }: {
     label: string;
     val: React.ReactNode;
-}> = ({
-    label,
-    val,
 }) => {
     return <div className="detail">
         <span className="label">{label}</span>
@@ -103,7 +94,9 @@ export const XDropDetail: React.FC<{
     </div>;
 };
 
-export const XDropStatusLabel: React.FC<{ status: XDropStatus }> = ({ status }) => {
+export const XDropStatusLabel = ({ status }: {
+    status: XDropStatus;
+}) => {
     if (status === "open")   return <label className="text-green">Open</label>;
     if (status === "paused") return <label className="text-orange">Paused</label>;
     if (status === "ended")  return <label className="text-red">Ended</label>;

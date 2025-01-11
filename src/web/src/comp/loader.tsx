@@ -43,9 +43,7 @@ export const XDropLoader: React.FC<{
 };
 
 export const Loader = <T,>({
-    name,
-    fetcher,
-    children,
+    name, fetcher, children
 }: {
     name: string;
     fetcher: UseFetchResult<T>;
