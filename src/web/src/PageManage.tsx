@@ -362,7 +362,8 @@ const CardAddClaims: React.FC<{
                     const totalWithMargin = suiTotal + 100_000_000n; // add 0.1 SUI for safety margin
 
                     if (suiBalance < totalWithMargin) {
-                        throw new Error(`Insufficient balance${isSuiXDrop ? "" : " for transaction fees"}: `
+                        throw new Error(`Insufficient balance `
+                            + `${isSuiXDrop? "to fund the claims and pay " : ""}for transaction fees: `
                             + `you need ${fmtBal(totalWithMargin, 9, "SUI")}, `
                             + `but only have ${fmtBal(suiBalance, 9, "SUI")}`);
                     }
@@ -420,15 +421,19 @@ const CardAddClaims: React.FC<{
         </div>
 
         {textArea.val && <>
-        <div className="card-desc">
-        <div className="card-title">Summary:</div>
-            <p>▸ {textArea.val.claims.length} addresses</p>
-            <p>▸ {fmtBal(textArea.val.totalAmount, decimals, symbol)}</p>
+            <div className="card-desc">
+                <div className="card-title">Summary:</div>
+                <p>▸ {textArea.val.claims.length} addresses</p>
+                <p>▸ {fmtBal(textArea.val.totalAmount, decimals, symbol)}</p>
+            </div>
             {requiredTxs > 1 && <>
-                <p>⚠️ Requires {requiredTxs} transactions. You can enter your private key to avoid signing each tx manually. Only enter your PK if you know what you're doing.</p>
-                {privateKey.input}
+                <div className="card-desc">
+                    <p>⚠️ Requires {requiredTxs} transactions. You can enter your private key to avoid signing each tx manually. Only enter your PK if you know what you're doing.</p>
+                </div>
+                <div className="card-desc">
+                    {privateKey.input}
+                </div>
             </>}
-        </div>
         </>}
 
         <div className="card-desc">
