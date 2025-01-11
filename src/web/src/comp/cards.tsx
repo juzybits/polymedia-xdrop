@@ -1,7 +1,7 @@
 import { CoinMetadata } from "@mysten/sui/client";
 import { formatBalance } from "@polymedia/suitcase-core";
 import { LinkToExplorer } from "@polymedia/suitcase-react";
-import { XDrop, XDropStatus } from "@polymedia/xdrop-sdk";
+import { LinkNetwork, XDrop, XDropIdentifier, XDropStatus } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useAppContext } from "../App";
 
@@ -46,7 +46,7 @@ const FullCardMsg = ({ children }: {
 };
 
 export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
-    xdrop: XDrop;
+    xdrop: XDropIdentifier & { status: XDropStatus, network_name: LinkNetwork };
     title?: React.ReactNode;
     extraDetails?: React.ReactNode;
     button?: React.ReactNode;

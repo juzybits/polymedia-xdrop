@@ -20,7 +20,7 @@ export const PageUser: React.FC = () =>
                 <div className="page-title">Your XDrops</div>
                 {!currAcct
                     ? <Card className="center-text"><ConnectToGetStarted /></Card>
-                    : <ListXdrops currAddr={currAcct.address} />
+                    : <ListCreatedXDrops currAddr={currAcct.address} />
                 }
             </div>
         </div>
@@ -29,10 +29,8 @@ export const PageUser: React.FC = () =>
 
 const PAGE_SIZE = isLocalhost() ? 2 : 10;
 
-const ListXdrops: React.FC<{
+const ListCreatedXDrops = ({ currAddr }: {
     currAddr: string;
-}> = ({
-    currAddr,
 }) =>
 {
     const { xdropClient } = useAppContext();

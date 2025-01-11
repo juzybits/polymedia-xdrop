@@ -1,4 +1,4 @@
-module xdrop::xdrop; // TODO check if graphql transactionBlocks() can do function + sender (prob can but won't have coin type)
+module xdrop::xdrop;
 
 // === imports ===
 
