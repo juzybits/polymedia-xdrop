@@ -4,6 +4,7 @@ import { Btn } from "@polymedia/suitcase-react";
 import { getNetworkConfig, LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useAppContext } from "./App";
+import { Card } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 
 const linkedForeignAddrs: Record<LinkNetwork, string[]> = {
@@ -76,7 +77,7 @@ export const PageDevLink: React.FC = () =>
                 Dev Link
             </div>
 
-            <div className="card compact">
+            <Card>
                 <div className="card-title">
                     <p>Config:</p>
                 </div>
@@ -89,7 +90,7 @@ export const PageDevLink: React.FC = () =>
                         ? <Btn onClick={onSubmit}>Create</Btn>
                         : <BtnConnect />}
                 </div>
-            </div>
+            </Card>
 
         </div>
 

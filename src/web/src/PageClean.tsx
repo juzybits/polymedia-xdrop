@@ -4,7 +4,7 @@ import { XDrop } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardMsg, CardXDropDetails, XDropStats } from "./comp/cards";
+import { Card, CardMsg, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { Loader, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
@@ -109,7 +109,7 @@ const CardClean: React.FC<{
         return <CardMsg>Already clean</CardMsg>;
     }
 
-    return <div className="card compact">
+    return <Card>
 
         {/* <div className="card-title"></div> */}
 
@@ -119,5 +119,5 @@ const CardClean: React.FC<{
 
         <ResultMsg res={submitRes} />
 
-    </div>;
+    </Card>;
 };

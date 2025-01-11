@@ -2,7 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { UseFetchResult } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
-import { CardMsg, CardSpinner } from "./cards";
+import { Card, CardMsg, CardSpinner } from "./cards";
 import { ConnectToGetStarted } from "./connect";
 import { UseXDropResult } from "./hooks";
 
@@ -34,9 +34,9 @@ export const XDropLoader: React.FC<{
     }
 
     if (requireWallet && !currAcct) {
-        return <div className="card compact center-text">
+        return <Card className="center-text">
             <ConnectToGetStarted />
-        </div>;
+        </Card>;
     }
 
     return <>{children(xdrop, coinMeta)}</>;

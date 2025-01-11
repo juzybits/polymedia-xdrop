@@ -6,6 +6,7 @@ import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "./App";
+import { Card } from "./comp/cards";
 import { ConnectOr } from "./comp/connect";
 import { ResultMsg, SubmitRes } from "./comp/submits";
 
@@ -95,7 +96,7 @@ export const PageNew: React.FC = () =>
             <div className="page-title">
                 Create xDrop
             </div>
-            <div className="card compact">
+            <Card>
                 <div className="card-header">
                     <div className="card-title">
                         Settings
@@ -115,7 +116,7 @@ export const PageNew: React.FC = () =>
                         <ResultMsg res={submitRes} />
                     </ConnectOr>
                 </div>
-            </div>
+            </Card>
 
         </div>
 

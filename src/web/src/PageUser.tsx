@@ -3,7 +3,7 @@ import { BtnPrevNext, isLocalhost, useFetchAndPaginate } from "@polymedia/suitca
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
+import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 
 export const PageUser: React.FC = () =>
@@ -19,7 +19,7 @@ export const PageUser: React.FC = () =>
             <div className="page-content">
                 <div className="page-title">Your XDrops</div>
                 {!currAcct
-                    ? <div className="card compact center-text"><ConnectToGetStarted /></div>
+                    ? <Card className="center-text"><ConnectToGetStarted /></Card>
                     : <ListXdrops currAddr={currAcct.address} />
                 }
             </div>

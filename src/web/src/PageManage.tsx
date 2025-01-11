@@ -7,7 +7,7 @@ import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
-import { CardXDropDetails, XDropStats } from "./comp/cards";
+import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
@@ -189,7 +189,7 @@ const CardAction: React.FC<{
     const disableBtn = isWorking || a.disabled;
 
     return (
-        <div className="card compact">
+        <Card>
             <div className="card-title">
                 <p>{a.title}</p>
             </div>
@@ -203,7 +203,7 @@ const CardAction: React.FC<{
                     {a.btnTxt}
                 </Btn>
             </div>
-        </div>
+        </Card>
     );
 };
 
@@ -384,9 +384,7 @@ const CardAddClaims: React.FC<{
 
     const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_OBJECTS_PER_TX);
 
-    return <>
-    <div className="card compact">
-
+    return <Card>
         <div className="card-title">
             <p>Add Claims</p>
         </div>
@@ -416,8 +414,7 @@ const CardAddClaims: React.FC<{
             <Btn disabled={disableSubmit} onClick={onSubmit}>ADD CLAIMS</Btn>
         </div>
         <ResultMsg res={submitRes} />
-    </div>
-    </>;
+    </Card>;
 };
 
 const CardNotAdmin: React.FC<{
@@ -425,11 +422,11 @@ const CardNotAdmin: React.FC<{
 }> = ({
     xdrop,
 }) => {
-    return <div className="card compact">
+    return <Card>
         <div className="card-title">Not admin</div>
         <div className="card-description">You are not the admin of this xDrop.
             Log in as {shortenAddress(xdrop.admin)} to manage this xDrop.</div>
-    </div>;
+    </Card>;
 };
 
 function localhostClaimsOrEmpty()

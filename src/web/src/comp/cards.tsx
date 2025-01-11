@@ -5,11 +5,11 @@ import { XDrop, XDropStatus } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { useAppContext } from "../App";
 
-export const Card = ({ className = "compact", children }: {
+export const Card = ({ className, children }: {
     className?: string;
     children: React.ReactNode;
 }) => {
-    return <div className={`card ${className}`}>
+    return <div className={`card compact ${className ?? ''}`}>
         {children}
     </div>;
 };

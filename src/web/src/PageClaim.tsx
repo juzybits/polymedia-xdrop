@@ -44,20 +44,20 @@ export const PageClaim: React.FC = () =>
                 {(xdrop, coinMeta) => (
                     xdrop.is_ended ?
                     <>
-                        <div className="card compact center-text">
+                        <Card className="center-text">
                             <div className="card-title center-element">
                                 {coinMeta.symbol} xDrop ended
                             </div>
                             <div className="card-description">
                                 <p className="text-orange">Claims are no longer possible.</p>
                             </div>
-                        </div>
+                        </Card>
                     </> : <>
                         <div className="page-title">
                             Claim {coinMeta.symbol}
                         </div>
 
-                        <div className="card compact">
+                        <Card>
                             <div className="card-title">
                                 <p>Step 1: Get a Sui wallet</p>
                             </div>
@@ -74,9 +74,9 @@ export const PageClaim: React.FC = () =>
                                     <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
                                 </div>
                             </>}
-                        </div>
+                        </Card>
 
-                        <div className="card compact">
+                        <Card>
                             <div className="card-title">
                                 <p>Step 2: Verify your {xdrop.network_name} address</p>
                             </div>
@@ -93,7 +93,7 @@ export const PageClaim: React.FC = () =>
                             <div className="center-element">
                                 <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
                             </div>
-                        </div>
+                        </Card>
 
                         <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} />
                     </>
@@ -119,7 +119,7 @@ const CardClaim: React.FC<{
     const { mutate: disconnect } = useDisconnectWallet();
 
     return (
-        <div className="card compact">
+        <Card>
             <div className="card-title">
                 <p>Step 3: Claim your {coinMeta.symbol} on Sui</p>
             </div>
@@ -147,7 +147,7 @@ const CardClaim: React.FC<{
                     />
                 </>
             )}
-        </div>
+        </Card>
     );
 };
 

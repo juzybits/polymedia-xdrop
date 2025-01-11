@@ -1,5 +1,6 @@
 import React from "react";
 import { useAppContext } from "./App";
+import { Card } from "./comp/cards";
 
 export const PageNotFound: React.FC = () =>
 {
@@ -14,13 +15,13 @@ export const PageNotFound: React.FC = () =>
                 Page not found
             </div>
 
-            <div className="card compact">
+            <Card>
                 <div className="card-description center-text">
                     <p>
                         This page does not exist.
                     </p>
                 </div>
-            </div>
+            </Card>
         </div>
 
     </div>

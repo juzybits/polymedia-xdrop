@@ -4,6 +4,7 @@ import React from "react";
 import { supportedNetworks, useAppContext } from "./App";
 import { ConnectToGetStarted } from "./comp/connect";
 import { RPC_ENDPOINTS } from "./lib/network";
+import { Card } from "./comp/cards";
 
 export const PageSettings: React.FC = () =>
 {
@@ -38,7 +39,8 @@ const SectionConnection: React.FC = () =>
 
     // === html ===
 
-    return <div className="card compact">
+    return (
+    <Card>
         <div className="card-title">
             Wallet
         </div>
@@ -54,14 +56,15 @@ const SectionConnection: React.FC = () =>
                     </div>
             </>
         }
-        </div>;
+    </Card>);
 };
 
 const SectionExplorer: React.FC = () =>
 {
     const { explorer, setExplorer } = useAppContext();
 
-    return <div className="card compact">
+    return (
+    <Card>
         <div className="card-title">
             Explorer
         </div>
@@ -69,14 +72,15 @@ const SectionExplorer: React.FC = () =>
             selectedExplorer={explorer}
             onSwitch={setExplorer}
         />
-    </div>;
+    </Card>);
 };
 
 const SectionNetwork: React.FC = () =>
 {
     const { network, setNetwork } = useAppContext();
 
-    return <div className="card compact">
+    return (
+    <Card>
         <div className="card-title">
             Network
         </div>
@@ -85,7 +89,7 @@ const SectionNetwork: React.FC = () =>
             supportedNetworks={supportedNetworks}
             onSwitch={setNetwork}
         />
-    </div>;
+    </Card>);
 };
 
 
@@ -98,7 +102,8 @@ const SectionRpc: React.FC = () =>
 
     // === html ===
 
-    return <div className="card compact">
+    return (
+    <Card>
         <div className="card-title">
             RPC
         </div>
@@ -114,5 +119,5 @@ const SectionRpc: React.FC = () =>
                 Find the fastest RPC for you
             </LinkExternal>.
         </div>}
-    </div>;
+    </Card>);
 };
