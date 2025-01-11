@@ -11,7 +11,7 @@ import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
-import { fmtBal } from "./lib/helpers";
+import { clientWithKeypair, fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
@@ -333,7 +333,7 @@ const CardAddClaims: React.FC<{
                             + `you need ${fmtBal(totalAmount, decimals, symbol)}, `
                             + `but only have ${fmtBal(balance, decimals, symbol)}`);
                     }
-                    console.debug(`[onSubmit] ${symbol} balance is enough: ${formatBalance(totalAmount, decimals, "compact")} <= ${formatBalance(balance, decimals, "compact")}`);
+                    console.debug(`[onSubmit] ${symbol} balance is enough: ${totalAmount} <= ${balance}`);
                 })(),
                 // check wallet has enough SUI for tx fees. TODO: add totalAmount if type_coin is SUI.
                 (async () => {
@@ -357,7 +357,7 @@ const CardAddClaims: React.FC<{
                             + `you need ${fmtBal(feeWithMargin, 9, "SUI")}, `
                             + `but only have ${fmtBal(suiBalance, 9, "SUI")}`);
                     }
-                    console.debug(`[onSubmit] SUI balance is enough: ${fmtBal(feeWithMargin, 9, "SUI")} < ${fmtBal(suiBalance, 9, "SUI")}`);
+                    console.debug(`[onSubmit] SUI balance is enough: ${feeTotal} < ${suiBalance}`);
                 })(),
                 // check for addresses already in xdrop
                 (async () => {
@@ -378,17 +378,9 @@ const CardAddClaims: React.FC<{
                 })()
             ]);
 
-            // use private key signer if provided
-            const client = !privateKey.val ? xdropClient : xdropClient.with({
-                signTx: async (tx) => {
-                    tx.setSenderIfNotSet(privateKey.val!.toSuiAddress());
-                    const txBytes = await tx.build({ client: xdropClient.suiClient });
-                    return privateKey.val!.signTransaction(txBytes);
-                },
-            });
-
             // submit the tx
             console.debug("[onSubmit] submitting tx");
+            const client = clientWithKeypair(xdropClient, privateKey.val);
             const resps = await client.adminAddsClaims(currAddr, xdrop, claims);
             console.debug("[onSubmit] okay:", resps);
             setSubmitRes({ ok: true });
@@ -456,7 +448,7 @@ function localhostClaimsOrEmpty()
 // `0x0000000000000000000000000000000000000AaA,100
 // 0x1111111111111111111111111111111111111BbB,200
 // ` +
-Array.from({ length: 1500 }, () => {
+Array.from({ length: 2002 }, () => {
         // Generate random Ethereum address (40 hex chars)
         const addr = "0x" + Array.from({ length: 40 }, () =>
             Math.floor(Math.random() * 16).toString(16)

@@ -1,4 +1,29 @@
-import { formatBalance } from "@polymedia/suitcase-core";
+import { Keypair } from "@mysten/sui/cryptography";
+import { formatBalance, pairFromSecretKey } from "@polymedia/suitcase-core";
+import { XDropClient } from "@polymedia/xdrop-sdk";
 
-export const fmtBal = (balance: bigint, decimals: number, symbol: string) =>
-    `${formatBalance(balance, decimals, "compact")} ${symbol}`;
+export function fmtBal(balance: bigint, decimals: number, symbol: string) {
+    return `${formatBalance(balance, decimals, "compact")} ${symbol}`;
+}
+
+export function clientWithKeypair(client: XDropClient, pair?: Keypair)
+{
+    if (!pair) {
+        const privateKey = import.meta.env.VITE_PRIVATE_KEY;
+        if (!privateKey) {
+            return client;
+        }
+        try {
+            pair = pairFromSecretKey(privateKey);
+        } catch {
+            return client;
+        }
+    }
+    return client.with({
+        signTx: async (tx) => {
+            tx.setSenderIfNotSet(pair.toSuiAddress());
+            const txBytes = await tx.build({ client: client.suiClient });
+            return pair.signTransaction(txBytes);
+        },
+    });
+}

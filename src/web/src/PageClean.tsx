@@ -8,6 +8,7 @@ import { Card, CardMsg, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { Loader, XDropLoader } from "./comp/loader";
 import { ResultMsg, SubmitRes } from "./comp/submits";
+import { clientWithKeypair } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageClean: React.FC = () =>
@@ -85,7 +86,8 @@ const CardClean: React.FC<{
             const foreignAddrs = await xdropClient.fetchAllClaimAddrs(xdrop.claims.id, true);
 
             console.debug("[onSubmit] submitting tx");
-            const resp = await xdropClient.cleanerDeletesClaims(
+            const client = clientWithKeypair(xdropClient);
+            const resp = await client.cleanerDeletesClaims(
                 cleanerCapId,
                 xdrop,
                 foreignAddrs,
