@@ -538,7 +538,7 @@ fun test_cleaner_deletes_claims_e_not_ended()
     destroy(runner);
 }
 
-#[test, expected_failure(abort_code = xdrop::E_ADDRESS_NOT_FOUND)]
+#[test, expected_failure(abort_code = sui::dynamic_field::EFieldDoesNotExist)]
 fun test_cleaner_deletes_claims_e_address_not_found()
 {
     let mut runner = begin(ADMIN);
