@@ -88,14 +88,6 @@ public struct CleanerCap has key, store {
     id: UID,
 }
 
-// === events ===
-
-public struct EventShare has drop, copy {
-    id: address,
-    type_coin: AsciiString,
-    type_network: AsciiString,
-}
-
 // === initialization ===
 
 fun init(otw: XDROP, ctx: &mut TxContext)
@@ -252,6 +244,14 @@ public fun user_claims<C, N>(
     xdrop.stats.amount_claimed = xdrop.stats.amount_claimed + claim.amount;
     xdrop.stats.amount_unclaimed = xdrop.stats.amount_unclaimed - claim.amount;
 
+    emit(EventClaim {
+        id: xdrop.id.to_address(),
+        type_coin: type_name::get<C>().into_string(),
+        type_network: type_name::get<N>().into_string(),
+        foreign_addr: addr,
+        amount: claim.amount,
+    });
+
     return coin::take(&mut xdrop.balance, claim.amount, ctx)
 }
 
@@ -350,6 +350,22 @@ public fun amount_unclaimed(stats: &Stats): u64 { stats.amount_unclaimed }
 public fun eligible(status: &EligibleStatus): bool { status.eligible }
 public fun claimed(status: &EligibleStatus): bool { status.claimed }
 public fun amount(status: &EligibleStatus): u64 { status.amount }
+
+// === events ===
+
+public struct EventShare has drop, copy {
+    id: address,
+    type_coin: AsciiString,
+    type_network: AsciiString,
+}
+
+public struct EventClaim has drop, copy {
+    id: address,
+    type_coin: AsciiString,
+    type_network: AsciiString,
+    foreign_addr: String,
+    amount: u64,
+}
 
 // === test functions ===
 
