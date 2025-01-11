@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { PageNotFound } from "./PageNotFound";
-import { CardSpinner, CardMsg } from "./comp/cards";
+import { CardSpinner, CardMsg, Card } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
@@ -258,17 +258,17 @@ const WidgetClaim: React.FC<{
 
     return <>
         <div className="card-description">
-            <div className="card-list tx-list">
+            <div className="card-list slim-list">
                 {(() => {
                     if (!hasAnyLinks) {
-                        return <div className="card tx disabled">
+                        return <Card className="slim disabled">
                             You haven't linked any addresses yet.
-                        </div>;
+                        </Card>;
                     }
                     if (!hasEligibleLinks) {
-                        return <div className="card tx disabled">
+                        return <Card className="slim disabled">
                             None of your linked addresses are eligible.
-                        </div>;
+                        </Card>;
                     }
                     return <>
                         {eligibleLinks.map(linkWStat =>
@@ -303,7 +303,7 @@ const CardClaimableLink: React.FC<{
     coinMeta,
     link,
 }) => {
-    return <div className={`card tx ${link.status.claimed ? "disabled" : "claimable"}`}>
+    return <Card className={`slim ${link.status.claimed ? "disabled" : "claimable"}`}>
         <div className="card-header">
             <div className="card-title">
                 {link.status.claimed
@@ -318,7 +318,7 @@ const CardClaimableLink: React.FC<{
                 </LinkExternal>
             </div>
         </div>
-    </div>;
+    </Card>;
 };
 
 // === helpers ===
