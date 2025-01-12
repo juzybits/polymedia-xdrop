@@ -388,6 +388,8 @@ const CardAddClaims: React.FC<{
                 })()
             ]);
 
+            // throw new Error("Dev exit.");
+
             // submit the tx
             console.debug("[onSubmit] submitting tx");
             const client = clientWithKeypair(xdropClient, privateKey.val);
