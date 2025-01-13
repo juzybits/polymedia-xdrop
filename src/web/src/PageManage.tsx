@@ -27,14 +27,6 @@ export const PageManage: React.FC = () =>
     const currAcct = useCurrentAccount();
     const fetched = useXDrop(xdropId);
 
-    const [showSuccess, setShowSuccess] = useState(false);
-
-    useEffect(() => {
-        if (!showSuccess) return;
-        const id = setTimeout(() => { setShowSuccess(false); }, 2000);
-        return () => clearTimeout(id);
-    }, [showSuccess]);
-
     useEffect(() => {
         if (!fetched.data?.xdrop) return;
         console.debug("[useEffect] xdrop:", JSON.stringify(fetched.data.xdrop, null, 2));
@@ -50,7 +42,7 @@ export const PageManage: React.FC = () =>
             const resp = await xdropClient.signAndExecuteTx(tx);
             console.debug("[onSubmit] okay:", resp);
             fetched.refetch();
-            setShowSuccess(true);
+            toast.success("Success");
         } catch (err) {
             console.warn("[onSubmit] error:", err);
             const msg = xdropClient.errParser.errToStr(err, "Something went wrong");
@@ -68,8 +60,6 @@ export const PageManage: React.FC = () =>
                 <div className="page-title">
                     Manage xDrop
                 </div>
-
-                {showSuccess && <SuccessMsg res={{ ok: true }} />}
 
                 <XDropLoader fetched={fetched} requireWallet={true}>
                 {(xdrop, coinMeta) =>
@@ -164,7 +154,6 @@ export const PageManage: React.FC = () =>
                                 xdrop={xdrop}
                                 coinMeta={coinMeta}
                                 refetch={fetched.refetch}
-                                setShowSuccess={setShowSuccess}
                             />
                             {adminActions.map((action, idx) => (
                                 <CardAction
@@ -221,13 +210,11 @@ const CardAddClaims: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     refetch: () => Promise<void>;
-    setShowSuccess: ReactSetter<boolean>;
 }> = ({
     currAddr,
     xdrop,
     coinMeta,
     refetch,
-    setShowSuccess,
 }) =>
 {
     if (xdrop.is_ended) return null;
@@ -404,7 +391,7 @@ const CardAddClaims: React.FC<{
             console.debug("[onSubmit] okay:", resps);
             setSubmitRes({ ok: true });
             refetch();
-            setShowSuccess(true);
+            toast.success("Success");
         } catch (err) {
             console.warn("[onSubmit] error:", err);
             setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to add claims") });
