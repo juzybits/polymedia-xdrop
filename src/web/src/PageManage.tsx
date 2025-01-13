@@ -5,6 +5,7 @@ import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalan
 import { Btn, isLocalhost, ReactSetter, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect, useState } from "react";
+import { toast, Toaster } from 'react-hot-toast';
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
@@ -51,13 +52,16 @@ export const PageManage: React.FC = () =>
             fetched.refetch();
             setShowSuccess(true);
         } catch (err) {
-            console.warn("[onSubmit] error:", err); // TODO: show error
+            console.warn("[onSubmit] error:", err);
+            const msg = xdropClient.errParser.errToStr(err, "Something went wrong");
+            msg && toast.error(msg);
         } finally {
             setIsWorking(false);
         }
     };
 
     return <>
+        <Toaster position="bottom-center" />
         {header}
         <div id="page-manage" className="page-regular">
             <div className="page-content">
@@ -161,7 +165,7 @@ export const PageManage: React.FC = () =>
                                 coinMeta={coinMeta}
                                 refetch={fetched.refetch}
                                 setShowSuccess={setShowSuccess}
-                                />
+                            />
                             {adminActions.map((action, idx) => (
                                 <CardAction
                                 key={idx}
