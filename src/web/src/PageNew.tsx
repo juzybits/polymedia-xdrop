@@ -31,7 +31,7 @@ export const PageNew: React.FC = () =>
         html: { required: true, placeholder: "0x2::sui::SUI" },
         validateInput: (input: string) => {
             const trimmed = input.trim();
-            const match = trimmed.match(REGEX_TYPE_BASIC);
+            const match = trimmed.match(`^${REGEX_TYPE_BASIC}$`);
             if (!match) {
                 return { err: "Invalid coin type", val: undefined };
             }
