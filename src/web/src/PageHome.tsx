@@ -1,8 +1,9 @@
+import { LinkExternal } from "@polymedia/suitcase-react";
 import React from "react";
 import { Link } from "react-router-dom";
 import { isProdDomain, useAppContext } from "./App";
-import { HeroBanner } from "./comp/hero";
 import { Card } from "./comp/cards";
+import { HeroBanner } from "./comp/hero";
 
 export const PageHome: React.FC = () =>
 {
@@ -33,25 +34,38 @@ export const PageHome: React.FC = () =>
 
 const SectionHowItWorks: React.FC = () =>
 {
-    return <div>
+    return <>
         <div className="page-section">
-            <div className="page-title">How it works</div>
+            <div className="page-title">What is this?</div>
             <Card>
                 <div className="card-desc">
-                    <p>
-                        1. Admin creates a Sui xDrop and specifies which Ethereum or Solana addresses can claim coins.
-                    </p>
-                </div>
-            </Card>
-            <Card>
-                <div className="card-desc">
-                    <p>
-                        2. Users verify their Ethereum or Solana address via SuiLink and can then claim coins on Sui.
-                    </p>
+                    <p>xDrop is a cross-chain airdrop system built on Sui and powered by <LinkExternal href="https://www.suilink.io">SuiLink</LinkExternal>.</p>
+                    <p>It lets you distribute Sui coins to users on other chains like Solana, Ethereum, and other EVM chains like Base, Arbitrum, etc.</p>
                 </div>
             </Card>
         </div>
-    </div>;
+        <div className="page-section">
+            <div className="page-title">How does it work?</div>
+            <Card>
+                <div className="card-title">
+                    For senders
+                </div>
+                <div className="card-desc">
+                    <p>To create an xDrop, specify which addresses can claim and how much, and fund the xDrop with the coins you want to distribute.</p>
+                    <p>The criteria is up to you: it could be Ethereum NFT holders, Solana DEX traders, or any other group you want to target.</p>
+                </div>
+            </Card>
+            <Card>
+                <div className="card-title">
+                    For recipients
+                </div>
+                <div className="card-desc">
+                    <p>To claim an xDrop, verify your Solana or Ethereum address on SuiLink by signing a message with your wallet.</p>
+                    <p>If your address is eligible, you can then claim your coins on Sui.</p>
+                </div>
+            </Card>
+        </div>
+    </>;
 };
 
 // const SectionFeatured: React.FC = () =>

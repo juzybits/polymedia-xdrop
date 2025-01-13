@@ -299,8 +299,11 @@ const CardAddClaims: React.FC<{
     });
 
     const privateKey = useInputPrivateKey({
-        html: { value: import.meta.env.VITE_PRIVATE_KEY ?? "" },
-        label: "Admin private key (optional, DYOR):",
+        label: "Admin private key (optional, DYOR 🚨):",
+        html: {
+            value: import.meta.env.VITE_PRIVATE_KEY ?? "",
+            placeholder: "suiprivkey..."
+        },
         validateValue: (pk) => {
             if (pk.toSuiAddress() !== xdrop.admin) {
                 return { err: "Admin private key does not match XDrop admin.", val: undefined };
@@ -414,8 +417,10 @@ const CardAddClaims: React.FC<{
         </div>
 
         <div className="card-desc">
-            <p>Enter 1 claim per line as follows:</p>
-            <p>{xdrop.network_name.toUpperCase()}_ADDRESS,{symbol}_AMOUNT</p>
+            <p>
+                Enter 1 claim per line as follows:
+                <br />{xdrop.network_name.toUpperCase()}_ADDRESS,{symbol}_AMOUNT
+            </p>
         </div>
 
         <div className="card-desc">
@@ -424,13 +429,19 @@ const CardAddClaims: React.FC<{
 
         {textArea.val && <>
             <div className="card-desc">
-                <div className="card-title">Summary:</div>
-                <p>▸ {textArea.val.claims.length} addresses</p>
-                <p>▸ {fmtBal(textArea.val.totalAmount, decimals, symbol)}</p>
+                <div className="card-title">Summary</div>
+                <div className="card-desc">
+                    ▸ {textArea.val.claims.length} addresses
+                    <br />▸ {fmtBal(textArea.val.totalAmount, decimals, symbol)}
+                </div>
             </div>
             {requiredTxs > 1 && <>
+                <div className="card-title">
+                    ⚠️ Needs {requiredTxs} transactions
+                </div>
                 <div className="card-desc">
-                    <p>⚠️ Requires {requiredTxs} transactions. You can enter your private key to avoid signing each tx manually. Only enter your PK if you know what you're doing.</p>
+                    <p>If you don't want to manually approve each tx, you can enter your private key below.</p>
+                    <p>Your PK will never leave your browser and is secured by Trust Me Bro™ technology.</p>
                 </div>
                 <div className="card-desc">
                     {privateKey.input}
