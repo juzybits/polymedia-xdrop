@@ -40,7 +40,7 @@ const SectionHowItWorks: React.FC = () =>
             <Card>
                 <div className="card-desc">
                     <p>xDrop is a cross-chain airdrop system built on Sui and powered by <LinkExternal href="https://www.suilink.io">SuiLink</LinkExternal>.</p>
-                    <p>It lets you distribute Sui coins to users on other chains like Solana, Ethereum, and other EVM chains like Base, Arbitrum, etc.</p>
+                    <p>It lets you distribute Sui coins to users on Solana, Ethereum, and other EVM chains.</p>
                 </div>
             </Card>
         </div>
@@ -51,7 +51,7 @@ const SectionHowItWorks: React.FC = () =>
                     For senders
                 </div>
                 <div className="card-desc">
-                    <p>To create an xDrop, specify which addresses can claim and how much, and fund the xDrop with the coins you want to distribute.</p>
+                    <p>To create an xDrop, you specify eligible addresses and amounts, then  fund the xDrop with the coins you want to distribute.</p>
                     <p>The criteria is up to you: it could be Ethereum NFT holders, Solana DEX traders, or any other group you want to target.</p>
                 </div>
             </Card>
@@ -60,8 +60,8 @@ const SectionHowItWorks: React.FC = () =>
                     For recipients
                 </div>
                 <div className="card-desc">
-                    <p>To claim an xDrop, verify your Solana or Ethereum address on SuiLink by signing a message with your wallet.</p>
-                    <p>If your address is eligible, you can then claim your coins on Sui.</p>
+                    <p>To claim an xDrop, verify your Solana or Ethereum address on SuiLink.</p>
+                    <p>Then, if your address is eligible, you can claim your coins on Sui.</p>
                 </div>
             </Card>
         </div>
