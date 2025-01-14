@@ -228,9 +228,9 @@ const CardAddClaims: React.FC<{
         claims: { foreignAddr: string; amount: bigint }[];
         totalAmount: bigint;
     }>({
-        msgRequired: "Claims are required.",
+        msgRequired: "Enter eligible addresses and amounts",
         html: {
-            value: localhostClaimsOrEmpty(),
+            value: devClaimsOrEmpty(),
             required: true,
             placeholder: xdrop.network_name === "Solana"
                 ? "AaAaAa,1000\nBbBbBb,2000"
@@ -288,10 +288,7 @@ const CardAddClaims: React.FC<{
 
     const privateKey = useInputPrivateKey({
         label: "Admin private key (optional, DYOR 🚨):",
-        html: {
-            value: import.meta.env.VITE_PRIVATE_KEY ?? "",
-            placeholder: "suiprivkey..."
-        },
+        html: { placeholder: "suiprivkey..." },
         validateValue: (pk) => {
             if (pk.toSuiAddress() !== xdrop.admin) {
                 return { err: "Admin private key does not match XDrop admin.", val: undefined };
@@ -449,7 +446,7 @@ const CardNotAdmin: React.FC<{
     </Card>;
 };
 
-function localhostClaimsOrEmpty()
+function devClaimsOrEmpty()
 {
     if (!isLocalhost()) return "";
     return (

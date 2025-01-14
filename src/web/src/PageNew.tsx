@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
-import { Btn, useDropdown, useInputString } from "@polymedia/suitcase-react";
+import { Btn, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React from "react";
 import toast from "react-hot-toast";
@@ -30,7 +30,7 @@ export const PageNew: React.FC = () =>
 
     const coinType = useInputString({
         label: "Coin Type",
-        html: { required: true, placeholder: "0x2::sui::SUI" },
+        html: { required: true, placeholder: "0x2::sui::SUI", value: devCoinTypeOrEmpty() },
         validateInput: (input: string) => {
             const trimmed = input.trim();
             const match = trimmed.match(`^${REGEX_TYPE_BASIC}$`);
@@ -107,3 +107,16 @@ export const PageNew: React.FC = () =>
     </div>
     </>;
 };
+
+function devCoinTypeOrEmpty()
+{
+    const { network } = useAppContext();
+    if (!isLocalhost()) return "";
+
+    if (network === "devnet")
+        return "0xb4a43019846e3b6fd5f8d6a2c28a9f94cd00d2edea158e94aeaf7ee8ebeb5ebb::dogcoin::DOGCOIN";
+    if (network === "mainnet")
+        return "0xf64a704b8fa0380f6bca10af0c9e5a5d478bbfc50b2a97898a7f1315289c7b54::dogcoin::DOGCOIN";
+
+    return "";
+}
