@@ -20,7 +20,7 @@ export const PageUser: React.FC = () =>
             <div className="page-content">
                 <div className="page-title">Your XDrops</div>
                 {!currAcct
-                    ? <Card className="center-text"><ConnectToGetStarted /></Card>
+                    ? <Card><ConnectToGetStarted msg="Connect your Sui wallet to see your xDrops." /></Card>
                     : <ListCreatedXDrops currAddr={currAcct.address} />
                 }
             </div>

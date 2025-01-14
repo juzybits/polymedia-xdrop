@@ -1,7 +1,7 @@
 import { useCurrentAccount, useDisconnectWallet, useWallets } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { NetworkName, shortenAddress } from "@polymedia/suitcase-core";
-import { Btn, LinkExternal, useFetch } from "@polymedia/suitcase-react";
+import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
 import { LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
@@ -9,7 +9,7 @@ import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { PageNotFound } from "./PageNotFound";
 import { Card, CardMsg, CardSpinner } from "./comp/cards";
-import { BtnConnect } from "./comp/connect";
+import { ConnectToGetStarted } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { fmtBal } from "./lib/helpers";
@@ -127,12 +127,7 @@ const CardClaim: React.FC<{
             {custom?.step3?.(xdrop, coinMeta)}
 
             {!currAcct ? (
-                <>
-                    <div className="card-desc">
-                        Connect your Sui wallet to claim.
-                    </div>
-                    <BtnConnect />
-                </>
+                <ConnectToGetStarted msg="Connect your Sui wallet to claim." />
             ) : (
                 <>
                     <div className="card-desc">

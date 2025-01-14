@@ -2,7 +2,7 @@ import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { useAppContext } from "../App";
 import { BtnSubmit } from "./buttons";
 
-export const BtnConnect: React.FC = () =>
+export const BtnConnect = () =>
 {
     // === state ===
 
@@ -22,19 +22,23 @@ export const BtnConnect: React.FC = () =>
     );
 };
 
-export const ConnectToGetStarted: React.FC = () =>
+export const ConnectToGetStarted = ({
+    msg,
+}: {
+    msg?: string;
+}) =>
 {
     return <>
-        <div className="card-desc">
-            Connect your Sui wallet to get started.
-        </div>
+        {msg && <div className="card-desc">{msg}</div>}
         <BtnConnect />
     </>;
 };
 
-export const ConnectOr: React.FC<{
+export const ConnectOr = ({
+    children
+}: {
     children: React.ReactNode;
-}> = ({ children }) =>
+}) =>
 {
     const currAcct = useCurrentAccount();
     return <>

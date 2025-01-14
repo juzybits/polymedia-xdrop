@@ -34,8 +34,8 @@ export const XDropLoader: React.FC<{
     }
 
     if (requireWallet && !currAcct) {
-        return <Card className="center-text">
-            <ConnectToGetStarted />
+        return <Card>
+            <ConnectToGetStarted msg="Connect your Sui wallet to get started." />
         </Card>;
     }
 
