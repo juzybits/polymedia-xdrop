@@ -140,7 +140,6 @@ export const PageManage: React.FC = () =>
 
                     return <>
                         <CardXDropDetails xdrop={xdrop}
-                            title="Details"
                             extraDetails={<XDropStats xdrop={xdrop} coinMeta={coinMeta} />}
                             button={<BtnLinkInternal to={`/claim/${xdrop.id}`} disabled={isWorking}>
                                 VIEW CLAIM PAGE

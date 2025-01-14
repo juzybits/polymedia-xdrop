@@ -88,9 +88,6 @@ export const PageNew: React.FC = () =>
                 Create xDrop
             </div>
             <Card>
-                <div className="card-title">
-                    Settings
-                </div>
                 <div className="form">
                     <div className="form-section">
                         {linkNetwork.input}

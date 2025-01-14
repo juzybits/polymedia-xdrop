@@ -71,9 +71,9 @@ export const PageClaim: React.FC = () =>
                                 <div className="card-desc">
                                     <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
                                 </div>
-                                <div className="center-element">
-                                    <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://suiwallet.com/">INSTALL WALLET</LinkExternal>
-                                </div>
+                                <BtnLinkExternal href="https://suiwallet.com/" disabled={isWorking}>
+                                    INSTALL WALLET
+                                </BtnLinkExternal>
                             </>}
                         </Card>
 
@@ -277,14 +277,13 @@ const WidgetClaim: React.FC<{
         </div>
 
         {hasEligibleLinks && <>
-            <div className="center-element">
-                {!xdrop.is_open
-                ? <div className="card-desc">
-                        <p className="text-orange">Claims are not open yet.</p>
-                </div>
-                : <BtnSubmit disabled={disableSubmit} onClick={onSubmit}>CLAIM ALL</BtnSubmit>
-                }
+            {!xdrop.is_open
+            ? <div className="card-desc">
+                <p className="text-orange">Claims are not open yet.</p>
             </div>
+            : <BtnSubmit disabled={disableSubmit} onClick={onSubmit}>
+                CLAIM ALL
+            </BtnSubmit>}
         </>}
 
     </>;
