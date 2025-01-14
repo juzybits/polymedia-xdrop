@@ -313,7 +313,6 @@ const CardAddClaims: React.FC<{
 
         try {
             setIsWorking(true);
-
             const { claims, totalAmount } = textArea.val;
 
             // last moment validation against onchain state
@@ -377,8 +376,6 @@ const CardAddClaims: React.FC<{
                     }
                 })()
             ]);
-
-            // throw new Error("Dev exit.");
 
             // submit the tx
             console.debug("[onSubmit] submitting tx");

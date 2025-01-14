@@ -3,15 +3,15 @@ import { CoinMetadata } from "@mysten/sui/client";
 import { NetworkName, shortenAddress } from "@polymedia/suitcase-core";
 import { Btn, LinkExternal, useFetch } from "@polymedia/suitcase-react";
 import { LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { PageNotFound } from "./PageNotFound";
-import { CardSpinner, CardMsg, Card } from "./comp/cards";
+import { Card, CardMsg, CardSpinner } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
-import { ResultMsg, SubmitRes } from "./comp/submits";
 import { fmtBal } from "./lib/helpers";
 
 export const PageClaim: React.FC = () =>
@@ -179,7 +179,6 @@ const WidgetClaim: React.FC<{
 
     const currAcct = useCurrentAccount();
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
-    const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
     const eligibleLinksWithStatus = useFetch<EligibleLinksWithStatus>(async () =>
     {
@@ -231,17 +230,17 @@ const WidgetClaim: React.FC<{
 
         try {
             setIsWorking(true);
-            setSubmitRes({ ok: undefined });
             const resp = await xdropClient.userClaims(
                 currAddr,
                 xdrop,
                 eligibleLinks.map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);
-            setSubmitRes({ ok: true });
+            toast.success("Success");
         } catch (err) {
             console.warn("[onSubmit] error:", err);
-            setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to claim") });
+            const msg = xdropClient.errParser.errToStr(err, "Failed to claim");
+            msg && toast.error(msg);
         } finally {
             setIsWorking(false);
             refetch();
@@ -288,7 +287,6 @@ const WidgetClaim: React.FC<{
                 : <Btn disabled={disableSubmit} onClick={onSubmit}>CLAIM ALL</Btn>
                 }
             </div>
-            <ResultMsg res={submitRes} />
         </>}
 
     </>;
