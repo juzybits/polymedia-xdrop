@@ -11,6 +11,7 @@ import { ExplorerName, IconGears, IconHistory, IconNew, Modal, ReactSetter, isLo
 import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Glitch } from "./comp/glitch";
 import { getGraphqlUrl, loadNetworkConfig } from "./lib/network";
@@ -203,6 +204,8 @@ const App: React.FC<{
             {modalContent && <Modal onClose={() => setModalContent(null)}>
                 {modalContent}
             </Modal>}
+
+            <Toaster position="bottom-center" />
 
         </div>
     </AppContext.Provider>

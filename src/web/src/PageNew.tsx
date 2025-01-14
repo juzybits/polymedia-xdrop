@@ -3,12 +3,12 @@ import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
 import { Btn, IconInfo, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
-import React, { useState } from "react";
+import React from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Card } from "./comp/cards";
 import { ConnectOr } from "./comp/connect";
-import { ResultMsg, SubmitRes } from "./comp/submits";
 
 export const PageNew: React.FC = () =>
 {
@@ -39,8 +39,6 @@ export const PageNew: React.FC = () =>
         },
     });
 
-    const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
-
     const hasErrors = [linkNetwork, coinType].some(input => !!input.err);
     const disableSubmit = !currAcct || isWorking || hasErrors;
 
@@ -52,7 +50,6 @@ export const PageNew: React.FC = () =>
 
         try {
             setIsWorking(true);
-            setSubmitRes({ ok: undefined });
 
             const coinMeta = await getCoinMeta(xdropClient.suiClient, coinType.val!);
             if (!coinMeta) {
@@ -65,13 +62,14 @@ export const PageNew: React.FC = () =>
             console.debug("[onSubmit] resp:", resp);
             console.debug("[onSubmit] objChange:", xdropObjChange);
             console.debug("[onSubmit] obj ID:", xdropObjChange.objectId);
-            setSubmitRes({ ok: true });
+            toast.success("Success");
             navigate(`/manage/${xdropObjChange.objectId}`, {
                 state: { justCreated: true },
             });
         } catch (err) {
             console.warn("[onSubmit] error:", err);
-            setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to create xDrop") });
+            const msg = xdropClient.errParser.errToStr(err, "Failed to create xDrop");
+            msg && toast.error(msg);
         } finally {
             setIsWorking(false);
         }
@@ -113,7 +111,6 @@ export const PageNew: React.FC = () =>
                         <Btn disabled={disableSubmit} onClick={onSubmit}>
                             CREATE
                         </Btn>
-                        <ResultMsg res={submitRes} />
                     </ConnectOr>
                 </div>
             </Card>
