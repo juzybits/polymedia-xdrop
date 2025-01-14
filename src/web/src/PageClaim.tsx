@@ -90,10 +90,9 @@ export const PageClaim: React.FC = () =>
                                     <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
                                 </div>
                             </>}
-                                <BtnLinkExternal
-                                    className={isWorking ? "disabled" : ""}
-                                    href="https://www.suilink.io/"
-                                >LINK ADDRESS</BtnLinkExternal>
+                                <BtnLinkExternal href="https://www.suilink.io/" disabled={isWorking}>
+                                    LINK ADDRESS
+                                </BtnLinkExternal>
                         </Card>
 
                         <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} />

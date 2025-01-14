@@ -34,7 +34,7 @@ const ListCreatedXDrops = ({ currAddr }: {
     currAddr: string;
 }) =>
 {
-    const { xdropClient } = useAppContext();
+    const { xdropClient, isWorking } = useAppContext();
     const listRef = useRef<HTMLDivElement>(null);
 
     const xdrops = useFetchAndPaginate(
@@ -56,7 +56,9 @@ const ListCreatedXDrops = ({ currAddr }: {
             {xdrops.isLoading && <CardSpinner />}
             {xdrops.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
-                    button={<BtnLinkInternal to={`/manage/${x.id}`}>MANAGE</BtnLinkInternal>}
+                    button={<BtnLinkInternal to={`/manage/${x.id}`} disabled={isWorking}>
+                        MANAGE
+                    </BtnLinkInternal>}
                     extraDetails={<XDropDetail label="Created:" val={x.timestamp.toLocaleString()} />}
                 />
             )}
