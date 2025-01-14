@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
-import { Btn, IconInfo, useDropdown, useInputString } from "@polymedia/suitcase-react";
+import { Btn, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React from "react";
 import toast from "react-hot-toast";
@@ -16,7 +16,7 @@ export const PageNew: React.FC = () =>
 
     const navigate = useNavigate();
     const currAcct = useCurrentAccount();
-    const { header, xdropClient, isWorking, setIsWorking, setModalContent } = useAppContext();
+    const { header, xdropClient, isWorking, setIsWorking } = useAppContext();
 
     // === form state ===
 
@@ -24,6 +24,7 @@ export const PageNew: React.FC = () =>
         label: "Network",
         html: { required: true },
         options: LINK_NETWORKS.map(network => ({ value: network, label: network })),
+        msgRequired: "Select the chain where users are coming from",
     });
 
     const coinType = useInputString({
@@ -37,6 +38,7 @@ export const PageNew: React.FC = () =>
             }
             return { err: null, val: trimmed };
         },
+        msgRequired: "Enter the kind of Sui coin to distribute"
     });
 
     const hasErrors = [linkNetwork, coinType].some(input => !!input.err);
@@ -73,14 +75,6 @@ export const PageNew: React.FC = () =>
         }
     };
 
-    const showFormInfoModal = () => {
-        setModalContent(<>
-            <div className="card-title"><IconInfo />Settings</div>
-            <div><b>Network:</b> The blockchain where users are coming from.</div>
-            <div><b>Coin type:</b> The kind of Sui coin you want to distribute.</div>
-        </>);
-    };
-
     // === html ===
 
     return <>
@@ -93,11 +87,8 @@ export const PageNew: React.FC = () =>
                 Create xDrop
             </div>
             <Card>
-                <div className="card-header">
-                    <div className="card-title">
-                        Settings
-                    </div>
-                    <IconInfo onClick={showFormInfoModal} />
+                <div className="card-title">
+                    Settings
                 </div>
                 <div className="form">
                     <div className="form-section">
