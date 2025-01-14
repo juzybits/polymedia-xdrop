@@ -226,6 +226,8 @@ const CardAddClaims: React.FC<{
     const textArea = useTextArea<{
         claims: { foreignAddr: string; amount: bigint }[];
         totalAmount: bigint;
+        feeAmount: bigint;
+        totalAmountPlusFee: bigint;
     }>({
         msgRequired: "Enter eligible addresses and amounts",
         html: {
@@ -274,7 +276,11 @@ const CardAddClaims: React.FC<{
                     }
                 }
 
-                return { err: null, val: { claims, totalAmount } };
+                const feeAmount = totalAmount * FEE.bps / 10000n;
+                const totalAmountPlusFee = totalAmount + feeAmount;
+                return { err: null, val: {
+                    claims, totalAmount, feeAmount, totalAmountPlusFee
+                }};
             } catch (e) {
                 return {
                     err: e instanceof Error ? e.message : "Invalid input",
@@ -309,7 +315,7 @@ const CardAddClaims: React.FC<{
 
         try {
             setIsWorking(true);
-            const { claims, totalAmount } = textArea.val;
+            const { claims, totalAmountPlusFee } = textArea.val;
 
             // last moment validation against onchain state
             await Promise.all([
@@ -321,14 +327,14 @@ const CardAddClaims: React.FC<{
                         owner: currAddr, coinType: xdrop.type_coin,
                     });
                     const balance = BigInt(respBalance.totalBalance);
-                    if (balance <= totalAmount) {
+                    if (balance <= totalAmountPlusFee) {
                         throw new Error("Insufficient balance to fund the claims: "
-                            + `you need ${fmtBal(totalAmount, decimals, symbol)}, `
+                            + `you need ${fmtBal(totalAmountPlusFee, decimals, symbol)}, `
                             + `but only have ${fmtBal(balance, decimals, symbol)}`);
                     }
-                    console.debug(`[onSubmit] ${symbol} balance is enough: ${totalAmount} <= ${balance}`);
+                    console.debug(`[onSubmit] ${symbol} balance is enough: ${totalAmountPlusFee} <= ${balance}`);
                 })(),
-                // check wallet has enough SUI for tx fees (+ totalAmount if isSuiXDrop)
+                // check wallet has enough SUI for tx fees (+ totalAmountPlusFee if isSuiXDrop)
                 (async () => {
                     if (!isSuiXDrop && requiredTxs <= 1)
                         return;
@@ -347,9 +353,9 @@ const CardAddClaims: React.FC<{
 
                     const suiBalance = BigInt(respBalance.totalBalance);
                     const gas = respsInspect[0].effects!.gasUsed;
-                    const feePerTx = BigInt(gas.computationCost) + BigInt(gas.storageCost) - BigInt(gas.storageRebate);
-                    const feeTotal = (feePerTx * BigInt(claims.length)) / BigInt(MAX_OBJECTS_PER_TX);
-                    const suiTotal = isSuiXDrop ? feeTotal + totalAmount : feeTotal;
+                    const gasPerTx = BigInt(gas.computationCost) + BigInt(gas.storageCost) - BigInt(gas.storageRebate);
+                    const gasTotal = (gasPerTx * BigInt(claims.length)) / BigInt(MAX_OBJECTS_PER_TX);
+                    const suiTotal = isSuiXDrop ? (gasTotal + totalAmountPlusFee) : gasTotal;
                     const totalWithMargin = suiTotal + 100_000_000n; // add 0.1 SUI for safety margin
 
                     if (suiBalance < totalWithMargin) {
@@ -419,9 +425,11 @@ const CardAddClaims: React.FC<{
             <div className="card-desc">
                 <div className="card-title">Summary</div>
                 <div className="card-desc">
-                    ▸ {textArea.val.claims.length} addresses
-                    <br />▸ {formatBalance(textArea.val.totalAmount, decimals, "compact")} claimable {symbol}
-                    <br />▸ {Number(FEE.bps) / 100}% fee = {fmtBal(textArea.val.totalAmount * FEE.bps / 10000n, decimals, symbol)}
+                    👥 {textArea.val.claims.length} address{textArea.val.claims.length === 1 ? "" : "es"}
+                    <br />💰 {formatBalance(textArea.val.totalAmount, decimals, "compact")} claimable {symbol}
+                    <br />{ FEE.bps > 0n
+                        ? <>💸 {Number(FEE.bps) / 100}% fee: {fmtBal(textArea.val.feeAmount, decimals, symbol)}</>
+                        : <>❤️ no platform fees</>}
                 </div>
             </div>
             {requiredTxs > 1 && <>

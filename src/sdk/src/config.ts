@@ -44,7 +44,10 @@ export const ERRORS_CODES: Record<number, string> = { // TODO add user-friendly 
     3012: "E_ZERO_LENGTH_ADDRESS",
 };
 
-export const FEE = {
-    bps: 10n,
+export const FEE: {
+    bps: bigint;
+    addr: string;
+} = {
+    bps: 20n,
     addr: "0xda55c41d7cdebe663ed2abcfbb8d8e9351f796443513b6655d360d78f6c17035",
 };
