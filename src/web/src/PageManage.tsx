@@ -1,17 +1,16 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
-import { Btn, isLocalhost, ReactSetter, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
+import { removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
+import { Btn, isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
 import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
-import React, { useEffect, useState } from "react";
-import { toast, Toaster } from 'react-hot-toast';
+import React, { useEffect } from "react";
+import { toast } from 'react-hot-toast';
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
-import { ResultMsg, SubmitRes, SuccessMsg } from "./comp/submits";
 import { clientWithKeypair, fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
@@ -41,8 +40,8 @@ export const PageManage: React.FC = () =>
             action(tx);
             const resp = await xdropClient.signAndExecuteTx(tx);
             console.debug("[onSubmit] okay:", resp);
-            fetched.refetch();
             toast.success("Success");
+            fetched.refetch();
         } catch (err) {
             console.warn("[onSubmit] error:", err);
             const msg = xdropClient.errParser.errToStr(err, "Something went wrong");
@@ -53,7 +52,6 @@ export const PageManage: React.FC = () =>
     };
 
     return <>
-        <Toaster position="bottom-center" />
         {header}
         <div id="page-manage" className="page-regular">
             <div className="page-content">
@@ -222,7 +220,6 @@ const CardAddClaims: React.FC<{
     // === state ===
 
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
-    const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
 
     const decimals = coinMeta.decimals;
     const symbol = coinMeta.symbol;
@@ -316,7 +313,6 @@ const CardAddClaims: React.FC<{
 
         try {
             setIsWorking(true);
-            setSubmitRes({ ok: undefined });
 
             const { claims, totalAmount } = textArea.val;
 
@@ -389,12 +385,12 @@ const CardAddClaims: React.FC<{
             const client = clientWithKeypair(xdropClient, privateKey.val);
             const resps = await client.adminAddsClaims(currAddr, xdrop, claims);
             console.debug("[onSubmit] okay:", resps);
-            setSubmitRes({ ok: true });
-            refetch();
             toast.success("Success");
+            refetch();
         } catch (err) {
             console.warn("[onSubmit] error:", err);
-            setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to add claims") });
+            const msg = xdropClient.errParser.errToStr(err, "Failed to add claims");
+            msg && toast.error(msg);
         } finally {
             setIsWorking(false);
         }
@@ -443,7 +439,6 @@ const CardAddClaims: React.FC<{
         <div className="card-desc">
             <Btn disabled={disableSubmit} onClick={onSubmit}>ADD CLAIMS</Btn>
         </div>
-        <ResultMsg res={submitRes} />
     </Card>;
 };
 
