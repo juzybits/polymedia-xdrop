@@ -1,12 +1,12 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
-import { Btn, isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
-import { MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
+import { isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
+import { FEE, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
 import { toast } from 'react-hot-toast';
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
@@ -17,7 +17,6 @@ import { BtnSubmit, BtnLinkInternal } from "./comp/buttons";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
 
-// TODO: maybe add fee
 export const PageManage: React.FC = () =>
 {
     const { xdropId } = useParams();
@@ -337,7 +336,13 @@ const CardAddClaims: React.FC<{
                     const firstTxClaims = claims.slice(0, MAX_OBJECTS_PER_TX);
                     const [respBalance, respsInspect] = await Promise.all([
                         xdropClient.suiClient.getBalance({ owner: currAddr }),
-                        xdropClient.adminAddsClaims(currAddr, xdrop, firstTxClaims, true)
+                        xdropClient.adminAddsClaims({
+                            sender: currAddr,
+                            xdrop,
+                            claims: firstTxClaims,
+                            dryRun: true,
+                            fee: FEE,
+                        })
                     ]);
 
                     const suiBalance = BigInt(respBalance.totalBalance);
@@ -377,7 +382,9 @@ const CardAddClaims: React.FC<{
             // submit the tx
             console.debug("[onSubmit] submitting tx");
             const client = clientWithKeypair(xdropClient, privateKey.val);
-            const resps = await client.adminAddsClaims(currAddr, xdrop, claims);
+            const resps = await client.adminAddsClaims({
+                sender: currAddr, xdrop, claims, fee: FEE
+            });
             console.debug("[onSubmit] okay:", resps);
             toast.success("Success");
             refetch();
@@ -413,7 +420,8 @@ const CardAddClaims: React.FC<{
                 <div className="card-title">Summary</div>
                 <div className="card-desc">
                     ▸ {textArea.val.claims.length} addresses
-                    <br />▸ {fmtBal(textArea.val.totalAmount, decimals, symbol)}
+                    <br />▸ {formatBalance(textArea.val.totalAmount, decimals, "compact")} claimable {symbol}
+                    <br />▸ {Number(FEE.bps) / 100}% fee = {fmtBal(textArea.val.totalAmount * FEE.bps / 10000n, decimals, symbol)}
                 </div>
             </div>
             {requiredTxs > 1 && <>
@@ -453,7 +461,7 @@ function devClaimsOrEmpty()
 // `0x0000000000000000000000000000000000000AaA,100
 // 0x1111111111111111111111111111111111111BbB,200
 // ` +
-Array.from({ length: 2002 }, () => {
+Array.from({ length: 1000 }, () => {
         // Generate random Ethereum address (40 hex chars)
         const addr = "0x" + Array.from({ length: 40 }, () =>
             Math.floor(Math.random() * 16).toString(16)

@@ -28,7 +28,7 @@ export function getNetworkConfig(network: NetworkName): NetworkConfig {
     return NETWORK_CONFIG[network];
 }
 
-export const ERRORS_CODES: Record<number, string> = {
+export const ERRORS_CODES: Record<number, string> = { // TODO add user-friendly messages
     3000: "E_ADDRESS_NOT_FOUND",
     3001: "E_ALREADY_CLAIMED",
     3002: "E_NOT_ADMIN",
@@ -42,4 +42,9 @@ export const ERRORS_CODES: Record<number, string> = {
     3010: "E_NOT_OPEN",
     3011: "E_NOT_PAUSED",
     3012: "E_ZERO_LENGTH_ADDRESS",
+};
+
+export const FEE = {
+    bps: 10n,
+    addr: "0xda55c41d7cdebe663ed2abcfbb8d8e9351f796443513b6655d360d78f6c17035",
 };

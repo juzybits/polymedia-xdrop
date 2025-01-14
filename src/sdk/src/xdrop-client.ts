@@ -282,11 +282,13 @@ export class XDropClient extends SuiClientBase
     /**
      * Add claims to an XDrop. Does multiple transactions if needed.
      */
-    public async adminAddsClaims(
-        sender: string,
-        xdrop: XDropIdentifier,
-        claims: { foreignAddr: string; amount: bigint }[],
-        dryRun?: boolean,
+    public async adminAddsClaims({ sender, xdrop, claims, dryRun, fee }: {
+            sender: string,
+            xdrop: XDropIdentifier,
+            claims: { foreignAddr: string; amount: bigint }[],
+            dryRun?: boolean,
+            fee?: { bps: bigint, addr: string },
+        }
     ): Promise<SuiTransactionBlockResponse[]>
     {
         const resps: SuiTransactionBlockResponse[] = [];
@@ -295,7 +297,14 @@ export class XDropClient extends SuiClientBase
         {
             console.debug(`[adminAddsClaims] submitting tx ${txNum + 1} of ${claimsByTx.length}`);
             const tx = new Transaction();
-            tx.setSender(sender);
+            tx.setSender(sender); // "Sender must be set to resolve CoinWithBalance"
+
+            if (fee) {
+                const txTotalAmount = txClaims.reduce((sum, claim) => sum + claim.amount, 0n);
+                const txFeeAmount = txTotalAmount * fee.bps / 10000n;
+                const txFeeCoin = coinWithBalance({ balance: txFeeAmount, type: xdrop.type_coin })(tx);
+                TransferModule.public_transfer(tx, `0x2::coin::Coin<${xdrop.type_coin}>`, txFeeCoin, fee.addr);
+            }
 
             const claimsByFn = chunkArray(txClaims, MAX_ADDRS_PER_FN);
             for (const fnClaims of claimsByFn)
