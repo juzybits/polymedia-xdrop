@@ -1,5 +1,6 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { useAppContext } from "../App";
+import { BtnSubmit } from "./buttons";
 
 export const BtnConnect: React.FC = () =>
 {
@@ -15,9 +16,9 @@ export const BtnConnect: React.FC = () =>
     };
 
     return (
-        <button className="btn" disabled={isWorking} onClick={connectWallet}>
+        <BtnSubmit disabled={isWorking} onClick={connectWallet}>
             CONNECT
-        </button>
+        </BtnSubmit>
     );
 };
 

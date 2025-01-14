@@ -13,6 +13,7 @@ import { BtnConnect } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { fmtBal } from "./lib/helpers";
+import { BtnSubmit } from "./comp/buttons";
 
 export const PageClaim: React.FC = () =>
 {
@@ -89,8 +90,7 @@ export const PageClaim: React.FC = () =>
                                     <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
                                 </div>
                             </>}
-
-                            <div className="center-element">
+                            <div className="btn-submit">
                                 <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
                             </div>
                         </Card>
@@ -131,9 +131,7 @@ const CardClaim: React.FC<{
                     <div className="card-desc">
                         Connect your Sui wallet to claim.
                     </div>
-                    <div className="center-element">
-                        <BtnConnect />
-                    </div>
+                    <BtnConnect />
                 </>
             ) : (
                 <>
@@ -280,11 +278,11 @@ const WidgetClaim: React.FC<{
 
         {hasEligibleLinks && <>
             <div className="center-element">
-                {!xdrop.is_open ?
-                    <div className="card-desc">
+                {!xdrop.is_open
+                ? <div className="card-desc">
                         <p className="text-orange">Claims are not open yet.</p>
-                    </div>
-                : <Btn disabled={disableSubmit} onClick={onSubmit}>CLAIM ALL</Btn>
+                </div>
+                : <BtnSubmit disabled={disableSubmit} onClick={onSubmit}>CLAIM ALL</BtnSubmit>
                 }
             </div>
         </>}

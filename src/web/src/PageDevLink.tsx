@@ -6,6 +6,7 @@ import React from "react";
 import { useAppContext } from "./App";
 import { Card } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
+import { BtnSubmit } from "./comp/buttons";
 
 const linkedForeignAddrs: Record<LinkNetwork, string[]> = {
     "Ethereum": [
@@ -88,7 +89,7 @@ export const PageDevLink: React.FC = () =>
                 </div>
                 <div>
                     {currAcct
-                        ? <Btn onClick={onSubmit}>Create</Btn>
+                        ? <BtnSubmit onClick={onSubmit}>Create</BtnSubmit>
                         : <BtnConnect />}
                 </div>
             </Card>

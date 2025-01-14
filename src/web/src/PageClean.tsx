@@ -10,6 +10,7 @@ import { useXDrop } from "./comp/hooks";
 import { Loader, XDropLoader } from "./comp/loader";
 import { clientWithKeypair } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
+import { BtnSubmit } from "./comp/buttons";
 
 export const PageClean: React.FC = () =>
 {
@@ -110,12 +111,6 @@ const CardClean: React.FC<{
     }
 
     return <Card>
-
-        {/* <div className="card-title"></div> */}
-
-        <div className="card-desc">
-            <Btn disabled={disableSubmit} onClick={onSubmit}>CLEAN ALL</Btn>
-        </div>
-
+        <BtnSubmit disabled={disableSubmit} onClick={onSubmit}>CLEAN ALL</BtnSubmit>
     </Card>;
 };

@@ -65,8 +65,8 @@ h1, h2, h3, h4, h5, button, input {
 }
 
 .rounded {
-    padding: 0.67em 1.5em;
-    border-radius: 2em;
+    padding: 0.67em 1.1em;
+    border-radius: 0.5em;
 }
 
 .icon {
@@ -719,6 +719,8 @@ a.card, .card.link {
 @btn-white: white;
 .btn {
     .rounded;
+    padding-top: 0.6em;
+    padding-bottom: 0.6em;
     &, * { color: @btn-white; }
     background-color: @btn-blue;
     cursor: pointer;
@@ -752,10 +754,9 @@ a.card, .card.link {
 .btn-submit {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 0.5rem;
-    .success, .error {
-        padding-left: 0.8em;
-    }
+    padding-top: 0.5rem;
 }
 
 .btn-prev-next {
@@ -770,13 +771,9 @@ a.card, .card.link {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-    .input-label {
-        padding-left: 0.8em;
-    }
     .input-error {
         .break-any;
         color: @color-text-red;
-        padding-left: 0.8em;
     }
     .input {
         .rounded;
@@ -792,10 +789,10 @@ a.card, .card.link {
     }
     select {
         appearance: none;
-        padding-right: 3em !important;
+        padding-right: 2.7em !important;
         background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23eee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
         background-repeat: no-repeat;
-        background-position: right 1em center;
+        background-position: right 0.8em center;
         background-size: 1.2em;
     }
 }
@@ -882,26 +879,22 @@ a.card, .card.link {
 }
 
 #btn-network {
-    // display: none;
     padding: 0;
     text-transform: uppercase;
     .network-option {
         .text {
             display: block;
-            // padding: 0.5em 1em;
         }
         &:not(.selected) {
             .text {
                 &:hover {
                     color: @btn-white;
-                    // background-color: @btn-dark;
                 }
             }
         }
     }
     .network-options {
         position: absolute;
-        // background-color: @btn-white;
     }
 }
 

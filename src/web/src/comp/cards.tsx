@@ -62,10 +62,7 @@ export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
                 <XDropDetail label="Coin type:" val={<LinkToExplorer addr={xdrop.type_coin} kind="coin" explorer={explorer} network={network} />} />
                 {extraDetails}
             </div>
-            {button &&
-            <div className="card-desc">
-                {button}
-            </div>}
+            {button}
         </div>
     );
 };

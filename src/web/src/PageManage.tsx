@@ -13,6 +13,7 @@ import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { clientWithKeypair, fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
+import { BtnSubmit } from "./comp/buttons";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
 
@@ -108,23 +109,23 @@ export const PageManage: React.FC = () =>
 
                     const adminActions = [
                         {
-                            title: "Open xDrop",
+                            title: "Open claims",
                             info: "Allow users to claim their share of the xDrop.",
-                            btnTxt: "OPEN",
+                            btnTxt: "OPEN CLAIMS",
                             submit: admin_opens_xdrop,
                             show: !xdrop.is_ended && xdrop.is_paused,
                         },
                         {
-                            title: "Pause xDrop",
+                            title: "Pause claims",
                             info: "Stop users from claiming their share of the xDrop.",
-                            btnTxt: "PAUSE",
+                            btnTxt: "PAUSE CLAIMS",
                             submit: admin_pauses_xdrop,
                             show: !xdrop.is_ended && xdrop.is_open,
                         },
                         {
                             title: "End xDrop",
                             info: "End the xDrop permanently and reclaim any remaining balance. This cannot be undone.",
-                            btnTxt: "END",
+                            btnTxt: "END PERMANENTLY",
                             submit: admin_ends_and_reclaims_xdrop,
                             show: !xdrop.is_ended,
                         },
@@ -139,9 +140,11 @@ export const PageManage: React.FC = () =>
 
                     return <>
                         <CardXDropDetails xdrop={xdrop}
-                            title="xDrop Details"
+                            title="Details"
                             extraDetails={<XDropStats xdrop={xdrop} coinMeta={coinMeta} />}
-                            button={<Link to={`/claim/${xdrop.id}`} className="btn">VIEW CLAIM PAGE</Link>}
+                            button={<div className="btn-submit">
+                                <Link to={`/claim/${xdrop.id}`} className="btn">VIEW CLAIM PAGE</Link>
+                            </div>}
                          />
 
                         {currAcct!.address !== xdrop.admin
@@ -193,11 +196,9 @@ const CardAction: React.FC<{
                 <p>{a.info}</p>
             </div>
             <div className="card-desc">
-                <Btn disabled={disableBtn} onClick={a.submit}
-                    className={a.btnTxt === "END" ? "red" : ""}
-                >
-                    {a.btnTxt}
-                </Btn>
+                <BtnSubmit disabled={disableBtn} onClick={a.submit}
+                    className={a.btnTxt === "END PERMANENTLY" ? "red" : ""}
+                >{a.btnTxt}</BtnSubmit>
             </div>
         </Card>
     );
@@ -433,9 +434,7 @@ const CardAddClaims: React.FC<{
             </>}
         </>}
 
-        <div className="card-desc">
-            <Btn disabled={disableSubmit} onClick={onSubmit}>ADD CLAIMS</Btn>
-        </div>
+        <BtnSubmit disabled={disableSubmit} onClick={onSubmit}>ADD CLAIMS</BtnSubmit>
     </Card>;
 };
 

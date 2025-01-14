@@ -1,10 +1,11 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
-import { ExplorerRadioSelector, LinkExternal, LinkToExplorer, NetworkRadioSelector, RpcRadioSelector } from "@polymedia/suitcase-react";
+import { Btn, ExplorerRadioSelector, LinkExternal, LinkToExplorer, NetworkRadioSelector, RpcRadioSelector } from "@polymedia/suitcase-react";
 import React from "react";
 import { supportedNetworks, useAppContext } from "./App";
 import { Card } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 import { RPC_ENDPOINTS } from "./lib/network";
+import { BtnSubmit } from "./comp/buttons";
 
 export const PageSettings: React.FC = () =>
 {
@@ -49,11 +50,9 @@ const SectionConnection: React.FC = () =>
             ? <ConnectToGetStarted />
             : <>
                 <div>Connected: <LinkToExplorer addr={currAcct.address} kind="address" explorer={explorer} network={network} /></div>
-                <div>
-                    <button onClick={() => disconnect()} className="btn">
-                        DISCONNECT
-                        </button>
-                    </div>
+                <BtnSubmit onClick={disconnect}>
+                    DISCONNECT
+                </BtnSubmit>
             </>
         }
     </Card>);

@@ -55,7 +55,9 @@ const ListCreatedXDrops = ({ currAddr }: {
             {xdrops.isLoading && <CardSpinner />}
             {xdrops.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
-                    button={<Link to={`/manage/${x.id}`} className="btn">MANAGE</Link>}
+                    button={<div className="btn-submit">
+                        <Link to={`/manage/${x.id}`} className="btn">MANAGE</Link>
+                    </div>}
                     extraDetails={<XDropDetail label="Created:" val={x.timestamp.toLocaleString()} />}
                 />
             )}

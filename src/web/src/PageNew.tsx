@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Card } from "./comp/cards";
 import { ConnectOr } from "./comp/connect";
+import { BtnSubmit } from "./comp/buttons";
 
 export const PageNew: React.FC = () =>
 {
@@ -97,9 +98,9 @@ export const PageNew: React.FC = () =>
                     </div>
 
                     <ConnectOr>
-                        <Btn disabled={disableSubmit} onClick={onSubmit}>
+                        <BtnSubmit disabled={disableSubmit} onClick={onSubmit}>
                             CREATE
-                        </Btn>
+                        </BtnSubmit>
                     </ConnectOr>
                 </div>
             </Card>
