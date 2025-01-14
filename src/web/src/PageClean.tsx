@@ -1,13 +1,13 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Btn, useFetch } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
-import React, { useState } from "react";
+import React from "react";
+import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Card, CardMsg, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { Loader, XDropLoader } from "./comp/loader";
-import { ResultMsg, SubmitRes } from "./comp/submits";
 import { clientWithKeypair } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
@@ -70,8 +70,6 @@ const CardClean: React.FC<{
 {
     const { isWorking, setIsWorking, xdropClient } = useAppContext();
 
-    const [ submitRes, setSubmitRes ] = useState<SubmitRes>({ ok: undefined });
-
     const disableSubmit = isWorking || !xdrop.is_ended || xdrop.claims.size === 0;
 
     const onSubmit = async () =>
@@ -80,7 +78,6 @@ const CardClean: React.FC<{
 
         try {
             setIsWorking(true);
-            setSubmitRes({ ok: undefined });
 
             console.debug("[onSubmit] fetching claim addrs");
             const foreignAddrs = await xdropClient.fetchAllClaimAddrs(xdrop.claims.id, true);
@@ -94,11 +91,12 @@ const CardClean: React.FC<{
             );
 
             console.debug("[onSubmit] okay:", resp);
-            setSubmitRes({ ok: true });
+            toast.success("Success");
             refetch();
         } catch (err) {
             console.warn("[onSubmit] error:", err);
-            setSubmitRes({ ok: false, err: xdropClient.errParser.errToStr(err, "Failed to add claims") });
+            const msg = xdropClient.errParser.errToStr(err, "Failed to add claims");
+            msg && toast.error(msg);
         } finally {
             setIsWorking(false);
         }
@@ -118,8 +116,6 @@ const CardClean: React.FC<{
         <div className="card-desc">
             <Btn disabled={disableSubmit} onClick={onSubmit}>CLEAN ALL</Btn>
         </div>
-
-        <ResultMsg res={submitRes} />
 
     </Card>;
 };
