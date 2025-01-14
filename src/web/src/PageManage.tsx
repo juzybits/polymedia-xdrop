@@ -13,7 +13,7 @@ import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { clientWithKeypair, fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
-import { BtnSubmit } from "./comp/buttons";
+import { BtnSubmit, BtnLinkInternal } from "./comp/buttons";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
 
@@ -142,9 +142,7 @@ export const PageManage: React.FC = () =>
                         <CardXDropDetails xdrop={xdrop}
                             title="Details"
                             extraDetails={<XDropStats xdrop={xdrop} coinMeta={coinMeta} />}
-                            button={<div className="btn-submit">
-                                <Link to={`/claim/${xdrop.id}`} className="btn">VIEW CLAIM PAGE</Link>
-                            </div>}
+                            button={<BtnLinkInternal to={`/claim/${xdrop.id}`}>VIEW CLAIM PAGE</BtnLinkInternal>}
                          />
 
                         {currAcct!.address !== xdrop.admin

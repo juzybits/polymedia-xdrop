@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useAppContext } from "./App";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
+import { BtnLinkInternal } from "./comp/buttons";
 
 export const PageUser: React.FC = () =>
 {
@@ -55,9 +56,7 @@ const ListCreatedXDrops = ({ currAddr }: {
             {xdrops.isLoading && <CardSpinner />}
             {xdrops.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
-                    button={<div className="btn-submit">
-                        <Link to={`/manage/${x.id}`} className="btn">MANAGE</Link>
-                    </div>}
+                    button={<BtnLinkInternal to={`/manage/${x.id}`}>MANAGE</BtnLinkInternal>}
                     extraDetails={<XDropDetail label="Created:" val={x.timestamp.toLocaleString()} />}
                 />
             )}

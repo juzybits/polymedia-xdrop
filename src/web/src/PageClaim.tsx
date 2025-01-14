@@ -13,7 +13,7 @@ import { BtnConnect } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { fmtBal } from "./lib/helpers";
-import { BtnSubmit } from "./comp/buttons";
+import { BtnSubmit, BtnLinkExternal } from "./comp/buttons";
 
 export const PageClaim: React.FC = () =>
 {
@@ -90,9 +90,10 @@ export const PageClaim: React.FC = () =>
                                     <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
                                 </div>
                             </>}
-                            <div className="btn-submit">
-                                <LinkExternal className={`btn ${isWorking ? "disabled" : ""}`} href="https://www.suilink.io/">LINK ADDRESS</LinkExternal>
-                            </div>
+                                <BtnLinkExternal
+                                    className={isWorking ? "disabled" : ""}
+                                    href="https://www.suilink.io/"
+                                >LINK ADDRESS</BtnLinkExternal>
                         </Card>
 
                         <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} />
