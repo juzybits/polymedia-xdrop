@@ -1,10 +1,4 @@
-import {
-    ConnectModal,
-    SuiClientProvider,
-    WalletProvider,
-    useSignTransaction,
-    useSuiClient,
-} from "@mysten/dapp-kit";
+import { ConnectModal, SuiClientProvider, WalletProvider, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
 import "@mysten/dapp-kit/dist/index.css";
 import { SuiGraphQLClient } from "@mysten/sui/graphql";
 import { ExplorerName, IconGears, IconHistory, IconNew, Modal, ReactSetter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
