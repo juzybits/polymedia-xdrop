@@ -229,7 +229,7 @@ const WidgetClaim: React.FC<{
                 eligibleLinks.map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);
-            toast.success("Success");
+            toast.success("Success"); // TODO maybe add confetti
         } catch (err) {
             console.warn("[onSubmit] error:", err);
             const msg = xdropClient.errParser.errToStr(err, "Failed to claim");

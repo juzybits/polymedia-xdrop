@@ -11,7 +11,7 @@ import { Card } from "./comp/cards";
 import { ConnectOr } from "./comp/connect";
 import { BtnSubmit } from "./comp/buttons";
 
-export const PageNew: React.FC = () =>
+export const PageNew: React.FC = () => // TODO maybe add info section
 {
     // === state ===
 
