@@ -319,53 +319,57 @@ const CardAddClaims: React.FC<{
 
             // last moment validation against onchain state
             await Promise.all([
-                // check wallet has enough `type_coin` to fund the claims
                 (async () => {
-                    if (isSuiXDrop) // checked along with gas below
-                        return;
-                    const respBalance = await xdropClient.suiClient.getBalance({
-                        owner: currAddr, coinType: xdrop.type_coin,
-                    });
-                    const balance = BigInt(respBalance.totalBalance);
-                    if (balance <= totalAmountPlusFee) {
-                        throw new Error("Insufficient balance to fund the claims: "
-                            + `you need ${fmtBal(totalAmountPlusFee, decimals, symbol)}, `
-                            + `but only have ${fmtBal(balance, decimals, symbol)}`);
-                    }
-                    console.debug(`[onSubmit] ${symbol} balance is enough: ${totalAmountPlusFee} <= ${balance}`);
-                })(),
-                // check wallet has enough SUI for tx fees (+ totalAmountPlusFee if isSuiXDrop)
-                (async () => {
-                    if (!isSuiXDrop && requiredTxs <= 1)
-                        return;
+                    /*
+                    Scenarios
+                    - non sui xdrop:
+                        - check coin_type balance is >= totalAmountPlusFee
+                        - check sui balance >= all tx fees
 
+                    - sui xdrop:
+                        - check sui balance >= totalAmountPlusFee + all tx fees
+                    */
                     const firstTxClaims = claims.slice(0, MAX_OBJECTS_PER_TX);
-                    const [respBalance, respsInspect] = await Promise.all([
-                        xdropClient.suiClient.getBalance({ owner: currAddr }),
+                    const [coinTypeBal, suiBal, gasTotal] = await Promise.all(
+                    [
+                        isSuiXDrop ? 0n : xdropClient.suiClient
+                            .getBalance({ owner: currAddr, coinType: xdrop.type_coin })
+                                .then(resp => BigInt(resp.totalBalance)),
+
+                        xdropClient.suiClient
+                            .getBalance({ owner: currAddr })
+                                .then(resp => BigInt(resp.totalBalance)),
+
                         xdropClient.adminAddsClaims({
-                            sender: currAddr,
-                            xdrop,
-                            claims: firstTxClaims,
-                            dryRun: true,
-                            fee: FEE,
-                        })
+                            sender: currAddr, xdrop, claims: firstTxClaims, dryRun: true, fee: FEE
+                        }).then(respsInspect => {
+                            const gas = respsInspect[0].effects!.gasUsed;
+                            const gasPerTx = BigInt(gas.computationCost) + BigInt(gas.storageCost) - BigInt(gas.storageRebate);
+                            const gasTotal = (gasPerTx * BigInt(claims.length)) / BigInt(firstTxClaims.length);
+                            return gasTotal;
+                        }),
                     ]);
 
-                    const suiBalance = BigInt(respBalance.totalBalance);
-                    const gas = respsInspect[0].effects!.gasUsed;
-                    const gasPerTx = BigInt(gas.computationCost) + BigInt(gas.storageCost) - BigInt(gas.storageRebate);
-                    const gasTotal = (gasPerTx * BigInt(claims.length)) / BigInt(MAX_OBJECTS_PER_TX);
-                    const suiTotal = isSuiXDrop ? (gasTotal + totalAmountPlusFee) : gasTotal;
-                    const totalWithMargin = suiTotal + 100_000_000n; // add 0.1 SUI for safety margin
-
-                    if (suiBalance < totalWithMargin) {
-                        throw new Error(`Insufficient balance `
-                            + `${isSuiXDrop? "to fund the claims and pay " : ""}for transaction fees: `
-                            + `you need ${fmtBal(totalWithMargin, 9, "SUI")}, `
-                            + `but only have ${fmtBal(suiBalance, 9, "SUI")}`);
+                    function errLowBalance(reason: string, owned: bigint, needed: bigint, symbol: string) {
+                        throw new Error(`Insufficient balance to ${reason}: `
+                            + `you need ${fmtBal(needed, decimals, symbol)}, `
+                            + `but only have ${fmtBal(owned, decimals, symbol)}`);
                     }
-                    console.debug(`[onSubmit] SUI balance is enough: ${suiTotal} < ${suiBalance}`);
-                })(),
+
+                    if (!isSuiXDrop) {
+                        if (coinTypeBal < totalAmountPlusFee) {
+                            errLowBalance("fund the claims", coinTypeBal, totalAmountPlusFee, symbol);
+                        }
+                        if (suiBal < gasTotal) {
+                            errLowBalance("pay for transaction fees", suiBal, gasTotal, "SUI");
+                        }
+                    } else {
+                        if (suiBal < (gasTotal + totalAmountPlusFee)) {
+                            errLowBalance("fund the claims and pay for transaction fees",
+                                suiBal, gasTotal + totalAmountPlusFee, "SUI");
+                        }
+                    }
+                }),
                 // check for addresses already in xdrop
                 (async () => {
                     if (xdrop.claims.size === 0)
