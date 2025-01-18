@@ -4,7 +4,7 @@ import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
 import { FEE, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
-import React, { useEffect } from "react";
+import React from "react";
 import { toast } from 'react-hot-toast';
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -25,11 +25,6 @@ export const PageManage: React.FC = () =>
     const { header, isWorking, setIsWorking, xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
     const fetched = useXDrop(xdropId);
-
-    useEffect(() => {
-        if (!fetched.data?.xdrop) return;
-        console.debug("[useEffect] xdrop:", JSON.stringify(fetched.data.xdrop, null, 2));
-    }, [fetched.data?.xdrop]);
 
     const disableSubmit = isWorking || !currAcct;
     const onSubmitAction = async (action: AdminAction) => {
@@ -348,10 +343,10 @@ const CardAddClaims: React.FC<{
                         }),
                     ]);
 
-                    console.debug("[onSubmit] balances:", !isSuiXDrop ?
+                    const summary = !isSuiXDrop ?
                         { has: { coinBal, suiBal }, needs: { coinTotalAndFee, gasTotal } }
                         : { has: suiBal, needs: coinTotalAndFee + gasTotal }
-                    );
+                    console.debug("[onSubmit] balances:", JSON.stringify(summary, null, 2));
 
                     function errLowBalance(reason: string, owned: bigint, needed: bigint, symbol: string) {
                         throw new Error(`Insufficient balance to ${reason}: `
@@ -372,7 +367,7 @@ const CardAddClaims: React.FC<{
                                 suiBal, gasTotal + coinTotalAndFee, "SUI");
                         }
                     }
-                }),
+                })(),
                 // check for addresses already in xdrop
                 (async () => {
                     if (xdrop.claims.size === 0)
