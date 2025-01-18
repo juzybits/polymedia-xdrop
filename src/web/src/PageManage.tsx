@@ -3,17 +3,17 @@ import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
-import { FEE, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import { calculateFee, FEE, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React from "react";
 import { toast } from 'react-hot-toast';
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
+import { BtnLinkInternal, BtnSubmit } from "./comp/buttons";
 import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { clientWithKeypair, fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
-import { BtnSubmit, BtnLinkInternal } from "./comp/buttons";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
 
@@ -271,7 +271,7 @@ const CardAddClaims: React.FC<{
                     }
                 }
 
-                const coinFee = coinTotal * FEE.bps / 10000n;
+                const coinFee = calculateFee(claims, FEE.bps);
                 const coinTotalAndFee = coinTotal + coinFee;
                 return { err: null, val: {
                     claims, coinTotal, coinFee, coinTotalAndFee
@@ -313,7 +313,8 @@ const CardAddClaims: React.FC<{
             const { claims, coinTotalAndFee } = textArea.val;
 
             // last moment validation against onchain state
-            await Promise.all([
+            await Promise.all(
+            [
                 (async () => {
                     /*
                     - non sui xdrop:
@@ -384,7 +385,7 @@ const CardAddClaims: React.FC<{
                     if (existingAddrs.length > 0) {
                         throw new Error(`Addresses already in xDrop: ${existingAddrs.join(", ")}`);
                     }
-                })()
+                })(),
             ]);
 
             // submit the tx

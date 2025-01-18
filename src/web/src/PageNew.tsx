@@ -85,7 +85,7 @@ export const PageNew: React.FC = () => // TODO maybe add info section
         <div className="page-content">
 
             <div className="page-title">
-                Create xDrop
+                New xDrop
             </div>
             <Card>
                 <div className="form">

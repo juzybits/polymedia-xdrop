@@ -9,7 +9,7 @@ import { serialBatchesOfParallelOperations } from "./misc.js";
 import { getSuiLinkNetworkType, getSuiLinkType, LinkNetwork } from "./suilink.js";
 import { XDropModule } from "./xdrop-functions.js";
 import { EligibleStatus, EligibleStatusBcs, objResToSuiLink, objResToXDrop, retValToEligibleStatus, SuiLink, XDrop, XDropIdentifier } from "./xdrop-structs.js";
-import { extractXDropObjCreated } from "./xdrop-txs.js";
+import { calculateFee, extractXDropObjCreated } from "./xdrop-txs.js";
 
 const MAX_PARALLEL_RPC_CALLS = 20;
 
@@ -300,8 +300,7 @@ export class XDropClient extends SuiClientBase
             tx.setSender(sender); // "Sender must be set to resolve CoinWithBalance"
 
             if (fee) {
-                const txTotalAmount = txClaims.reduce((sum, claim) => sum + claim.amount, 0n);
-                const txFeeAmount = txTotalAmount * fee.bps / 10000n;
+                const txFeeAmount = calculateFee(txClaims, fee.bps);
                 const txFeeCoin = coinWithBalance({ balance: txFeeAmount, type: xdrop.type_coin })(tx);
                 TransferModule.public_transfer(tx, `0x2::coin::Coin<${xdrop.type_coin}>`, txFeeCoin, fee.addr);
             }
