@@ -225,9 +225,9 @@ const CardAddClaims: React.FC<{
 
     const textArea = useTextArea<{
         claims: { foreignAddr: string; amount: bigint }[];
-        totalAmount: bigint;
-        feeAmount: bigint;
-        totalAmountPlusFee: bigint;
+        coinTotal: bigint;
+        coinFee: bigint;
+        coinTotalAndFee: bigint;
     }>({
         msgRequired: "Enter eligible addresses and amounts",
         html: {
@@ -241,7 +241,7 @@ const CardAddClaims: React.FC<{
             if (!input) {
                 return { err: null, val: undefined };
             }
-            let totalAmount = BigInt(0);
+            let coinTotal = BigInt(0);
             try {
                 const lines = input
                     .split("\n")
@@ -270,16 +270,16 @@ const CardAddClaims: React.FC<{
                             throw new Error(`Amount must be greater than 0: ${amountStr}`);
                         }
                         claims.push({foreignAddr: addr, amount});
-                        totalAmount += amount;
+                        coinTotal += amount;
                     } catch (e) {
                         throw new Error(`Invalid amount: ${amountStr}`);
                     }
                 }
 
-                const feeAmount = totalAmount * FEE.bps / 10000n;
-                const totalAmountPlusFee = totalAmount + feeAmount;
+                const coinFee = coinTotal * FEE.bps / 10000n;
+                const coinTotalAndFee = coinTotal + coinFee;
                 return { err: null, val: {
-                    claims, totalAmount, feeAmount, totalAmountPlusFee
+                    claims, coinTotal, coinFee, coinTotalAndFee
                 }};
             } catch (e) {
                 return {
@@ -315,22 +315,20 @@ const CardAddClaims: React.FC<{
 
         try {
             setIsWorking(true);
-            const { claims, totalAmountPlusFee } = textArea.val;
+            const { claims, coinTotalAndFee } = textArea.val;
 
             // last moment validation against onchain state
             await Promise.all([
                 (async () => {
                     /*
-                    Scenarios
                     - non sui xdrop:
-                        - check coin_type balance is >= totalAmountPlusFee
-                        - check sui balance >= all tx fees
-
+                        - check coin_type balance >= coinTotalAndFee
+                        - check sui balance >= all tx gas
                     - sui xdrop:
-                        - check sui balance >= totalAmountPlusFee + all tx fees
+                        - check sui balance >= coinTotalAndFee + all tx gas
                     */
                     const firstTxClaims = claims.slice(0, MAX_OBJECTS_PER_TX);
-                    const [coinTypeBal, suiBal, gasTotal] = await Promise.all(
+                    const [coinBal, suiBal, gasTotal] = await Promise.all(
                     [
                         isSuiXDrop ? 0n : xdropClient.suiClient
                             .getBalance({ owner: currAddr, coinType: xdrop.type_coin })
@@ -350,6 +348,11 @@ const CardAddClaims: React.FC<{
                         }),
                     ]);
 
+                    console.debug("[onSubmit] balances:", !isSuiXDrop ?
+                        { has: { coinBal, suiBal }, needs: { coinTotalAndFee, gasTotal } }
+                        : { has: suiBal, needs: coinTotalAndFee + gasTotal }
+                    );
+
                     function errLowBalance(reason: string, owned: bigint, needed: bigint, symbol: string) {
                         throw new Error(`Insufficient balance to ${reason}: `
                             + `you need ${fmtBal(needed, decimals, symbol)}, `
@@ -357,16 +360,16 @@ const CardAddClaims: React.FC<{
                     }
 
                     if (!isSuiXDrop) {
-                        if (coinTypeBal < totalAmountPlusFee) {
-                            errLowBalance("fund the claims", coinTypeBal, totalAmountPlusFee, symbol);
+                        if (coinBal < coinTotalAndFee) {
+                            errLowBalance("fund the claims", coinBal, coinTotalAndFee, symbol);
                         }
                         if (suiBal < gasTotal) {
                             errLowBalance("pay for transaction fees", suiBal, gasTotal, "SUI");
                         }
                     } else {
-                        if (suiBal < (gasTotal + totalAmountPlusFee)) {
-                            errLowBalance("fund the claims and pay for transaction fees",
-                                suiBal, gasTotal + totalAmountPlusFee, "SUI");
+                        if (suiBal < (coinTotalAndFee + gasTotal)) {
+                            errLowBalance("fund the claims and pay for gas",
+                                suiBal, gasTotal + coinTotalAndFee, "SUI");
                         }
                     }
                 }),
@@ -430,9 +433,9 @@ const CardAddClaims: React.FC<{
                 <div className="card-title">Summary</div>
                 <div className="card-desc">
                     👥 {textArea.val.claims.length} address{textArea.val.claims.length === 1 ? "" : "es"}
-                    <br />💰 {formatBalance(textArea.val.totalAmount, decimals, "compact")} claimable {symbol}
+                    <br />💰 {formatBalance(textArea.val.coinTotal, decimals, "compact")} claimable {symbol}
                     <br />{ FEE.bps > 0n
-                        ? <>💸 {Number(FEE.bps) / 100}% fee: {fmtBal(textArea.val.feeAmount, decimals, symbol)}</>
+                        ? <>💸 {Number(FEE.bps) / 100}% fee: {fmtBal(textArea.val.coinFee, decimals, symbol)}</>
                         : <>❤️ no platform fees</>}
                 </div>
             </div>
