@@ -771,6 +771,8 @@ a.card, .card.link {
 @input-bg: rgb(51 53 61);
 @input-hover-bg: rgb(59 61 69);
 @input-focus-border-color: rgb(87 139 250);
+@input-disabled-text-color: #666;
+@input-placeholder-text-color: #777;
 .poly-input {
     display: flex;
     flex-direction: column;
@@ -795,9 +797,13 @@ a.card, .card.link {
         }
         &:disabled {
             background-color: #222;
-            color: #666;
+            color: @input-disabled-text-color;
             cursor: default;
             pointer-events: none;
+        }
+        &::placeholder {
+            color: @input-placeholder-text-color;
+            opacity: 1;
         }
     }
     select {
@@ -807,6 +813,9 @@ a.card, .card.link {
         background-repeat: no-repeat;
         background-position: right 0.8em center;
         background-size: 1.2em;
+        &:invalid {
+            color: @input-placeholder-text-color;
+        }
     }
 }
 
