@@ -297,7 +297,7 @@ const CardAddClaims: React.FC<{
         },
     });
 
-    const disableSubmit = isWorking || !!textArea.err || !!privateKey.err;
+    const disableSubmit = isWorking || textArea.err !== null || privateKey.err !== null;
     const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_OBJECTS_PER_TX);
     const isSuiXDrop = "0x2::sui::SUI" === removeAddressLeadingZeros(xdrop.type_coin);
 

@@ -25,7 +25,7 @@ export const PageNew: React.FC = () => // TODO maybe add info section
         label: "Network",
         html: { required: true },
         options: LINK_NETWORKS.map(network => ({ value: network, label: network })),
-        msgRequired: "Select the chain where users are coming from",
+        msgRequired: "",
     });
 
     const coinType = useInputString({
@@ -39,10 +39,10 @@ export const PageNew: React.FC = () => // TODO maybe add info section
             }
             return { err: null, val: trimmed };
         },
-        msgRequired: "Enter the kind of Sui coin to distribute"
+        msgRequired: ""
     });
 
-    const hasErrors = [linkNetwork, coinType].some(input => !!input.err);
+    const hasErrors = [linkNetwork, coinType].some(input => input.err !== null);
     const disableSubmit = !currAcct || isWorking || hasErrors;
 
     // === functions ===
@@ -111,6 +111,7 @@ export const PageNew: React.FC = () => // TODO maybe add info section
 function devCoinTypeOrEmpty()
 {
     const { network } = useAppContext();
+    return "";
     if (!isLocalhost()) return "";
 
     if (network === "devnet")

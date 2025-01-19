@@ -42,7 +42,7 @@ const ListCreatedXDrops = ({ currAddr }: {
         [xdropClient, currAddr],
     );
 
-    if (xdrops.err) {
+    if (xdrops.err !== null) {
         return <CardMsg>{xdrops.err}</CardMsg>;
     }
     if (xdrops.page.length === 0) {

@@ -121,8 +121,8 @@ body.modal-open {
 #layout {
     &.disabled {
         opacity: 0.6;
-        pointer-events: none;
         cursor: wait;
+        pointer-events: none;
     }
 }
 
@@ -505,6 +505,8 @@ footer {
     &.disabled {
         opacity: 0.6;
         background-color: #333;
+        cursor: default;
+        pointer-events: none;
     }
 }
 
@@ -741,9 +743,9 @@ a.card, .card.link {
         }
     }
     &:disabled, &.working, &.disabled {
-        cursor: default;
         &, * { color: #ddd; }
         background-color: gray;
+        cursor: default;
         pointer-events: none;
     }
     &.working {
@@ -766,7 +768,9 @@ a.card, .card.link {
     width: 100%;
 }
 
-@input-bg: rgb(58, 61, 69);
+@input-bg: rgb(51 53 61);
+@input-hover-bg: rgb(59 61 69);
+@input-focus-border-color: rgb(87 139 250);
 .poly-input {
     display: flex;
     flex-direction: column;
@@ -779,12 +783,21 @@ a.card, .card.link {
         .rounded;
         background-color: @input-bg;
         color: @color-text;
+        &:hover {
+            background-color: @input-hover-bg;
+            cursor: pointer;
+        }
+        &.error {
+            outline: 2px solid @color-text-red;
+        }
         &:focus {
-            outline: 2px solid rgb(55 115 245);
+            outline: 2px solid @input-focus-border-color;
         }
         &:disabled {
             background-color: #222;
-            color: #777;
+            color: #666;
+            cursor: default;
+            pointer-events: none;
         }
     }
     select {

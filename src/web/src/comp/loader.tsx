@@ -17,7 +17,7 @@ export const XDropLoader: React.FC<{
 }) => {
     const currAcct = useCurrentAccount();
 
-    if (fetched.err) {
+    if (fetched.err !== null) {
         return <CardMsg>{fetched.err}</CardMsg>;
     }
 
@@ -49,7 +49,7 @@ export const Loader = <T,>({
     fetcher: UseFetchResult<T>;
     children: (data: NonNullable<T>) => React.ReactNode;
 }) => {
-    if (fetcher.err)
+    if (fetcher.err !== null)
         return <CardMsg>{fetcher.err}</CardMsg>;
     if (fetcher.isLoading || fetcher.data === undefined)
         return <CardSpinner />;
