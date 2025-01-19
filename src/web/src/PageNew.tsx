@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
-import { Btn, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
+import { Btn, IconGears, IconInfo, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React from "react";
 import toast from "react-hot-toast";
@@ -11,7 +11,7 @@ import { Card } from "./comp/cards";
 import { ConnectOr } from "./comp/connect";
 import { BtnSubmit } from "./comp/buttons";
 
-export const PageNew: React.FC = () => // TODO maybe add info section
+export const PageNew: React.FC = () =>
 {
     // === state ===
 
@@ -88,6 +88,7 @@ export const PageNew: React.FC = () => // TODO maybe add info section
                 New xDrop
             </div>
             <Card>
+                <div className="card-title"><IconGears />Settings</div>
                 <div className="form">
                     <div className="form-section">
                         {linkNetwork.input}
@@ -101,7 +102,14 @@ export const PageNew: React.FC = () => // TODO maybe add info section
                     </ConnectOr>
                 </div>
             </Card>
-
+            <Card>
+                <div className="card-title"><IconInfo />Help</div>
+                <div className="card-desc">
+                    <p>This creates an empty xDrop object on Sui. You can add eligible claims to it later.</p>
+                    <p><b><i>Network</i></b> is the blockchain where users are coming from.</p>
+                    <p><b><i>Coin type</i></b> is the kind of Sui coin you want to distribute.</p>
+                </div>
+            </Card>
         </div>
 
     </div>
