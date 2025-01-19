@@ -119,7 +119,6 @@ export const PageNew: React.FC = () =>
 function devCoinTypeOrEmpty()
 {
     const { network } = useAppContext();
-    return "";
     if (!isLocalhost()) return "";
 
     if (network === "devnet")

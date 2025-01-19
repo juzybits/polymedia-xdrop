@@ -51,6 +51,7 @@ export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
     extraDetails?: React.ReactNode;
     button?: React.ReactNode;
 }) => {
+    // return null;
     const { explorer, network } = useAppContext();
     return (
         <div className="card compact">

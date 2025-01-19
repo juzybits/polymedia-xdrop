@@ -224,7 +224,7 @@ const CardAddClaims: React.FC<{
         coinFee: bigint;
         coinTotalAndFee: bigint;
     }>({
-        msgRequired: "Enter eligible addresses and amounts",
+        msgRequired: "",
         html: {
             value: devClaimsOrEmpty(),
             required: true,
@@ -411,6 +411,16 @@ const CardAddClaims: React.FC<{
     return <Card>
         <div className="card-title">
             <p>Add Claims</p>
+        </div>
+
+        <div className="card-desc">
+            <p>
+                {xdrop.claims.size === 0
+                    ? <>Configure who can claim {symbol}. </>
+                    : <>You can add more eligible addresses. </>
+                }
+                Once you're happy with the list, you can open claims below.
+            </p>
         </div>
 
         <div className="card-desc">
