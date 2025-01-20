@@ -2,6 +2,8 @@
 
 xDrop is a cross-chain airdrop system. It lets users claim coins on Sui by proving ownership of their Ethereum or Solana addresses via [SuiLink](https://www.suilink.io/).
 
+![Polymedia xDrop](https://xdrop.polymedia.app/img/open-graph.webp)
+
 ## Project Structure
 
 - [src/sui/](./src/sui/) - Sui Move smart contract.
