@@ -4,7 +4,7 @@ import { SuiGraphQLClient } from "@mysten/sui/graphql";
 import { graphql } from "@mysten/sui/graphql/schemas/latest";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import { chunkArray, devInspectAndGetReturnValues, fetchAllDynamicFields, ObjChangeKind, SignTransaction, SuiClientBase, TransferModule, TxErrorParser, WaitForTxOptions } from "@polymedia/suitcase-core";
-import { ERRORS_CODES } from "./config.js";
+import { ERRORS } from "./config.js";
 import { serialBatchesOfParallelOperations } from "./misc.js";
 import { getSuiLinkNetworkType, getSuiLinkType, LinkNetwork } from "./suilink.js";
 import { XDropModule } from "./xdrop-functions.js";
@@ -57,7 +57,7 @@ export class XDropClient extends SuiClientBase
         this.graphClient = args.graphClient;
         this.xdropPkgId = args.xdropPkgId;
         this.suilinkPkgId = args.suilinkPkgId;
-        this.errParser = new TxErrorParser(args.xdropPkgId, ERRORS_CODES);
+        this.errParser = new TxErrorParser(args.xdropPkgId, ERRORS);
     }
 
     // === data fetching ===

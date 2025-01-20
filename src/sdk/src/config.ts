@@ -1,4 +1,4 @@
-import { NetworkName } from "@polymedia/suitcase-core";
+import { ErrorInfos, NetworkName } from "@polymedia/suitcase-core";
 
 export type NetworkConfig = {
     xdropPkgId: string;
@@ -28,20 +28,20 @@ export function getNetworkConfig(network: NetworkName): NetworkConfig {
     return NETWORK_CONFIG[network];
 }
 
-export const ERRORS_CODES: Record<number, string> = { // TODO add user-friendly messages
-    3000: "E_ADDRESS_NOT_FOUND",
-    3001: "E_ALREADY_CLAIMED",
-    3002: "E_NOT_ADMIN",
-    3003: "E_LENGTH_MISMATCH",
-    3004: "E_ADDRESS_ALREADY_ADDED",
-    3005: "E_ZERO_AMOUNT",
-    3006: "E_ZERO_LENGTH_VECTOR",
-    3007: "E_AMOUNT_MISMATCH",
-    3008: "E_ENDED",
-    3009: "E_NOT_ENDED",
-    3010: "E_NOT_OPEN",
-    3011: "E_NOT_PAUSED",
-    3012: "E_ZERO_LENGTH_ADDRESS",
+export const ERRORS: ErrorInfos = {
+    3000: { symbol: "E_ADDRESS_NOT_FOUND", msg: "Address not eligible for claiming" },
+    3001: { symbol: "E_ALREADY_CLAIMED", msg: "Coins already claimed by this address" },
+    3002: { symbol: "E_NOT_ADMIN", msg: "Only admin can perform this action" },
+    3003: { symbol: "E_LENGTH_MISMATCH", msg: "Number of addresses must match number of amounts" },
+    3004: { symbol: "E_ADDRESS_ALREADY_ADDED", msg: "Address already in the claims list" },
+    3005: { symbol: "E_ZERO_AMOUNT", msg: "Cannot add claim with zero value" },
+    3006: { symbol: "E_ZERO_LENGTH_VECTOR", msg: "Must provide at least one address and amount" },
+    3007: { symbol: "E_AMOUNT_MISMATCH", msg: "Sum of all claims must equal provided coin value" },
+    3008: { symbol: "E_ENDED", msg: "Not allowed because xDrop has ended" },
+    3009: { symbol: "E_NOT_ENDED", msg: "Only allowed if xDrop has ended" },
+    3010: { symbol: "E_NOT_OPEN", msg: "xDrop is not open for claims" },
+    3011: { symbol: "E_NOT_PAUSED", msg: "xDrop is not paused" },
+    3012: { symbol: "E_ZERO_LENGTH_ADDRESS", msg: "Address cannot be empty" },
 };
 
 export const FEE: {
