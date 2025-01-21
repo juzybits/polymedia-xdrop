@@ -289,13 +289,12 @@ export class XDropClient extends SuiClientBase
      * Add claims to an XDrop. Does multiple transactions if needed.
      */
     public async adminAddsClaims({ sender, xdrop, claims, dryRun, fee }: {
-            sender: string;
-            xdrop: XDropIdentifier;
-            claims: { foreignAddr: string; amount: bigint }[];
-            dryRun?: boolean;
-            fee?: { bps: bigint; addr: string };
-        }
-    ): Promise<SuiTransactionBlockResponse[]>
+        sender: string;
+        xdrop: XDropIdentifier;
+        claims: { foreignAddr: string; amount: bigint }[];
+        dryRun?: boolean;
+        fee?: { bps: bigint; addr: string };
+    }): Promise<SuiTransactionBlockResponse[]>
     {
         const resps: SuiTransactionBlockResponse[] = [];
         const claimsByTx = chunkArray(claims, MAX_OBJECTS_PER_TX);

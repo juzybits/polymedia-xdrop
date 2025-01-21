@@ -381,7 +381,7 @@ const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
                         claims.map(c => c.foreignAddr),
                     );
                     const claimsAndStatus = claims.map((claim, i) => ({ ...claim, status: statuses[i] }));
-                    const existingAddrs = claimsAndStatus.filter(c => c.status.eligible).map(c => c.foreignAddr);
+                    const existingAddrs = claimsAndStatus.filter(c => c.status.eligible).map(c => shortenAddress(c.foreignAddr));
                     if (existingAddrs.length > 0) {
                         throw new Error(`Addresses already in xDrop: ${existingAddrs.join(", ")}`);
                     }
