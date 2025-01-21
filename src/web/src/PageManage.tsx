@@ -374,12 +374,13 @@ const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
                     if (xdrop.claims.size === 0)
                         return;
                     console.debug("[onSubmit] checking for existing addresses in xdrop");
-                    const statuses = await xdropClient.fetchEligibleStatuses(
-                        xdrop.type_coin,
-                        xdrop.network_name,
-                        xdrop.id,
-                        claims.map(c => c.foreignAddr),
-                    );
+                    const statuses = await xdropClient.fetchEligibleStatuses({
+                        typeCoin: xdrop.type_coin,
+                        linkNetwork: xdrop.network_name,
+                        xdropId: xdrop.id,
+                        addrs: claims.map(c => c.foreignAddr),
+                        onUpdate: msg => console.debug("[fetchEligibleStatuses]", msg),
+                    });
                     const claimsAndStatus = claims.map((claim, i) => ({ ...claim, status: statuses[i] }));
                     const existingAddrs = claimsAndStatus.filter(c => c.status.eligible).map(c => shortenAddress(c.foreignAddr));
                     if (existingAddrs.length > 0) {
@@ -392,7 +393,11 @@ const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
             console.debug("[onSubmit] submitting tx");
             const client = clientWithKeypair(xdropClient, privateKey.val);
             const resps = await client.adminAddsClaims({
-                sender: currAddr, xdrop, claims, fee: FEE
+                sender: currAddr,
+                xdrop,
+                claims,
+                fee: FEE,
+                onUpdate: msg => console.debug("[adminAddsClaims]", msg),
             });
             console.debug("[onSubmit] okay:", resps);
             toast.success("Success");

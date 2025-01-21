@@ -182,12 +182,13 @@ const WidgetClaim: React.FC<{
         }
 
         // Fetch claim statuses for those links
-        const statuses = await xdropClient.fetchEligibleStatuses(
-            xdrop.type_coin,
-            xdrop.network_name,
-            xdrop.id,
-            links.map(l => l.network_address),
-        );
+        const statuses = await xdropClient.fetchEligibleStatuses({
+            typeCoin: xdrop.type_coin,
+            linkNetwork: xdrop.network_name,
+            xdropId: xdrop.id,
+            addrs: links.map(l => l.network_address),
+            onUpdate: msg => console.debug("[fetchEligibleStatuses]", msg),
+        });
 
         // Merge links with their statuses, filter eligible links, and sort unclaimed links first
         const eligibleLinks = links

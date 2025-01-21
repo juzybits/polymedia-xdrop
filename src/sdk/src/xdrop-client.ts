@@ -91,16 +91,19 @@ export class XDropClient extends SuiClientBase
         return null;
     }
 
-    public async fetchEligibleStatuses(
-        typeCoin: string,
-        linkNetwork: LinkNetwork,
-        xdropId: string,
-        addrs: string[],
-    ): Promise<EligibleStatus[]>
+    public async fetchEligibleStatuses({
+        typeCoin, linkNetwork, xdropId, addrs, onUpdate
+    }: {
+        typeCoin: string;
+        linkNetwork: LinkNetwork;
+        xdropId: string;
+        addrs: string[];
+        onUpdate?: (msg: string) => unknown;
+    }): Promise<EligibleStatus[]>
     {
         const inspectTx = async (txAddrs: string[], idx: number) =>
         {
-            console.debug(`[fetchEligibleStatuses] inspecting tx ${idx + 1} in batch`);
+            onUpdate && onUpdate(`Inspecting tx ${idx + 1} in batch`);
             const tx = new Transaction();
             const addrsByFn = chunkArray(txAddrs, MAX_ADDRS_PER_FN);
 
@@ -288,19 +291,22 @@ export class XDropClient extends SuiClientBase
     /**
      * Add claims to an XDrop. Does multiple transactions if needed.
      */
-    public async adminAddsClaims({ sender, xdrop, claims, dryRun, fee }: {
+    public async adminAddsClaims({
+        sender, xdrop, claims, dryRun, fee, onUpdate
+    }: {
         sender: string;
         xdrop: XDropIdentifier;
         claims: { foreignAddr: string; amount: bigint }[];
         dryRun?: boolean;
         fee?: { bps: bigint; addr: string };
+        onUpdate?: (msg: string) => unknown;
     }): Promise<SuiTransactionBlockResponse[]>
     {
         const resps: SuiTransactionBlockResponse[] = [];
         const claimsByTx = chunkArray(claims, MAX_OBJECTS_PER_TX);
         for (const [txNum, txClaims] of claimsByTx.entries())
         {
-            console.debug(`[adminAddsClaims] submitting tx ${txNum + 1} of ${claimsByTx.length}`);
+            onUpdate && onUpdate(`Submitting tx ${txNum + 1} of ${claimsByTx.length}`);
             const tx = new Transaction();
             tx.setSender(sender); // "Sender must be set to resolve CoinWithBalance"
 
@@ -359,22 +365,31 @@ export class XDropClient extends SuiClientBase
         return await this.signAndExecuteTx(tx);
     }
 
-    public async cleanerDeletesClaims(
-        cleanerCap: string,
-        xdrop: XDropIdentifier,
-        addrs: string[],
-    ): Promise<SuiTransactionBlockResponse[]>
+    public async cleanerDeletesClaims({
+        cleanerCapId, xdrop, addrs, onUpdate
+    }: {
+        cleanerCapId: string;
+        xdrop: XDropIdentifier;
+        addrs: string[];
+        onUpdate?: (msg: string) => unknown;
+    }): Promise<SuiTransactionBlockResponse[]>
     {
         const resps: SuiTransactionBlockResponse[] = [];
         const addrsByTx = chunkArray(addrs, MAX_OBJECTS_PER_TX);
         for (const [txNum, txAddrs] of addrsByTx.entries())
         {
-            console.debug(`[cleanerDeletesClaims] submitting tx ${txNum + 1} of ${addrsByTx.length}`);
+            onUpdate && onUpdate(`Submitting tx ${txNum + 1} of ${addrsByTx.length}`);
             const tx = new Transaction();
             const claimsByFn = chunkArray(txAddrs, MAX_ADDRS_PER_FN);
             for (const fnAddrs of claimsByFn) {
                 XDropModule.cleaner_deletes_claims(
-                    tx, this.xdropPkgId, xdrop.type_coin, xdrop.type_network, cleanerCap, xdrop.id, fnAddrs
+                    tx,
+                    this.xdropPkgId,
+                    xdrop.type_coin,
+                    xdrop.type_network,
+                    cleanerCapId,
+                    xdrop.id,
+                    fnAddrs,
                 );
             }
             const resp = await this.signAndExecuteTx(tx);

@@ -85,11 +85,12 @@ const CardClean: React.FC<{
 
             console.debug("[onSubmit] submitting tx");
             const client = clientWithKeypair(xdropClient);
-            const resp = await client.cleanerDeletesClaims(
+            const resp = await client.cleanerDeletesClaims({
                 cleanerCapId,
                 xdrop,
-                foreignAddrs,
-            );
+                addrs: foreignAddrs,
+                onUpdate: msg => console.debug("[cleanerDeletesClaims]", msg),
+            });
 
             console.debug("[onSubmit] okay:", resp);
             toast.success("Success");
