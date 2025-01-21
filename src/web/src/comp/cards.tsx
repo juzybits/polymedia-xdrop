@@ -9,7 +9,7 @@ export const Card = ({ className, children }: {
     className?: string;
     children: React.ReactNode;
 }) => {
-    return <div className={`card compact ${className ?? ''}`}>
+    return <div className={`card compact ${className ?? ""}`}>
         {children}
     </div>;
 };
@@ -46,7 +46,7 @@ const FullCardMsg = ({ children }: {
 };
 
 export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
-    xdrop: XDropIdentifier & { status: XDropStatus, network_name: LinkNetwork };
+    xdrop: XDropIdentifier & { status: XDropStatus; network_name: LinkNetwork };
     title?: React.ReactNode;
     extraDetails?: React.ReactNode;
     button?: React.ReactNode;
@@ -75,7 +75,7 @@ export const XDropStats = ({ xdrop, coinMeta }: {
     return <>
         <XDropDetail label="Balance claimed/unclaimed:"
             val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / `
-            + `${formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")}`} />
+            + formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")} />
         <XDropDetail label="Addresses claimed/unclaimed:"
             val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
         {/* <XDropDetail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} /> */}

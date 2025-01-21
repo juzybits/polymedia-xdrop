@@ -16,7 +16,7 @@ export const BtnConnect = () =>
     };
 
     return (
-        <BtnSubmit disabled={isWorking} onClick={async () => connectWallet()}>
+        <BtnSubmit disabled={isWorking} onClick={() => Promise.resolve(connectWallet())}>
             CONNECT
         </BtnSubmit>
     );

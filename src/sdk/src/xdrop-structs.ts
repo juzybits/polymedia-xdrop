@@ -15,7 +15,7 @@ export type XDrop = {
     admin: string;
     status: XDropStatus;
     balance: bigint;
-    claims: { id: string, size: number };
+    claims: { id: string; size: number };
     stats: XDropStats;
     // helpers
     is_open: boolean;

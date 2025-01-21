@@ -5,7 +5,7 @@ import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalan
 import { isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
 import { calculateFee, FEE, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React from "react";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
 import { BtnLinkInternal, BtnSubmit } from "./comp/buttons";
@@ -197,7 +197,7 @@ const CardAction: React.FC<{
     );
 };
 
-const CardAddClaims: React.FC<{
+const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
     currAddr: string;
     xdrop: XDrop;
     coinMeta: CoinMetadata;
@@ -346,7 +346,7 @@ const CardAddClaims: React.FC<{
 
                     const summary = !isSuiXDrop ?
                         { has: { coinBal, suiBal }, needs: { coinTotalAndFee, gasTotal } }
-                        : { has: suiBal, needs: coinTotalAndFee + gasTotal }
+                        : { has: suiBal, needs: coinTotalAndFee + gasTotal };
                     console.debug("[onSubmit] balances:", JSON.stringify(summary, null, 2));
 
                     function errLowBalance(reason: string, owned: bigint, needed: bigint, symbol: string) {

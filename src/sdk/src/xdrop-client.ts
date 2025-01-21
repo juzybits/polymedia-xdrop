@@ -121,7 +121,13 @@ export class XDropClient extends SuiClientBase
                 Array.from({ length: addrsByFn.length }, () => [bcs.vector(EligibleStatusBcs)])
             );
 
-            return blockReturns.flatMap(txRet => txRet[0].map(retValToEligibleStatus));
+            const statuses: EligibleStatus[] = [];
+            for (const txRet of blockReturns) {
+                for (const ret of txRet[0]) {
+                    statuses.push(retValToEligibleStatus(ret));
+                }
+            }
+            return statuses;
         };
 
         const addrsByTx = chunkArray(addrs, MAX_OBJECTS_PER_TX);
@@ -283,11 +289,11 @@ export class XDropClient extends SuiClientBase
      * Add claims to an XDrop. Does multiple transactions if needed.
      */
     public async adminAddsClaims({ sender, xdrop, claims, dryRun, fee }: {
-            sender: string,
-            xdrop: XDropIdentifier,
-            claims: { foreignAddr: string; amount: bigint }[],
-            dryRun?: boolean,
-            fee?: { bps: bigint, addr: string },
+            sender: string;
+            xdrop: XDropIdentifier;
+            claims: { foreignAddr: string; amount: bigint }[];
+            dryRun?: boolean;
+            fee?: { bps: bigint; addr: string };
         }
     ): Promise<SuiTransactionBlockResponse[]>
     {

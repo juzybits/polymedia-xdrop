@@ -9,8 +9,8 @@ export function fmtBal(balance: bigint, decimals: number, symbol: string) {
 export function clientWithKeypair(client: XDropClient, pair?: Keypair)
 {
     if (!pair) {
-        const privateKey = import.meta.env.VITE_PRIVATE_KEY;
-        if (!privateKey) {
+        const privateKey: unknown = import.meta.env.VITE_PRIVATE_KEY;
+        if (!privateKey || typeof privateKey !== "string") {
             return client;
         }
         try {

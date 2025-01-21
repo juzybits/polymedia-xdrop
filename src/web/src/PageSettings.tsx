@@ -50,7 +50,7 @@ const SectionConnection: React.FC = () =>
             ? <ConnectToGetStarted />
             : <>
                 <div>Connected: <LinkToExplorer addr={currAcct.address} kind="address" explorer={explorer} network={network} /></div>
-                <BtnSubmit onClick={async () => disconnect()}>
+                <BtnSubmit onClick={() => Promise.resolve(disconnect())}>
                     DISCONNECT
                 </BtnSubmit>
             </>
