@@ -16,7 +16,7 @@ export const BtnConnect = () =>
     };
 
     return (
-        <BtnSubmit disabled={isWorking} onClick={connectWallet}>
+        <BtnSubmit disabled={isWorking} onClick={async () => connectWallet()}>
             CONNECT
         </BtnSubmit>
     );
