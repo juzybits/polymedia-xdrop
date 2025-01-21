@@ -13,13 +13,14 @@ export async function serialBatchesOfParallelOperations<Input, Output>( // TODO:
     batchSize: number,
     inputs: Input[],
     operation: (input: Input, idx: number) => Promise<Output>,
+    onUpdate?: (msg: string) => void,
 ): Promise<Output[]>
 {
     const results: Output[][] = [];
     const batches = chunkArray(inputs, batchSize);
 
     for (const [batchNum, batchInputs] of batches.entries()) {
-        console.debug(`[serialBatchesOfParallelOperations] processing batch ${batchNum + 1} of ${batches.length}`);
+        onUpdate?.(`Processing batch ${batchNum + 1} of ${batches.length}`);
         const batchResults = await Promise.all(batchInputs.map(operation));
         results.push(batchResults);
     }

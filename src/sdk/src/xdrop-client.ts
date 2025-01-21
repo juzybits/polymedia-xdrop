@@ -103,7 +103,6 @@ export class XDropClient extends SuiClientBase
     {
         const inspectTx = async (txAddrs: string[], idx: number) =>
         {
-            onUpdate && onUpdate(`Inspecting tx ${idx + 1} in batch`);
             const tx = new Transaction();
             const addrsByFn = chunkArray(txAddrs, MAX_ADDRS_PER_FN);
 
@@ -135,7 +134,7 @@ export class XDropClient extends SuiClientBase
 
         const addrsByTx = chunkArray(addrs, MAX_OBJECTS_PER_TX);
         const statusesByTx = await serialBatchesOfParallelOperations(
-            MAX_PARALLEL_RPC_CALLS, addrsByTx, inspectTx.bind(this)
+            MAX_PARALLEL_RPC_CALLS, addrsByTx, inspectTx.bind(this), onUpdate
         );
 
         return statusesByTx.flat();
@@ -306,7 +305,7 @@ export class XDropClient extends SuiClientBase
         const claimsByTx = chunkArray(claims, MAX_OBJECTS_PER_TX);
         for (const [txNum, txClaims] of claimsByTx.entries())
         {
-            onUpdate && onUpdate(`Submitting tx ${txNum + 1} of ${claimsByTx.length}`);
+            onUpdate?.(`Submitting tx ${txNum + 1} of ${claimsByTx.length}`);
             const tx = new Transaction();
             tx.setSender(sender); // "Sender must be set to resolve CoinWithBalance"
 
@@ -378,7 +377,7 @@ export class XDropClient extends SuiClientBase
         const addrsByTx = chunkArray(addrs, MAX_OBJECTS_PER_TX);
         for (const [txNum, txAddrs] of addrsByTx.entries())
         {
-            onUpdate && onUpdate(`Submitting tx ${txNum + 1} of ${addrsByTx.length}`);
+            onUpdate?.(`Submitting tx ${txNum + 1} of ${addrsByTx.length}`);
             const tx = new Transaction();
             const claimsByFn = chunkArray(txAddrs, MAX_ADDRS_PER_FN);
             for (const fnAddrs of claimsByFn) {
