@@ -96,7 +96,7 @@ const CardClean: React.FC<{
             refetch();
         } catch (err) {
             console.warn("[onSubmit] error:", err);
-            const msg = xdropClient.errParser.errToStr(err, "Failed to clean xDrop");
+            const msg = xdropClient.errToStr(err, "Failed to clean xDrop");
             msg && toast.error(msg);
         } finally {
             setIsWorking(false);

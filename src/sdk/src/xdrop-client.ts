@@ -37,7 +37,7 @@ export class XDropClient extends SuiClientBase
     public readonly graphClient: SuiGraphQLClient;
     public readonly xdropPkgId: string;
     public readonly suilinkPkgId: string;
-    public readonly errParser: TxErrorParser;
+    protected readonly errParser: TxErrorParser;
 
     constructor(args: {
         graphClient: SuiGraphQLClient;
@@ -390,10 +390,19 @@ export class XDropClient extends SuiClientBase
      * Create a new XDropClient instance with modified parameters
      * while preserving all other settings from the current instance.
      */
-    public with(overrides: Partial<ConstructorParameters<typeof XDropClient>[0]>): XDropClient {
+    public with(
+        overrides: Partial<ConstructorParameters<typeof XDropClient>[0]>
+    ): XDropClient {
         return new XDropClient({
             ...this,
             ...overrides,
         });
+    }
+
+    public errToStr(
+        ...args: Parameters<typeof TxErrorParser.prototype.errToStr>
+    ): string | null
+    {
+        return this.errParser.errToStr(...args);
     }
 }

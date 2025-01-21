@@ -39,7 +39,7 @@ export const PageManage: React.FC = () =>
             fetched.refetch();
         } catch (err) {
             console.warn("[onSubmit] error:", err);
-            const msg = xdropClient.errParser.errToStr(err, "Something went wrong");
+            const msg = xdropClient.errToStr(err, "Something went wrong");
             msg && toast.error(msg);
         } finally {
             setIsWorking(false);
@@ -399,7 +399,7 @@ const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
             refetch();
         } catch (err) {
             console.warn("[onSubmit] error:", err);
-            const msg = xdropClient.errParser.errToStr(err, "Failed to add claims");
+            const msg = xdropClient.errToStr(err, "Failed to add claims");
             msg && toast.error(msg);
         } finally {
             setIsWorking(false);

@@ -232,7 +232,7 @@ const WidgetClaim: React.FC<{
             toast.success("Success"); // TODO maybe add confetti
         } catch (err) {
             console.warn("[onSubmit] error:", err);
-            const msg = xdropClient.errParser.errToStr(err, "Failed to claim");
+            const msg = xdropClient.errToStr(err, "Failed to claim");
             msg && toast.error(msg);
         } finally {
             setIsWorking(false);
