@@ -4,7 +4,7 @@ import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
 import { calculateFee, FEE, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "./App";
@@ -197,7 +197,7 @@ const CardAction: React.FC<{
     );
 };
 
-const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
+const CardAddClaims: React.FC<{
     currAddr: string;
     xdrop: XDrop;
     coinMeta: CoinMetadata;
@@ -214,6 +214,7 @@ const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
     // === state ===
 
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
+    const [progressUpdates, setProgressUpdates ] = useState<string[]>([]);
 
     const decimals = coinMeta.decimals;
     const symbol = coinMeta.symbol;
@@ -397,7 +398,7 @@ const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
                 xdrop,
                 claims,
                 fee: FEE,
-                onUpdate: msg => console.debug("[adminAddsClaims]", msg),
+                onUpdate: msg => setProgressUpdates(prev => [...prev, msg]),
             });
             console.debug("[onSubmit] okay:", resps);
             toast.success("Success");
@@ -408,6 +409,7 @@ const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
             msg && toast.error(msg);
         } finally {
             setIsWorking(false);
+            setProgressUpdates([]);
         }
     };
 
@@ -465,6 +467,15 @@ const CardAddClaims: React.FC<{ // TODO progress messages for multiple txs
         </>}
 
         <BtnSubmit disabled={disableSubmit} onClick={onSubmit}>ADD CLAIMS</BtnSubmit>
+
+        {isWorking && progressUpdates.length > 0 &&
+        <div className="card-desc">
+            <div className="card-title">Progress:</div>
+            <div className="card-desc">
+                {progressUpdates.map((msg, idx) =>
+                    <React.Fragment key={idx}>{msg}<br /></React.Fragment>)}
+            </div>
+        </div>}
     </Card>;
 };
 
