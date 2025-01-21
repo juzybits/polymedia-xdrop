@@ -15,8 +15,8 @@ export const NETWORK_CONFIG: Record<NetworkName, NetworkConfig> = {
         suilinkPkgId: "",
     },
     devnet: {
-        xdropPkgId: "0x5b0b87bd59264f56a16fe9f0a8bf1b42e01dd17684f424d6c7c51cea2b92d683",
-        suilinkPkgId: "0xcfb386a5a35790015d1356886fbf62be0e97801f569e045a4ab2432d21378cd7",
+        xdropPkgId: "0xa7dcc06add5988e8f03d7580fd29717651798e4007b3d78f045524c29b591011",
+        suilinkPkgId: "0x1fe53e6f506f5efdbaed9d375d96351aac62a6fbd4c90c1e15977c82b7561800",
     },
     localnet: {
         xdropPkgId: "",
