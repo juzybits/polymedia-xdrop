@@ -6,18 +6,18 @@ set -o pipefail     # Prevent errors in a pipeline from being masked
 set -o xtrace       # Print each command to the terminal before execution
 
 SCRIPT_DIR="$( dirname "$(readlink -f "${BASH_SOURCE[0]}")" )"
-PROJECT_ROOT="$( cd "$SCRIPT_DIR/../.." && pwd )"
+PATH_PROJECT="$( cd "$SCRIPT_DIR/../.." && pwd )"
 
 REACT_VERSION="^18.0.0"
 
-cd $PROJECT_ROOT
+cd $PATH_PROJECT
 pnpm up --latest --recursive
 pnpm up --latest -w
 
-cd $PROJECT_ROOT/src/web
+cd $PATH_PROJECT/src/web
 pnpm add react@$REACT_VERSION react-dom@$REACT_VERSION
 pnpm add -D @types/react@$REACT_VERSION @types/react-dom@$REACT_VERSION
 
-cd $PROJECT_ROOT
+cd $PATH_PROJECT
 pnpm up --recursive
 pnpm up -w
