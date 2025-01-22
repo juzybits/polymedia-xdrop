@@ -25,27 +25,27 @@
         "typecheck": "tsc -b"
     },
     "dependencies": {
-        "@mysten/dapp-kit": "^0.14.44",
-        "@mysten/sui": "^1.18.0",
-        "@polymedia/coinmeta": "^0.0.19",
-        "@polymedia/suitcase-core": "^0.0.37",
-        "@polymedia/suitcase-react": "^0.0.37",
+        "@mysten/dapp-kit": "^0.14.47",
+        "@mysten/sui": "^1.20.0",
+        "@polymedia/coinmeta": "^0.0.21",
+        "@polymedia/suitcase-core": "^0.0.40",
+        "@polymedia/suitcase-react": "^0.0.40",
         "@polymedia/xdrop-sdk": "workspace:*",
-        "@tanstack/react-query": "^5.62.8",
+        "@tanstack/react-query": "^5.64.2",
         "normalize.css": "^8.0.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-hot-toast": "^2.5.1",
-        "react-router-dom": "^7.1.0"
+        "react-router-dom": "^7.1.3"
     },
     "devDependencies": {
         "@types/react": "^18.3.18",
         "@types/react-dom": "^18.3.5",
         "@vitejs/plugin-react-swc": "^3.7.2",
-        "less": "^4.2.1",
-        "typescript": "^5.7.2",
-        "vite": "^6.0.5",
-        "wrangler": "^3.99.0"
+        "less": "^4.2.2",
+        "typescript": "^5.7.3",
+        "vite": "^6.0.11",
+        "wrangler": "^3.103.2"
     },
     "type": "module",
     "sideEffects": false

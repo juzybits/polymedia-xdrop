@@ -24,13 +24,13 @@
         "typecheck": "tsc -p tsconfig.esm.json"
     },
     "dependencies": {
-        "@polymedia/suitcase-core": "^0.0.37"
+        "@polymedia/suitcase-core": "^0.0.40"
     },
     "peerDependencies": {
         "@mysten/sui": "^1.18.0"
     },
     "devDependencies": {
-        "typescript": "^5.7.2"
+        "typescript": "^5.7.3"
     },
     "type": "module",
     "sideEffects": false,
