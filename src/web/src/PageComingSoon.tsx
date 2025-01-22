@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useAppContext } from "./App";
 
 export const PageComingSoon: React.FC = () =>

@@ -6,10 +6,11 @@ import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+
 import { useAppContext } from "./App";
+import { BtnSubmit } from "./comp/buttons";
 import { Card } from "./comp/cards";
 import { ConnectOr } from "./comp/connect";
-import { BtnSubmit } from "./comp/buttons";
 
 export const PageNew: React.FC = () =>
 {

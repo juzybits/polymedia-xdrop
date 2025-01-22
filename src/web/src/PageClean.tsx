@@ -4,13 +4,14 @@ import { XDrop } from "@polymedia/xdrop-sdk";
 import React from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
+
 import { useAppContext } from "./App";
+import { BtnSubmit } from "./comp/buttons";
 import { Card, CardMsg, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { Loader, XDropLoader } from "./comp/loader";
 import { clientWithKeypair } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
-import { BtnSubmit } from "./comp/buttons";
 
 export const PageClean: React.FC = () =>
 {

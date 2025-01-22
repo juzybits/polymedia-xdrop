@@ -2,10 +2,11 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { BtnPrevNext, isLocalhost, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
+
 import { useAppContext } from "./App";
+import { BtnLinkInternal } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
-import { BtnLinkInternal } from "./comp/buttons";
 
 export const PageUser: React.FC = () =>
 {

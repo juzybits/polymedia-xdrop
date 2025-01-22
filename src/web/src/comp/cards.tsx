@@ -3,6 +3,7 @@ import { formatBalance } from "@polymedia/suitcase-core";
 import { LinkToExplorer } from "@polymedia/suitcase-react";
 import { LinkNetwork, XDrop, XDropIdentifier, XDropStatus } from "@polymedia/xdrop-sdk";
 import React from "react";
+
 import { useAppContext } from "../App";
 
 export const Card = ({ className, children }: {

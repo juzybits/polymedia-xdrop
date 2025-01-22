@@ -1,5 +1,6 @@
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { ObjectInput, objectArg } from "@polymedia/suitcase-core";
+
 import { suiLinkNetworkTypeToName, validateAndNormalizeNetworkAddr } from "./suilink.js";
 
 /**

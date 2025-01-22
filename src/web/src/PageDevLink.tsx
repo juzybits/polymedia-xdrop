@@ -3,10 +3,11 @@ import { Transaction } from "@mysten/sui/transactions";
 import { Btn } from "@polymedia/suitcase-react";
 import { getNetworkConfig, LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 import React from "react";
+
 import { useAppContext } from "./App";
+import { BtnSubmit } from "./comp/buttons";
 import { Card } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
-import { BtnSubmit } from "./comp/buttons";
 
 const linkedForeignAddrs: Record<LinkNetwork, string[]> = {
     "Ethereum": [
