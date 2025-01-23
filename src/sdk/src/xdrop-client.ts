@@ -85,6 +85,7 @@ export class XDropClient extends SuiClientBase
             owner,
             options: { showContent: true },
             filter: { StructType: `${this.xdropPkgId}::xdrop::CleanerCap` },
+            limit: 1,
         });
         for (const objRes of resp.data) {
             return objRes.data!.objectId;
