@@ -27,7 +27,7 @@
     "dependencies": {
         "@mysten/dapp-kit": "^0.14.47",
         "@mysten/sui": "^1.20.0",
-        "@polymedia/coinmeta": "^0.0.21",
+        "@polymedia/coinmeta": "^0.0.22",
         "@polymedia/suitcase-core": "^0.0.40",
         "@polymedia/suitcase-react": "^0.0.40",
         "@polymedia/xdrop-sdk": "workspace:*",
@@ -45,7 +45,7 @@
         "less": "^4.2.2",
         "typescript": "^5.7.3",
         "vite": "^6.0.11",
-        "wrangler": "^3.103.2"
+        "wrangler": "^3.105.1"
     },
     "type": "module",
     "sideEffects": false
