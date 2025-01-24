@@ -409,7 +409,7 @@ export class XDropClient extends SuiClientBase
         overrides: Partial<ConstructorParameters<typeof XDropClient>[0]>
     ): XDropClient {
         return new XDropClient({
-            ...this,
+            ...this, // eslint-disable-line @typescript-eslint/no-misused-spread
             ...overrides,
         });
     }
