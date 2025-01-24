@@ -295,7 +295,7 @@ const CardClaimableLink: React.FC<{
     coinMeta,
     link,
 }) => {
-    return <Card className={`slim ${link.status.claimed ? "disabled" : "claimable"}`}>
+    return <Card className={`slim ${link.status.claimed ? "disabled" : "subcard"}`}>
         <div className="card-header">
             <div className="card-title">
                 {link.status.claimed

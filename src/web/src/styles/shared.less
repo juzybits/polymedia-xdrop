@@ -11,14 +11,21 @@
 @border-gray: 1px solid @color-border-gray;
 @border-radius: 1.5rem;
 @color-bg: rgb(10 12 14);
+// @color-bg: rgb(28 28 28); // brownie
 @color-blue-light: #acf3f2;
 @color-blue: #00fffc;
 @color-border-gray: rgb(138 145 158 / 20%);
+// @color-border-gray: #444; // brownie
+@color-card-bg: none;
+// @color-card-bg: rgb(38 38 39); //brownie
+@color-subcard-bg: rgb(4 30 40);
+// @color-subcard-bg: rgb(33 33 33); // brownie
 @color-text-gray: #aaa;
 @color-text-green: lightgreen;
 @color-text-orange: rgb(255 190 71);
 @color-text-red: rgb(255, 158, 158);
 @color-text: #eee;
+// @color-text: #dbdbdb; // brownie
 @font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 @font-system: system-ui;
 @max-width-page-regular: 1440px;
@@ -478,6 +485,7 @@ footer {
 }
 
 .card {
+    background-color: @color-card-bg;
     border-radius: @border-radius;
     border: @border-gray;
     width: 100%;
@@ -508,6 +516,10 @@ footer {
         cursor: default;
         pointer-events: none;
     }
+}
+
+.card.subcard {
+    background-color: @color-subcard-bg;
 }
 
 .card-spinner {
