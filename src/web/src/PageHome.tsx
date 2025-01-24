@@ -36,7 +36,6 @@ export const PageHome: React.FC = () =>
 const SectionHowItWorks: React.FC = () =>
 {
     return <>
-        <div className="page-section">
             <div className="page-title">What is this?</div>
             <Card>
                 <div className="card-desc">
@@ -44,8 +43,6 @@ const SectionHowItWorks: React.FC = () =>
                     <p>It lets you distribute Sui coins to users on Solana, Ethereum, and other EVM chains.</p>
                 </div>
             </Card>
-        </div>
-        <div className="page-section">
             <div className="page-title">How does it work?</div>
             <Card>
                 <div className="card-title">
@@ -65,7 +62,6 @@ const SectionHowItWorks: React.FC = () =>
                     <p>Then, if your address is eligible, you can claim your coins on Sui.</p>
                 </div>
             </Card>
-        </div>
     </>;
 };
 
