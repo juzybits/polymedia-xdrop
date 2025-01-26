@@ -179,6 +179,11 @@ public fun admin_opens_xdrop<C, N>(
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
     assert!( xdrop.is_paused(), E_NOT_PAUSED );
     xdrop.status = XDROP_STATUS_OPEN;
+    emit(EventOpen {
+        id: xdrop.id.to_address(),
+        type_coin: type_name::get<C>().into_string(),
+        type_network: type_name::get<N>().into_string(),
+    });
 }
 
 public fun admin_pauses_xdrop<C, N>(
@@ -188,6 +193,11 @@ public fun admin_pauses_xdrop<C, N>(
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
     assert!( xdrop.is_open(), E_NOT_OPEN );
     xdrop.status = XDROP_STATUS_PAUSED;
+    emit(EventPause {
+        id: xdrop.id.to_address(),
+        type_coin: type_name::get<C>().into_string(),
+        type_network: type_name::get<N>().into_string(),
+    });
 }
 
 public fun admin_ends_xdrop<C, N>(
@@ -197,6 +207,11 @@ public fun admin_ends_xdrop<C, N>(
     assert!( ctx.sender() == xdrop.admin, E_NOT_ADMIN );
     assert!( !xdrop.is_ended(), E_ENDED );
     xdrop.status = XDROP_STATUS_ENDED;
+    emit(EventEnd {
+        id: xdrop.id.to_address(),
+        type_coin: type_name::get<C>().into_string(),
+        type_network: type_name::get<N>().into_string(),
+    });
 }
 
 public fun admin_sets_admin_address<C, N>(
@@ -354,6 +369,24 @@ public fun amount(status: &EligibleStatus): u64 { status.amount }
 // === events ===
 
 public struct EventShare has drop, copy {
+    id: address,
+    type_coin: AsciiString,
+    type_network: AsciiString,
+}
+
+public struct EventOpen has drop, copy {
+    id: address,
+    type_coin: AsciiString,
+    type_network: AsciiString,
+}
+
+public struct EventPause has drop, copy {
+    id: address,
+    type_coin: AsciiString,
+    type_network: AsciiString,
+}
+
+public struct EventEnd has drop, copy {
     id: address,
     type_coin: AsciiString,
     type_network: AsciiString,
