@@ -6,7 +6,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 
-import { ExplorerName, IconGears, IconHistory, IconNew, Modal, ReactSetter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
+import { ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
 import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 
 import { Glitch } from "./comp/glitch";
@@ -89,13 +89,13 @@ const AppSuiProviders = () =>
     };
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <SuiClientProvider networks={networkConfig} network={network}>
-                <WalletProvider autoConnect={true}>
-                    <App network={network} setNetwork={setNetwork} rpc={rpc} setRpc={setRpc} />
-                </WalletProvider>
-            </SuiClientProvider>
-        </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+        <SuiClientProvider networks={networkConfig} network={network}>
+            <WalletProvider autoConnect={true}>
+                <App network={network} setNetwork={setNetwork} rpc={rpc} setRpc={setRpc} />
+            </WalletProvider>
+        </SuiClientProvider>
+    </QueryClientProvider>
     );
 };
 
@@ -112,21 +112,19 @@ export const useAppContext = () => {
 };
 
 export type AppContext = {
-    explorer: ExplorerName; setExplorer: ReactSetter<ExplorerName>;
-    network: NetworkName; setNetwork: ReactSetter<NetworkName>;
-    rpc: string; setRpc: (rpc: string) => void;
-    isWorking: boolean; setIsWorking: ReactSetter<boolean>;
+    network: NetworkName; setNetwork: Setter<NetworkName>;
+    rpc: string; setRpc: Setter<string>;
+    explorer: ExplorerName; setExplorer: Setter<ExplorerName>;
+    isWorking: boolean; setIsWorking: Setter<boolean>;
     openConnectModal: () => void;
-    setModalContent: ReactSetter<React.ReactNode>;
+    setModalContent: Setter<React.ReactNode>;
     header: React.ReactNode;
     xdropClient: XDropClient;
 };
 
 const App = (args: {
-    network: NetworkName;
-    setNetwork: ReactSetter<NetworkName>;
-    rpc: string;
-    setRpc: (rpc: string) => void;
+    network: NetworkName; setNetwork: Setter<NetworkName>;
+    rpc: string; setRpc: Setter<string>;
 }) =>
 {
     // === state ===
@@ -151,9 +149,9 @@ const App = (args: {
     }, [suiClient, walletSignTx]);
 
     const appContext: AppContext = {
-        explorer, setExplorer,
         network: args.network, setNetwork: args.setNetwork,
         rpc: args.rpc, setRpc: args.setRpc,
+        explorer, setExplorer,
         isWorking, setIsWorking,
         openConnectModal: () => { setShowConnectModal(true); },
         setModalContent,
