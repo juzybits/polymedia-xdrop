@@ -1,7 +1,7 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import React from "react";
 
-import { Btn, ExplorerRadioSelector, LinkExternal, LinkToExplorer, NetworkRadioSelector, RpcRadioSelector } from "@polymedia/suitcase-react";
+import { ExplorerRadioSelector, LinkExternal, LinkToExplorer, NetworkRadioSelector, RpcRadioSelector } from "@polymedia/suitcase-react";
 
 import { supportedNetworks, useAppContext } from "./App";
 import { BtnSubmit } from "./comp/buttons";

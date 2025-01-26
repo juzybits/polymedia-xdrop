@@ -1,6 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import React, { useRef } from "react";
-import { Link } from "react-router-dom";
 
 import { BtnPrevNext, isLocalhost, useFetchAndPaginate } from "@polymedia/suitcase-react";
 

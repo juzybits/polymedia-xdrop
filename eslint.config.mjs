@@ -3,6 +3,7 @@ import eslint from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
 import eslintPluginImport from "eslint-plugin-import";
 import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
+import unusedImports from "eslint-plugin-unused-imports";
 import tsEslint from "typescript-eslint";
 
 export default [
@@ -24,6 +25,7 @@ export default [
         plugins: {
             "@stylistic": stylistic,
             import: eslintPluginImport,
+            "unused-imports": unusedImports,
         },
         rules: {
             // === stylistic ===
@@ -58,6 +60,7 @@ export default [
                     "caseInsensitive": true,
                 }
             }],
+            "unused-imports/no-unused-imports": "error",
 
             // === typescript ===
             "@typescript-eslint/consistent-type-definitions": [ "error", "type" ],

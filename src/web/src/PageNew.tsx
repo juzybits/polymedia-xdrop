@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
-import { Btn, IconGears, IconInfo, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
+import { IconGears, IconInfo, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
