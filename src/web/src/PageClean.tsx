@@ -2,7 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
-import { useFetch } from "@polymedia/suitcase-react";
+import { useFetch, UseFetchResult } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
@@ -15,13 +15,20 @@ import { clientWithKeypair } from "./lib/helpers";
 export const PageClean = () =>
 {
     const { xdropId } = useParams();
-    const { header } = useAppContext();
+    const currAcct = useCurrentAccount();
+    const { header, xdropClient } = useAppContext();
+
+    const capFetch = useFetch(
+        async () => !currAcct ? undefined : xdropClient.fetchOneCleanerCapId(currAcct.address),
+        [xdropClient, currAcct],
+    );
+
     return <>
         {header}
         <div id="page-clean" className="page-regular">
             { !xdropId
                 ? <SubPageList />
-                : <SubPageClean xdropId={xdropId} />
+                : <SubPageClean xdropId={xdropId} capFetch={capFetch} />
             }
         </div>
     </>;
@@ -34,39 +41,32 @@ const SubPageList = () => {
     ];
 
     return <>
-        <div id="page-clean-list" className="page-regular">
-            <div className="page-content">
-                <div className="page-title">
-                    Recent xDrops
-                </div>
-
-                {mockXDrops.map(xdrop => (
-                    <Card key={xdrop.id}>
-                        <a href={`/clean/${xdrop.id}`} className="clean-list-item">
-                            <div className="name">{xdrop.name}</div>
-                            <div className="date">{new Date(xdrop.created_at).toLocaleDateString()}</div>
-                        </a>
-                    </Card>
-                ))}
+        <div className="page-content">
+            <div className="page-title">
+                Recent xDrops
             </div>
+
+            {mockXDrops.map(xdrop => (
+                <Card key={xdrop.id}>
+                    <a href={`/clean/${xdrop.id}`} className="clean-list-item">
+                        <div className="name">{xdrop.name}</div>
+                        <div className="date">{new Date(xdrop.created_at).toLocaleDateString()}</div>
+                    </a>
+                </Card>
+            ))}
         </div>
     </>;
 };
 
 const SubPageClean = ({
     xdropId,
+    capFetch,
 }: {
     xdropId: string;
+    capFetch: UseFetchResult<string | null>;
 }) =>
 {
-    const { xdropClient } = useAppContext();
-    const currAcct = useCurrentAccount();
     const fetchedXDrop = useXDrop(xdropId);
-    const fetchedCap = useFetch(
-        async () => !currAcct ? undefined : xdropClient.fetchOneCleanerCapId(currAcct.address),
-        [xdropClient, currAcct],
-    );
-
     return (
         <div className="page-content">
             <div className="page-title">
@@ -80,7 +80,7 @@ const SubPageClean = ({
                     extraDetails={<XDropStats xdrop={xdrop} coinMeta={_coinMeta} />}
                 />
 
-                <Loader name="Cleaner Cap" fetcher={fetchedCap}>
+                <Loader name="Cleaner Cap" fetcher={capFetch}>
                 {cleanerCapId =>
                     <CardClean
                         xdrop={xdrop}
