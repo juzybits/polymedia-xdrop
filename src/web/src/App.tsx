@@ -23,15 +23,25 @@ import { PageSettings } from "./PageSettings";
 import { PageUser } from "./PageUser";
 import "./styles/App.less";
 
+// ==== config ====
+
 const isLocalDomain = isLocalhost();
 const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname;
 const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
 export const isProdDomain = "xdrop.polymedia.app" === window.location.hostname;
 
-/* App router */
+export const [ defaultNetwork, supportedNetworks ] =
+    isLocalDomain  ? ["devnet" as const, ["mainnet", "testnet", "devnet"] as const]
+    : isDevDomain  ? ["devnet"   as const, ["devnet"] as const]
+    : isTestDomain ? ["testnet"  as const, ["testnet"] as const]
+    : /* prod */     ["mainnet"  as const, ["mainnet"] as const];
 
-export const AppRouter: React.FC = () => {
-    return (
+export type NetworkName = typeof supportedNetworks[number];
+
+// ==== router ====
+
+export const AppRouter = () =>
+(
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<AppSuiProviders />} >
@@ -52,25 +62,16 @@ export const AppRouter: React.FC = () => {
             </Route>
         </Routes>
     </BrowserRouter>
-    );
-};
+);
 
-/* Sui providers + network config */
-
-const [ defaultNetwork, supportedNetworks ] =
-    isLocalDomain  ? ["devnet" as const, ["mainnet", "testnet", "devnet"] as const]
-    : isDevDomain  ? ["devnet"   as const, ["devnet"] as const]
-    : isTestDomain ? ["testnet"  as const, ["testnet"] as const]
-    : /* prod */     ["mainnet"  as const, ["mainnet"] as const];
-
-export { supportedNetworks };
-
-export type NetworkName = typeof supportedNetworks[number];
+// ==== sui providers ====
 
 const queryClient = new QueryClient();
-const AppSuiProviders: React.FC = () =>
+const AppSuiProviders = () =>
 {
-    const [ network, setNetwork ] = useState(loadNetwork(supportedNetworks, defaultNetwork));
+    const [ network, setNetwork ] = useState(
+        loadNetwork(supportedNetworks, defaultNetwork)
+    );
 
     const [ networkConfig, setNetworkConfig ] = useState({
         mainnet: loadNetworkConfig("mainnet"),
@@ -88,17 +89,17 @@ const AppSuiProviders: React.FC = () =>
     };
 
     return (
-    <QueryClientProvider client={queryClient}>
-        <SuiClientProvider networks={networkConfig} network={network}>
-            <WalletProvider autoConnect={true}>
-                <App network={network} setNetwork={setNetwork} rpc={rpc} setRpc={setRpc} />
-            </WalletProvider>
-        </SuiClientProvider>
-    </QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+            <SuiClientProvider networks={networkConfig} network={network}>
+                <WalletProvider autoConnect={true}>
+                    <App network={network} setNetwork={setNetwork} rpc={rpc} setRpc={setRpc} />
+                </WalletProvider>
+            </SuiClientProvider>
+        </QueryClientProvider>
     );
 };
 
-/* App */
+// ==== app ====
 
 const AppContext = createContext<AppContext | null>(null);
 
@@ -121,16 +122,11 @@ export type AppContext = {
     xdropClient: XDropClient;
 };
 
-const App: React.FC<{
+const App = (args: {
     network: NetworkName;
     setNetwork: ReactSetter<NetworkName>;
     rpc: string;
     setRpc: (rpc: string) => void;
-}> = ({
-    network,
-    setNetwork,
-    rpc,
-    setRpc,
 }) =>
 {
     // === state ===
@@ -143,10 +139,10 @@ const App: React.FC<{
     const suiClient = useSuiClient();
     const { mutateAsync: walletSignTx } = useSignTransaction();
 
-    const netCnf = getNetworkConfig(network);
+    const netCnf = getNetworkConfig(args.network);
     const xdropClient = useMemo(() => {
         return new XDropClient({
-            graphClient: new SuiGraphQLClient({ url: getGraphqlUrl(network) }),
+            graphClient: new SuiGraphQLClient({ url: getGraphqlUrl(args.network) }),
             xdropPkgId: netCnf.xdropPkgId,
             suilinkPkgId: netCnf.suilinkPkgId,
             suiClient,
@@ -156,8 +152,8 @@ const App: React.FC<{
 
     const appContext: AppContext = {
         explorer, setExplorer,
-        network, setNetwork,
-        rpc, setRpc,
+        network: args.network, setNetwork: args.setNetwork,
+        rpc: args.rpc, setRpc: args.setRpc,
         isWorking, setIsWorking,
         openConnectModal: () => { setShowConnectModal(true); },
         setModalContent,
@@ -210,7 +206,7 @@ const App: React.FC<{
 
 /* One-off components */
 
-const Header: React.FC = () =>
+const Header = () =>
 {
     const { network } = useAppContext();
     return (
