@@ -33,14 +33,15 @@ export default [
             "@stylistic/quotes": [ "error", "double", { avoidEscape: true } ],
             "@stylistic/semi": [ "error", "always" ],
 
-            // === import organization ===
+            // === imports ===
+            "import/extensions": ["error", "ignorePackages", { ts: "never", tsx: "never" }], // require .js
             "import/first": "error",
             "import/newline-after-import": "error",
             "import/no-duplicates": "error",
             "import/order": ["error", {
                 "groups": [
                     "builtin", // Node.js built-in modules (fs, path, etc.)
-                    ["external"], // npm packages
+                    "external", // npm packages
                     ["internal", "parent", "sibling", "index"] // project imports (aliased + relative)
                 ],
                 "pathGroups": [
@@ -92,15 +93,9 @@ export default [
         },
     },
     {
-        files: ["src/core/**/*.ts?(x)", "src/sdk/**/*.ts?(x)"],
+        files: ["**/__tests__/**/*.ts?(x)", "src/web/src/**/*.ts?(x)", "src/react/src/**/*.ts?(x)"],
         rules: {
-            "import/extensions": ["error", "ignorePackages", { ts: "never", tsx: "never" }],
-        },
-    },
-    {
-        files: ["**/__tests__/**/*.ts?(x)"],
-        rules: {
-            "import/extensions": ["off", "ignorePackages"],
+            "import/extensions": ["off", "ignorePackages"], // don't require .js
         },
     },
 ];
