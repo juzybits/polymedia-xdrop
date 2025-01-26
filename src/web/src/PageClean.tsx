@@ -1,5 +1,4 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import React from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
@@ -12,14 +11,55 @@ import { Card, CardMsg, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { Loader, XDropLoader } from "./comp/loader";
 import { clientWithKeypair } from "./lib/helpers";
-import { PageNotFound } from "./PageNotFound";
 
-export const PageCleaner = () =>
+export const PageClean = () =>
 {
     const { xdropId } = useParams();
-    if (!xdropId) return <PageNotFound />;
+    const { header } = useAppContext();
+    return <>
+        {header}
+        <div id="page-clean" className="page-regular">
+            { !xdropId
+                ? <SubPageList />
+                : <SubPageClean xdropId={xdropId} />
+            }
+        </div>
+    </>;
+};
 
-    const { header, xdropClient } = useAppContext();
+const SubPageList = () => {
+    const mockXDrops = [
+        { id: "0x123", name: "XDrop 1", created_at: new Date().toISOString() },
+        { id: "0x456", name: "XDrop 2", created_at: new Date().toISOString() },
+    ];
+
+    return <>
+        <div id="page-clean-list" className="page-regular">
+            <div className="page-content">
+                <div className="page-title">
+                    Recent xDrops
+                </div>
+
+                {mockXDrops.map(xdrop => (
+                    <Card key={xdrop.id}>
+                        <a href={`/clean/${xdrop.id}`} className="clean-list-item">
+                            <div className="name">{xdrop.name}</div>
+                            <div className="date">{new Date(xdrop.created_at).toLocaleDateString()}</div>
+                        </a>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    </>;
+};
+
+const SubPageClean = ({
+    xdropId,
+}: {
+    xdropId: string;
+}) =>
+{
+    const { xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
     const fetchedXDrop = useXDrop(xdropId);
     const fetchedCap = useFetch(
@@ -27,38 +67,32 @@ export const PageCleaner = () =>
         [xdropClient, currAcct],
     );
 
-    return <>
-        {header}
-        <div id="page-clean" className="page-regular">
-            <div className="page-content">
-
-                <div className="page-title">
-                    Clean xDrop
-                </div>
-
-                <XDropLoader fetched={fetchedXDrop} requireWallet={true}>
-                {(xdrop, _coinMeta) => <>
-
-                    <CardXDropDetails
-                        xdrop={xdrop}
-                        extraDetails={<XDropStats xdrop={xdrop} coinMeta={_coinMeta} />}
-                    />
-
-                    <Loader name="Cleaner Cap" fetcher={fetchedCap}>
-                    {cleanerCapId =>
-                        <CardClean
-                            xdrop={xdrop}
-                            cleanerCapId={cleanerCapId}
-                            refetch={fetchedXDrop.refetch}
-                    />}
-                    </Loader>
-
-                </>}
-                </XDropLoader>
-
+    return (
+        <div className="page-content">
+            <div className="page-title">
+                Clean xDrop
             </div>
+
+            <XDropLoader fetched={fetchedXDrop} requireWallet={true}>
+            {(xdrop, _coinMeta) => <>
+                <CardXDropDetails
+                    xdrop={xdrop}
+                    extraDetails={<XDropStats xdrop={xdrop} coinMeta={_coinMeta} />}
+                />
+
+                <Loader name="Cleaner Cap" fetcher={fetchedCap}>
+                {cleanerCapId =>
+                    <CardClean
+                        xdrop={xdrop}
+                        cleanerCapId={cleanerCapId}
+                        refetch={fetchedXDrop.refetch}
+                    />
+                }
+                </Loader>
+            </>}
+            </XDropLoader>
         </div>
-    </>;
+    );
 };
 
 const CardClean = ({
@@ -67,8 +101,7 @@ const CardClean = ({
     xdrop: XDrop;
     cleanerCapId: string;
     refetch: () => Promise<void>;
-}) =>
-{
+}) => {
     const { isWorking, setIsWorking, xdropClient } = useAppContext();
 
     const disableSubmit = isWorking || !xdrop.is_ended || xdrop.claims.size === 0;
@@ -76,7 +109,6 @@ const CardClean = ({
     const onSubmit = async () =>
     {
         if (disableSubmit) { return; }
-
         try {
             setIsWorking(true);
 

@@ -104,7 +104,7 @@ export class XDropClient extends SuiClientBase
         onUpdate?: (msg: string) => unknown;
     }): Promise<EligibleStatus[]>
     {
-        const inspectTx = async (txAddrs: string[], idx: number) =>
+        const inspectTx = async (txAddrs: string[], _idx: number) =>
         {
             const tx = new Transaction();
             const addrsByFn = chunkArray(txAddrs, MAX_ADDRS_PER_FN);
