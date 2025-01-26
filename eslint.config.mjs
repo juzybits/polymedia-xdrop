@@ -34,23 +34,29 @@ export default [
             "@stylistic/semi": [ "error", "always" ],
 
             // === import organization ===
+            "import/first": "error",
+            "import/newline-after-import": "error",
+            "import/no-duplicates": "error",
             "import/order": ["error", {
                 "groups": [
-                    "builtin",     // Node.js built-in modules (fs, path, etc.)
-                    "external",    // npm packages
-                    "internal",    // your own modules
-                    ["parent", "sibling"], // relative imports (.. and .)
-                    "index"       // index files
+                    "builtin", // Node.js built-in modules (fs, path, etc.)
+                    ["external"], // npm packages
+                    ["internal", "parent", "sibling", "index"] // project imports (aliased + relative)
                 ],
-                "newlines-between": "always",  // Add blank lines between groups
-                "alphabetize": {               // Sort imports alphabetically
-                    "order": "asc",           // A-Z order
-                    "caseInsensitive": true   // Ignore case when sorting
+                "pathGroups": [
+                    {
+                        "pattern": "@polymedia/**",
+                        "group": "external",
+                        "position": "after",
+                    }
+                ],
+                "pathGroupsExcludedImportTypes": ["builtin"],
+                "newlines-between": "always",
+                "alphabetize": {
+                    "order": "asc",
+                    "caseInsensitive": true,
                 }
             }],
-            "import/first": "error",           // Imports must be at the top
-            "import/newline-after-import": "error", // Require blank line after imports
-            "import/no-duplicates": "error",   // No duplicate imports
 
             // === typescript ===
             "@typescript-eslint/consistent-type-definitions": [ "error", "type" ],

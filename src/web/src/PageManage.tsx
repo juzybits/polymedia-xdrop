@@ -1,12 +1,13 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
-import { isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
-import { calculateFee, FEE, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
+
+import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
+import { isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
+import { calculateFee, FEE, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
 import { BtnLinkInternal, BtnSubmit } from "./comp/buttons";

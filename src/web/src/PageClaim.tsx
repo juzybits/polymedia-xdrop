@@ -1,11 +1,12 @@
 import { useCurrentAccount, useDisconnectWallet, useWallets } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
-import { NetworkName, shortenAddress } from "@polymedia/suitcase-core";
-import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
-import { LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
+
+import { NetworkName, shortenAddress } from "@polymedia/suitcase-core";
+import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
+import { LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
 import { BtnSubmit, BtnLinkExternal } from "./comp/buttons";

@@ -1,5 +1,6 @@
 import { bcs } from "@mysten/sui/bcs";
 import { SuiObjectResponse } from "@mysten/sui/client";
+
 import { objResToFields, objResToType } from "@polymedia/suitcase-core";
 
 import { LinkNetwork, suiLinkNetworkTypeToName } from "./suilink.js";

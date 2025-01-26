@@ -1,4 +1,5 @@
 import { getFullnodeUrl } from "@mysten/sui/client";
+
 import { NetworkName } from "@polymedia/suitcase-core";
 import { loadRpc } from "@polymedia/suitcase-react";
 

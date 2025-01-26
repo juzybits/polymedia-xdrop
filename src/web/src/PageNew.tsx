@@ -1,11 +1,12 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import React from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
 import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
 import { Btn, IconGears, IconInfo, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
-import React from "react";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 
 import { useAppContext } from "./App";
 import { BtnSubmit } from "./comp/buttons";

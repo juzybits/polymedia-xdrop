@@ -1,6 +1,7 @@
-import { Btn, LinkExternal } from "@polymedia/suitcase-react";
 import { forwardRef, ComponentProps } from "react";
 import { Link } from "react-router-dom";
+
+import { Btn, LinkExternal } from "@polymedia/suitcase-react";
 
 export const BtnSubmit: typeof Btn = (props) => {
     return (

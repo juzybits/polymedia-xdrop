@@ -1,7 +1,8 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { BtnPrevNext, isLocalhost, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
+
+import { BtnPrevNext, isLocalhost, useFetchAndPaginate } from "@polymedia/suitcase-react";
 
 import { useAppContext } from "./App";
 import { BtnLinkInternal } from "./comp/buttons";
