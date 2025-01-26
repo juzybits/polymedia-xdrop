@@ -12,7 +12,7 @@ import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 import { Glitch } from "./comp/glitch";
 import { getGraphqlUrl, loadNetworkConfig } from "./lib/network";
 import { PageClaim } from "./PageClaim";
-import { PageClean } from "./PageClean";
+import { PageCleaner } from "./PageCleaner";
 import { PageComingSoon } from "./PageComingSoon";
 import { PageDevLink } from "./PageDevLink";
 import { PageHome } from "./PageHome";
@@ -50,7 +50,7 @@ export const AppRouter = () =>
                     <Route path="/new" element={<PageNew />} />
                     <Route path="/claim/:xdropId" element={<PageClaim />} />
                     <Route path="/manage/:xdropId" element={<PageManage />} />
-                    <Route path="/clean/:xdropId" element={<PageClean />} />
+                    <Route path="/clean/:xdropId?" element={<PageCleaner />} />
                     <Route path="/user" element={<PageUser />} />
                     <Route path="/settings" element={<PageSettings />} />
                     <Route path="/dev-link" element={<PageDevLink />} />

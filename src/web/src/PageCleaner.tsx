@@ -14,7 +14,7 @@ import { Loader, XDropLoader } from "./comp/loader";
 import { clientWithKeypair } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
-export const PageClean: React.FC = () =>
+export const PageCleaner = () =>
 {
     const { xdropId } = useParams();
     if (!xdropId) return <PageNotFound />;
@@ -61,14 +61,12 @@ export const PageClean: React.FC = () =>
     </>;
 };
 
-const CardClean: React.FC<{
+const CardClean = ({
+    xdrop, cleanerCapId, refetch,
+}: {
     xdrop: XDrop;
     cleanerCapId: string;
     refetch: () => Promise<void>;
-}> = ({
-    xdrop,
-    cleanerCapId,
-    refetch,
 }) =>
 {
     const { isWorking, setIsWorking, xdropClient } = useAppContext();
