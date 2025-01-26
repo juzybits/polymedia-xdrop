@@ -17,7 +17,6 @@
         "deploy-dev": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-xdrop --branch dev",
         "deploy-test": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-xdrop --branch test",
         "deploy-prod": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-xdrop --branch main",
-        "deploy-demo": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-xdrop --branch demo",
         "dev": "vite",
         "host": "vite --host",
         "lint": "eslint src/ --report-unused-disable-directives --max-warnings 0",
