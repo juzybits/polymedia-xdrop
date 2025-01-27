@@ -60,6 +60,8 @@ export type XDropStats = {
     amount_unclaimed: bigint;
 };
 
+export type XDropEventName = "EventShare" | "EventOpen" | "EventPause" | "EventEnd" | "EventClaim";
+
 // === suilink structs ===
 
 export type SuiLink = {

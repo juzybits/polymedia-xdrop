@@ -10,7 +10,7 @@ import { ERRORS } from "./config.js";
 import { serialBatchesOfParallelOperations } from "./misc.js";
 import { getSuiLinkNetworkType, getSuiLinkType, LinkNetwork } from "./suilink.js";
 import { XDropModule } from "./xdrop-functions.js";
-import { EligibleStatus, EligibleStatusBcs, objResToSuiLink, objResToXDrop, retValToEligibleStatus, SuiLink, XDrop, XDropIdentifier } from "./xdrop-structs.js";
+import { EligibleStatus, EligibleStatusBcs, objResToSuiLink, objResToXDrop, retValToEligibleStatus, SuiLink, XDrop, XDropEventName, XDropIdentifier } from "./xdrop-structs.js";
 import { calculateFee, extractXDropObjCreated } from "./xdrop-txs.js";
 
 const MAX_PARALLEL_RPC_CALLS = 20;
@@ -165,7 +165,7 @@ export class XDropClient extends SuiClientBase
     }
 
     public async fetchXDropsByEvent(
-        eventType: string,
+        eventType: XDropEventName,
         options: {
             sender?: string,
             cursor?: string | null,
@@ -235,21 +235,6 @@ export class XDropClient extends SuiClientBase
             nextCursor: data.events.pageInfo.startCursor,
             data: enhancedXDrops,
         };
-    }
-
-    public async fetchXDropsCreated(
-        sender: string,
-        cursor: string | null | undefined,
-        limit: number,
-    ) {
-        return this.fetchXDropsByEvent('EventShare', { sender, cursor, limit });
-    }
-
-    public async fetchXDropsEnded(
-        cursor: string | null | undefined,
-        limit: number,
-    ) {
-        return this.fetchXDropsByEvent('EventEnd', { cursor, limit });
     }
 
     public async fetchOwnedLinks(

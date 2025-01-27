@@ -42,7 +42,10 @@ const SubPageList = () => {
     const listRef = useRef<HTMLDivElement>(null);
 
     const xdrops = useFetchAndPaginate(
-        async (cursor) => await xdropClient.fetchXDropsEnded(cursor as any, PAGE_SIZE), // eslint-disable-line
+        async (cursor) => await xdropClient.fetchXDropsByEvent("EventEnd", {
+            cursor: cursor as any, // eslint-disable-line
+            limit: PAGE_SIZE,
+        }),
         [xdropClient],
     );
 
@@ -68,7 +71,10 @@ const SubPageList = () => {
                         button={<BtnLinkInternal to={`/clean/${x.id}`} disabled={isWorking}>
                             CLEAN
                         </BtnLinkInternal>}
-                        extraDetails={<XDropDetail label="Ended:" val={x.timestamp.toLocaleString()} />}
+                        extraDetails={<>
+                            <XDropDetail label="Ended:" val={x.timestamp.toLocaleString()} />
+                            <XDropDetail label="Claims:" val={x.claims.length} />
+                        </>}
                     />
                 )}
             </div>

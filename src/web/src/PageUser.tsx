@@ -39,7 +39,11 @@ const ListCreatedXDrops = ({ currAddr }: {
     const listRef = useRef<HTMLDivElement>(null);
 
     const xdrops = useFetchAndPaginate(
-        async (cursor) => await xdropClient.fetchXDropsCreated(currAddr, cursor as any, PAGE_SIZE), // eslint-disable-line
+        async (cursor) => await xdropClient.fetchXDropsByEvent("EventShare", {
+            sender: currAddr,
+            cursor: cursor as any, // eslint-disable-line
+            limit: PAGE_SIZE,
+        }),
         [xdropClient, currAddr],
     );
 
