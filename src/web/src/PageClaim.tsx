@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 
 import { NetworkName, shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
-import { LinkNetwork, LinkWithStatus, XDrop } from "@polymedia/xdrop-sdk";
+import { LinkNetwork, LinkWithStatus, SuiLink, XDrop } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
 import { BtnSubmit, BtnLinkExternal } from "./comp/buttons";
@@ -148,15 +148,15 @@ const CardClaim: React.FC<{
 };
 
 type EligibleLinksWithStatus = {
+    allLinks: SuiLink[];
     eligibleLinks: LinkWithStatus[];
     claimableLinks: LinkWithStatus[];
-    hasAnyLinks: boolean;
 };
 
 const EMPTY_LINKS_WITH_STATUS: EligibleLinksWithStatus = {
+    allLinks: [],
     eligibleLinks: [],
     claimableLinks: [],
-    hasAnyLinks: false,
 } as const;
 
 const WidgetClaim: React.FC<{
@@ -177,8 +177,8 @@ const WidgetClaim: React.FC<{
     const eligibleLinksWithStatus = useFetch<EligibleLinksWithStatus>(async () =>
     {
         // Fetch SuiLink objects
-        const links = await xdropClient.fetchOwnedLinks(currAddr, xdrop.network_name);
-        if (!links?.length) {
+        const allLinks = await xdropClient.fetchOwnedLinks(currAddr, xdrop.network_name);
+        if (!allLinks?.length) {
             return EMPTY_LINKS_WITH_STATUS;
         }
 
@@ -187,12 +187,12 @@ const WidgetClaim: React.FC<{
             typeCoin: xdrop.type_coin,
             linkNetwork: xdrop.network_name,
             xdropId: xdrop.id,
-            addrs: links.map(l => l.network_address),
+            addrs: allLinks.map(l => l.network_address),
             onUpdate: msg => console.debug("[fetchEligibleStatuses]", msg),
         });
 
         // Merge links with their statuses, filter eligible links, and sort unclaimed links first
-        const eligibleLinks = links
+        const eligibleLinks = allLinks
             .map((link, i) => ({
                 ...link,
                 status: statuses[i]
@@ -203,14 +203,14 @@ const WidgetClaim: React.FC<{
         const claimableLinks = eligibleLinks.filter(link => !link.status.claimed);
 
         return {
+            allLinks,
             eligibleLinks,
             claimableLinks,
-            hasAnyLinks: links.length > 0,
         };
     }, [xdrop, coinMeta, currAddr]);
 
     const { err, isLoading, data, refetch } = eligibleLinksWithStatus;
-    const { eligibleLinks, claimableLinks, hasAnyLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
+    const { allLinks, eligibleLinks, claimableLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
     const disableSubmit = !currAcct || isWorking || claimableLinks.length === 0;
 
     // == effects ==
@@ -262,7 +262,7 @@ const WidgetClaim: React.FC<{
         <div className="card-desc">
             <div className="card-list slim-list">
                 {(() => {
-                    if (!hasAnyLinks) {
+                    if (allLinks.length === 0) {
                         return <Card className="slim disabled">
                             You haven't linked any addresses yet.
                         </Card>;
