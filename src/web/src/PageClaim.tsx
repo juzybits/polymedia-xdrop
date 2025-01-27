@@ -14,6 +14,7 @@ import { Card, CardMsg, CardSpinner } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
+import { showConfetti } from "./lib/confetti";
 import { fmtBal } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
@@ -232,7 +233,8 @@ const WidgetClaim: React.FC<{
                 eligibleLinks.map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);
-            toast.success("Success"); // TODO maybe add confetti
+            toast.success("Success");
+            showConfetti(["💰"]);
         } catch (err) {
             console.warn("[onSubmit] error:", err);
             const msg = xdropClient.errToStr(err, "Failed to claim");

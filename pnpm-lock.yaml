@@ -75,6 +75,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.64.2
         version: 5.64.2(react@18.3.1)
+      js-confetti:
+        specifier: ^0.12.0
+        version: 0.12.0
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -1905,6 +1908,9 @@ packages:
 
   jose@5.9.6:
     resolution: {integrity: sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ==}
+
+  js-confetti@0.12.0:
+    resolution: {integrity: sha512-1R0Akxn3Zn82pMqW65N1V2NwKkZJ75bvBN/VAb36Ya0YHwbaSiAJZVRr/19HBxH/O8x2x01UFAbYI18VqlDN6g==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -4500,6 +4506,8 @@ snapshots:
       set-function-name: 2.0.2
 
   jose@5.9.6: {}
+
+  js-confetti@0.12.0: {}
 
   js-tokens@4.0.0: {}
 

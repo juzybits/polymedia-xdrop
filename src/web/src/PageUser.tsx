@@ -29,7 +29,7 @@ export const PageUser: React.FC = () =>
     </>;
 };
 
-const PAGE_SIZE = isLocalhost() ? 2 : 10;
+const PAGE_SIZE = isLocalhost() ? 10 : 10;
 
 const ListCreatedXDrops = ({ currAddr }: {
     currAddr: string;
