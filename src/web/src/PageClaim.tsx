@@ -25,9 +25,6 @@ export const PageClaim: React.FC = () =>
 
     const { header, network, isWorking } = useAppContext();
 
-    const wallets = useWallets();
-    const hasWallet = wallets.length > 0;
-
     // Handle custom xDrops
     const custom = CustomXDrops[network][xdropId] ?? null;
     xdropId = custom?.xdropId ?? xdropId;
@@ -47,57 +44,13 @@ export const PageClaim: React.FC = () =>
                 <XDropLoader fetched={fetched} requireWallet={false}>
                 {(xdrop, coinMeta) => (
                     xdrop.is_ended ?
-                    <>
-                        <Card className="center-text">
-                            <div className="card-title center-element">
-                                {coinMeta.symbol} xDrop ended
-                            </div>
-                            <div className="card-desc">
-                                <p className="text-orange">Claims are no longer possible.</p>
-                            </div>
-                        </Card>
-                    </> : <>
+                    <CardEnded coinMeta={coinMeta} />
+                    : <>
                         <div className="page-title">
                             Claim {coinMeta.symbol}
                         </div>
-
-                        <Card>
-                            <div className="card-title">
-                                <p>Step 1: Get a Sui wallet</p>
-                            </div>
-
-                            {hasWallet ?
-                                <div className="card-desc">
-                                    <p>✅ Your Sui wallet is installed and ready.</p>
-                                </div>
-                            : <>
-                                <div className="card-desc">
-                                    <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
-                                </div>
-                                <BtnLinkExternal href="https://suiwallet.com/" disabled={isWorking}>
-                                    INSTALL WALLET
-                                </BtnLinkExternal>
-                            </>}
-                        </Card>
-
-                        <Card>
-                            <div className="card-title">
-                                <p>Step 2: Verify your {xdrop.network_name} address</p>
-                            </div>
-
-                            {custom?.step2?.(xdrop, coinMeta) ?? <>
-                                <div className="card-desc">
-                                    <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
-                                </div>
-                                <div className="card-desc">
-                                    <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
-                                </div>
-                            </>}
-                                <BtnLinkExternal href="https://www.suilink.io/" disabled={isWorking}>
-                                    LINK ADDRESS
-                                </BtnLinkExternal>
-                        </Card>
-
+                        <CardWallet coinMeta={coinMeta} />
+                        <CardLink xdrop={xdrop} coinMeta={coinMeta} custom={custom} />
                         <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} />
                     </>
                 )}
@@ -106,6 +59,85 @@ export const PageClaim: React.FC = () =>
             </div>
         </div>
     </>;
+};
+
+const CardEnded: React.FC<{
+    coinMeta: CoinMetadata;
+}> = ({
+    coinMeta,
+}) => {
+    return (
+    <Card className="center-text">
+        <div className="card-title center-element">
+            {coinMeta.symbol} xDrop ended
+        </div>
+        <div className="card-desc">
+            <p className="text-orange">Claims are no longer possible.</p>
+        </div>
+    </Card>
+);
+};
+
+const CardWallet: React.FC<{
+    coinMeta: CoinMetadata;
+}> = ({
+    coinMeta,
+}) => {
+    const wallets = useWallets();
+    const hasWallet = wallets.length > 0;
+    const { isWorking } = useAppContext();
+    return (
+    <Card>
+        <div className="card-title">
+            <p>Step 1: Get a Sui wallet</p>
+        </div>
+
+        {hasWallet ?
+            <div className="card-desc">
+                <p>✅ Your Sui wallet is installed and ready.</p>
+            </div>
+        : <>
+            <div className="card-desc">
+                <p>You need a wallet to claim your {coinMeta.symbol} on Sui. We recommend the official Sui wallet.</p>
+            </div>
+            <BtnLinkExternal href="https://suiwallet.com/" disabled={isWorking}>
+                INSTALL WALLET
+            </BtnLinkExternal>
+        </>}
+    </Card>
+    );
+};
+
+const CardLink: React.FC<{
+    xdrop: XDrop;
+    coinMeta: CoinMetadata;
+    custom: CustomXDropConfig | null;
+}> = ({
+    xdrop,
+    coinMeta,
+    custom,
+}) => {
+    const { isWorking } = useAppContext();
+    return (
+    <Card>
+        <div className="card-title">
+            <p>Step 2: Verify your {xdrop.network_name} address</p>
+            {/* TODO: show checkmark */}
+        </div>
+
+        {custom?.step2?.(xdrop, coinMeta) ?? <>
+            <div className="card-desc">
+                <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
+            </div>
+            <div className="card-desc">
+                <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
+            </div>
+        </>}
+        {/* TODO show "you've connected X addresses" */}
+            <BtnLinkExternal href="https://www.suilink.io/" disabled={isWorking}>
+                LINK ADDRESS
+            </BtnLinkExternal>
+    </Card>);
 };
 
 const CardClaim: React.FC<{
@@ -171,7 +203,6 @@ const WidgetClaim: React.FC<{
 {
     // == state ==
 
-    const currAcct = useCurrentAccount();
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
 
     const eligibleLinksWithStatus = useFetch<EligibleLinksWithStatus>(async () =>
@@ -211,7 +242,7 @@ const WidgetClaim: React.FC<{
 
     const { err, isLoading, data, refetch } = eligibleLinksWithStatus;
     const { allLinks, eligibleLinks, claimableLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
-    const disableSubmit = !currAcct || isWorking || claimableLinks.length === 0;
+    const disableSubmit = isWorking || claimableLinks.length === 0;
 
     // == effects ==
 
