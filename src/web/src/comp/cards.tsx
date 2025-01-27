@@ -70,25 +70,27 @@ export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
     );
 };
 
-export const XDropStats = ({ xdrop, coinMeta }: {
+export const XDropStats = ({ xdrop, coinMeta, statClass }: {
     xdrop: XDrop;
     coinMeta: CoinMetadata;
+    statClass?: string;
 }) => {
     return <>
-        <XDropDetail label="Balance claimed/unclaimed:"
+        <XDropDetail label="Balance claimed/unclaimed:" className={statClass}
             val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / `
             + formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")} />
-        <XDropDetail label="Addresses claimed/unclaimed:"
+        <XDropDetail label="Addresses claimed/unclaimed:" className={statClass}
             val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
         {/* <XDropDetail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} /> */}
     </>;
 };
 
-export const XDropDetail = ({ label, val }: {
+export const XDropDetail = ({ label, val, className }: {
     label: string;
     val: React.ReactNode;
+    className?: string;
 }) => {
-    return <div className="detail">
+    return <div className={`detail ${className ?? ""}`}>
         <span className="label">{label}</span>
         <span className="value">{val}</span>
     </div>;

@@ -27,7 +27,6 @@
 }
 
 #page-manage {
-
     .poly-input textarea {
         height: 10em;
         font-size: 0.9em;
@@ -41,4 +40,13 @@
     .page-content {
         width: 100%;
     }
+}
+
+@keyframes blink {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(255, 255, 255, 0.1); }
+}
+
+.detail.blink {
+    animation: blink 0.75s ease-in-out 4;
 }

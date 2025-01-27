@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
@@ -28,6 +28,13 @@ export const PageManage: React.FC = () =>
     const { header, isWorking, setIsWorking, xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
     const fetched = useXDrop(xdropId);
+    const [statsBlink, setStatsBlink] = useState(false);
+
+    useEffect(() => {
+        if (!statsBlink) { return; }
+        const timer = setTimeout(() => { setStatsBlink(false); }, 4000);
+        return () => clearTimeout(timer);
+    }, [statsBlink]);
 
     const disableSubmit = isWorking || !currAcct;
     const onSubmitAction = async (action: AdminAction) => {
@@ -137,7 +144,11 @@ export const PageManage: React.FC = () =>
 
                     return <>
                         <CardXDropDetails xdrop={xdrop}
-                            extraDetails={<XDropStats xdrop={xdrop} coinMeta={coinMeta} />}
+                            extraDetails={<XDropStats
+                                xdrop={xdrop}
+                                coinMeta={coinMeta}
+                                statClass={statsBlink ? "blink" : ""}
+                            />}
                             button={<BtnLinkInternal to={`/claim/${xdrop.id}`} disabled={isWorking}>
                                 VIEW CLAIM PAGE
                             </BtnLinkInternal>}
@@ -150,7 +161,10 @@ export const PageManage: React.FC = () =>
                                 currAddr={currAcct!.address}
                                 xdrop={xdrop}
                                 coinMeta={coinMeta}
-                                refetch={fetched.refetch}
+                                onSuccess={() => {
+                                    fetched.refetch();
+                                    setStatsBlink(true);
+                                }}
                             />
                             {adminActions.map((action, idx) => (
                                 <CardAction
@@ -204,12 +218,12 @@ const CardAddClaims: React.FC<{
     currAddr: string;
     xdrop: XDrop;
     coinMeta: CoinMetadata;
-    refetch: () => Promise<void>;
+    onSuccess: () => void;
 }> = ({
     currAddr,
     xdrop,
     coinMeta,
-    refetch,
+    onSuccess,
 }) =>
 {
     if (xdrop.is_ended) return null;
@@ -408,7 +422,7 @@ const CardAddClaims: React.FC<{
             });
             console.debug("[onSubmit] okay:", resps);
             toast.success("Success");
-            refetch();
+            onSuccess();
         } catch (err) {
             console.warn("[onSubmit] error:", err);
             const msg = xdropClient.errToStr(err, "Failed to add claims");
