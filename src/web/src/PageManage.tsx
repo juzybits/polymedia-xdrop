@@ -149,50 +149,61 @@ export const PageManage: React.FC = () =>
 
                         {currAcct!.address !== xdrop.admin
                         ? <CardNotAdmin xdrop={xdrop} />
-                        : <>
-                            <CardAddClaims
-                                currAddr={currAcct!.address}
-                                xdrop={xdrop}
-                                coinMeta={coinMeta}
-                                onSuccess={() => {
-                                    fetched.refetch();
-                                    setStatsBlink(true);
-                                }}
-                            />
+                        : (() => {
+                            const cardsOpenAndPause = <>
+                                {!xdrop.is_ended && xdrop.is_paused &&
+                                <CardAdminAction
+                                    title="Open claims"
+                                    info="Allow users to claim their share of the xDrop."
+                                    btnTxt="OPEN CLAIMS"
+                                    submit={() => onSubmitAction(admin_opens_xdrop, true)}
+                                />}
 
-                            {!xdrop.is_ended && xdrop.is_paused &&
-                            <CardAdminAction
-                                title="Open claims"
-                                info="Allow users to claim their share of the xDrop."
-                                btnTxt="OPEN CLAIMS"
-                                submit={() => onSubmitAction(admin_opens_xdrop, true)}
-                            />}
+                                {!xdrop.is_ended && xdrop.is_open &&
+                                <CardAdminAction
+                                    title="Pause claims"
+                                    info="Stop users from claiming their share of the xDrop."
+                                    btnTxt="PAUSE CLAIMS"
+                                    submit={() => onSubmitAction(admin_pauses_xdrop, true)}
+                                />}
+                            </>;
 
-                            {!xdrop.is_ended && xdrop.is_open &&
-                            <CardAdminAction
-                                title="Pause claims"
-                                info="Stop users from claiming their share of the xDrop."
-                                btnTxt="PAUSE CLAIMS"
-                                submit={() => onSubmitAction(admin_pauses_xdrop, true)}
-                            />}
+                            const cardAddClaims =
+                                <CardAddClaims
+                                    currAddr={currAcct!.address}
+                                    xdrop={xdrop}
+                                    coinMeta={coinMeta}
+                                    onSuccess={() => {
+                                        fetched.refetch();
+                                        setStatsBlink(true);
+                                    }}
+                                />;
 
-                            {!xdrop.is_ended &&
-                            <CardAdminAction
-                                title="End xDrop"
-                                info="End the xDrop permanently and reclaim any remaining balance. This cannot be undone."
-                                btnTxt="END PERMANENTLY"
-                                submit={() => onSubmitAction(admin_ends_and_reclaims_xdrop, true)}
-                                btnClass="red"/>
-                            }
+                            const showAddClaimsFirst = xdrop.claims.size === 0;
 
-                            {xdrop.is_ended && xdrop.balance > 0n &&
-                            <CardAdminAction
-                                title="Reclaim Balance"
-                                info="Reclaim the remaining balance of the xDrop."
-                                btnTxt="RECLAIM"
-                                submit={() => onSubmitAction(admin_reclaims_balance, false)}
-                            />}
-                        </>}
+                            return <>
+                                {showAddClaimsFirst
+                                ? <>{cardAddClaims}{cardsOpenAndPause}</>
+                                : <>{cardsOpenAndPause}{cardAddClaims}</>}
+
+                                {!xdrop.is_ended &&
+                                <CardAdminAction
+                                    title="End xDrop"
+                                    info="End the xDrop permanently and reclaim any remaining balance. This cannot be undone."
+                                    btnTxt="END PERMANENTLY"
+                                    submit={() => onSubmitAction(admin_ends_and_reclaims_xdrop, true)}
+                                    btnClass="red"/>
+                                }
+
+                                {xdrop.is_ended && xdrop.balance > 0n &&
+                                <CardAdminAction
+                                    title="Reclaim Balance"
+                                    info="Reclaim the remaining balance of the xDrop."
+                                    btnTxt="RECLAIM"
+                                    submit={() => onSubmitAction(admin_reclaims_balance, false)}
+                                />}
+                            </>;
+                        })()}
                     </>;
                 }}
                 </XDropLoader>
