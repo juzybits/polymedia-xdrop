@@ -32,6 +32,12 @@ export const MAX_OBJECTS_PER_TX = 1000;
 export const MAX_ADDRS_PER_FN = 350; // breaks at 381 addresses (2024-11-29)
 
 /**
+ * Maximum number of results returned by a single Sui RPC request.
+ * (see sui/crates/sui-json-rpc-api/src/lib.rs)
+ */
+export const RPC_QUERY_MAX_RESULT_LIMIT = 50;
+
+/**
  * Execute transactions on the XDrop Sui package.
  */
 export class XDropClient extends SuiClientBase
@@ -64,19 +70,41 @@ export class XDropClient extends SuiClientBase
 
     // === data fetching ===
 
-    public async fetchAllClaimAddrs(
-        claimTableId: string,
-        verbose = false,
-    ): Promise<string[]>
-    {
-        const fieldInfos = await fetchAllDynamicFields(this.suiClient, claimTableId, 0, verbose);
+    /**
+     * Fetch the foreign addresses of all claims in an xDrop.
+     * These addresses are strings and correspond to DOF keys.
+     */
+    public async fetchClaimAddrs(
+        claimsTableId: string,
+        totalLimit: number,
+        startCursor?: string | null
+    ) {
         const addrs: string[] = [];
-        for (const dof of fieldInfos) {
-            if (dof.objectType === `${this.xdropPkgId}::xdrop::Claim`) {
-                addrs.push(String(dof.name.value));
+        let cursor = startCursor;
+        let hasNextPage = true;
+
+        while (hasNextPage && addrs.length < totalLimit) {
+            // calculate how many more DOFs we need
+            const remaining = totalLimit - addrs.length;
+            const batchLimit = Math.min(remaining, RPC_QUERY_MAX_RESULT_LIMIT);
+
+            const page = await this.suiClient.getDynamicFields({
+                parentId: claimsTableId,
+                cursor,
+                limit: batchLimit
+            });
+
+            for (const dof of page.data) {
+                if (dof.objectType === `${this.xdropPkgId}::xdrop::Claim`) {
+                    addrs.push(String(dof.name.value));
+                }
             }
+
+            hasNextPage = page.hasNextPage;
+            cursor = page.nextCursor;
         }
-        return addrs;
+
+        return { addrs, hasNextPage, cursor };
     }
 
     public async fetchOneCleanerCapId(

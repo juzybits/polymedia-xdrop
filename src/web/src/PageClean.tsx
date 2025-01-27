@@ -3,7 +3,7 @@ import { useRef } from "react";
 import toast from "react-hot-toast";
 
 import { BtnPrevNext, isLocalhost, useFetch, useFetchAndPaginate } from "@polymedia/suitcase-react";
-import { XDrop } from "@polymedia/xdrop-sdk";
+import { MAX_OBJECTS_PER_TX, XDrop } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
 import { BtnSubmit } from "./comp/buttons";
@@ -59,20 +59,44 @@ const ListEndedXDrops = ({
 
         try {
             setIsWorking(true);
+            let cleanedCount = 0;
+            let hasMore = true;
+            const totalClaims = xdrop.claims.length;
+            const totalBatches = Math.ceil(totalClaims / MAX_OBJECTS_PER_TX);
+            let batchCount = 0;
 
-            console.debug("[onClean] fetching claim addrs");
-            const foreignAddrs = await xdropClient.fetchAllClaimAddrs(xdrop.claims.id, true);
+            console.debug(`[onClean] starting cleanup of ${totalClaims} claims`);
+            while (hasMore)
+            {
+                console.debug(`[onClean] fetching batch ${batchCount+1}/${totalBatches}`);
+                const result = await xdropClient.fetchClaimAddrs(xdrop.claims.id, MAX_OBJECTS_PER_TX);
 
-            console.debug("[onClean] submitting tx");
-            const resp = await xdropClient.cleanerDeletesClaims({
-                cleanerCapId,
-                xdrop,
-                addrs: foreignAddrs,
-                onUpdate: msg => console.debug("[cleanerDeletesClaims]", msg),
-            });
+                if (result.addrs.length === 0) {
+                    console.debug("[onClean] no more claims found in this batch");
+                    break;
+                }
 
-            console.debug("[onClean] okay:", resp);
-            toast.success("Success");
+                console.debug(`[onClean] cleaning ${result.addrs.length} claims`);
+                await xdropClient.cleanerDeletesClaims({
+                    cleanerCapId,
+                    xdrop,
+                    addrs: result.addrs,
+                    onUpdate: msg => console.debug("[cleanerDeletesClaims]", msg),
+                });
+
+                cleanedCount += result.addrs.length;
+                console.debug(`[onClean] cleaned: ${cleanedCount}/${totalClaims}`);
+
+                hasMore = result.hasNextPage;
+                batchCount++;
+            }
+
+            const remaining = totalClaims - cleanedCount;
+            if (remaining > 0) {
+                console.warn(`[onClean] cleaned ${cleanedCount} claims but expected ${totalClaims} (${remaining} remaining)`);
+            } else {
+                console.debug(`[onClean] successfully cleaned all ${cleanedCount} claims`);
+            }
             // fetchedXdrops.refetch();
         } catch (err) {
             console.warn("[onClean] error:", err);
