@@ -15,7 +15,7 @@ import { ConnectToGetStarted } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { showConfetti } from "./lib/confetti";
-import { fmtBal } from "./lib/helpers";
+import { fmtBal, shortenForeignAddr } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageClaim: React.FC = () =>
@@ -268,6 +268,7 @@ const WidgetClaim: React.FC<{
                         </Card>;
                     }
                     return <>
+                        <div className="card-title" style={{ fontSize: "1.1em" }}>Claimable amounts:</div>
                         {eligibleLinks.map(linkWStat =>
                             <CardClaimableLink key={linkWStat.id} xdrop={xdrop} coinMeta={coinMeta} link={linkWStat} />
                         )}
@@ -305,15 +306,17 @@ const CardClaimableLink: React.FC<{
     return <Card className={`slim ${link.status.claimed ? "disabled" : "subcard"}`}>
         <div className="card-header">
             <div className="card-title">
-                {link.status.claimed
-                    ? "Claimed"
-                    : fmtBal(link.status.amount, coinMeta.decimals, coinMeta.symbol)}
+                {fmtBal(link.status.amount, coinMeta.decimals, coinMeta.symbol)}
+                {link.status.claimed && " (claimed)"}
             </div>
         </div>
         <div className="card-body">
             <div>
-                {xdrop.network_name} address: <LinkExternal href={linkedAddrUrl(xdrop.network_name, link.network_address)}>
-                    {shortenLinkedAddr(link.network_address)}
+                {xdrop.network_name} address: <LinkExternal
+                    href={linkedAddrUrl(xdrop.network_name, link.network_address)}
+                    className="link-external nowrap"
+                >
+                    {shortenForeignAddr(link.network_address)}
                 </LinkExternal>
             </div>
         </div>
@@ -321,11 +324,6 @@ const CardClaimableLink: React.FC<{
 };
 
 // === helpers ===
-
-function shortenLinkedAddr(addr: string): string {
-    return addr.slice(0, addr.startsWith("0x") ? 6 : 4)
-        + "…" + addr.slice(-4);
-}
 
 function linkedAddrUrl(network: LinkNetwork, addr: string): string {
     if (network === "Ethereum") return `https://etherscan.io/address/${addr}`;

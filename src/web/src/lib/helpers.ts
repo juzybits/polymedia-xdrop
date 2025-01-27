@@ -18,9 +18,9 @@ export function clientWithKeypair(client: XDropClient, pair: Keypair)
     });
 }
 
-
-export function shortenString(str: string): string {
-    return str.slice(0, 6) + "…" + str.slice(-4);
+export function shortenForeignAddr(addr: string): string {
+    return addr.slice(0, addr.startsWith("0x") ? 6 : 4)
+        + "…" + addr.slice(-4);
 }
 
 /**
