@@ -164,14 +164,17 @@ export class XDropClient extends SuiClientBase
         );
     }
 
-    public async fetchXDropsCreated(
-        sender: string,
-        cursor: string | null | undefined,
-        limit: number,
+    public async fetchXDropsByEvent(
+        eventType: string,
+        options: {
+            sender?: string,
+            cursor?: string | null,
+            limit: number,
+        }
     ) {
         const result = await this.graphClient.query({
             query: graphql(`
-                query($limit: Int!, $cursor: String, $sender: SuiAddress!, $eventType: String!) {
+                query($limit: Int!, $cursor: String, $sender: SuiAddress, $eventType: String!) {
                     events(
                         last: $limit
                         before: $cursor
@@ -193,16 +196,19 @@ export class XDropClient extends SuiClientBase
                 }
             `),
             variables: {
-                limit, cursor, sender, eventType: `${this.xdropPkgId}::xdrop::EventShare`,
+                limit: options.limit,
+                cursor: options.cursor,
+                sender: options.sender,
+                eventType: `${this.xdropPkgId}::xdrop::${eventType}`,
             }
         });
 
         if (result.errors) {
-            throw new Error(`[fetchCreatedXDrops] GraphQL error: ${JSON.stringify(result.errors, null, 2)}`);
+            throw new Error(`[fetchXDropsByEvent] GraphQL error: ${JSON.stringify(result.errors, null, 2)}`);
         }
         const data = result.data;
         if (!data) {
-            throw new Error("[fetchCreatedXDrops] GraphQL returned no data");
+            throw new Error("[fetchXDropsByEvent] GraphQL returned no data");
         }
 
         const events = data.events.nodes
@@ -231,69 +237,19 @@ export class XDropClient extends SuiClientBase
         };
     }
 
+    public async fetchXDropsCreated(
+        sender: string,
+        cursor: string | null | undefined,
+        limit: number,
+    ) {
+        return this.fetchXDropsByEvent('EventShare', { sender, cursor, limit });
+    }
+
     public async fetchXDropsEnded(
         cursor: string | null | undefined,
         limit: number,
     ) {
-        const result = await this.graphClient.query({
-            query: graphql(`
-                query($limit: Int!, $cursor: String, $eventType: String!) {
-                    events(
-                        last: $limit
-                        before: $cursor
-                        filter: {
-                            eventType: $eventType
-                        }
-                    ) {
-                        pageInfo {
-                            hasPreviousPage
-                            startCursor
-                        }
-                        nodes {
-                            transactionBlock { digest }
-                            timestamp
-                            contents { json }
-                        }
-                    }
-                }
-            `),
-            variables: {
-                limit, cursor, eventType: `${this.xdropPkgId}::xdrop::EventEnd`,
-            }
-        });
-
-        if (result.errors) {
-            throw new Error(`[fetchCreatedXDrops] GraphQL error: ${JSON.stringify(result.errors, null, 2)}`);
-        }
-        const data = result.data;
-        if (!data) {
-            throw new Error("[fetchCreatedXDrops] GraphQL returned no data");
-        }
-
-        const events = data.events.nodes
-            .map(event => ({
-                digest: event.transactionBlock!.digest!,
-                timestamp: new Date(event.timestamp!),
-                ...event.contents.json as XDropIdentifier,
-            }))
-            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-
-        const xdrops = await this.fetchXDrops(events.map(evt => evt.id));
-
-        const enhancedXDrops = xdrops.map(xdrop => {
-            const event = events.find(e => e.id === xdrop.id);
-            return {
-                ...xdrop,
-                digest: event!.digest,
-                timestamp: event!.timestamp,
-            };
-        });
-
-        return {
-            hasNextPage: data.events.pageInfo.hasPreviousPage,
-            nextCursor: data.events.pageInfo.startCursor,
-            data: enhancedXDrops,
-        };
+        return this.fetchXDropsByEvent('EventEnd', { cursor, limit });
     }
 
     public async fetchOwnedLinks(
