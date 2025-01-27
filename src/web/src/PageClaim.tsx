@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
 import { shortenAddress } from "@polymedia/suitcase-core";
-import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
+import { LinkExternal, useFetch, UseFetchResult } from "@polymedia/suitcase-react";
 import { LinkWithStatus, SuiLink, XDrop } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
@@ -19,18 +19,77 @@ import { CUSTOM_XDROPS, CustomXDropConfig } from "./lib/custom";
 import { fmtBal, foreignAddrUrl, shortenForeignAddr } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
+type OwnedLinks = {
+    allLinks: SuiLink[];
+    eligibleLinks: LinkWithStatus[];
+    claimableLinks: LinkWithStatus[];
+};
+
+const EMPTY_OWNED_LINKS: OwnedLinks = {
+    allLinks: [],
+    eligibleLinks: [],
+    claimableLinks: [],
+} as const;
+
 export const PageClaim: React.FC = () =>
 {
+    // === state ===
+
+    // URL state
     let { xdropId } = useParams();
     if (!xdropId) return <PageNotFound />;
 
-    const { header, network, isWorking } = useAppContext();
+    // app state
+    const currAcct = useCurrentAccount();
+    const currAddr = currAcct?.address ?? null;
+    const { header, network, xdropClient } = useAppContext();
 
-    // Handle custom xDrops
+    // override xdropId if custom xDrop
     const custom = CUSTOM_XDROPS[network][xdropId] ?? null;
     xdropId = custom?.xdropId ?? xdropId;
 
-    const fetched = useXDrop(xdropId);
+    // onchain state
+    const fetchedXDrop = useXDrop(xdropId);
+    const { xdrop, coinMeta } = fetchedXDrop.data ?? {};
+
+    const fetchedLinks = useFetch<OwnedLinks>(async () =>
+    {
+        if (!currAddr || !xdrop || !coinMeta) {
+            return EMPTY_OWNED_LINKS;
+        }
+
+        // Fetch SuiLink objects
+        const allLinks = await xdropClient.fetchOwnedLinks(currAddr, xdrop.network_name);
+        if (!allLinks?.length) {
+            return EMPTY_OWNED_LINKS;
+        }
+
+        // Fetch claim statuses for those links
+        const statuses = await xdropClient.fetchEligibleStatuses({
+            typeCoin: xdrop.type_coin,
+            linkNetwork: xdrop.network_name,
+            xdropId: xdrop.id,
+            addrs: allLinks.map(l => l.network_address),
+            onUpdate: msg => console.debug("[fetchEligibleStatuses]", msg),
+        });
+
+        // Merge links with their statuses, filter eligible links, and sort unclaimed links first
+        const eligibleLinks = allLinks
+            .map((link, i) => ({
+                ...link,
+                status: statuses[i]
+            }))
+            .filter(l => l.status.eligible)
+            .sort((a, b) => Number(!b.status.claimed) - Number(!a.status.claimed));
+
+        const claimableLinks = eligibleLinks.filter(link => !link.status.claimed);
+
+        return {
+            allLinks,
+            eligibleLinks,
+            claimableLinks,
+        };
+    }, [xdrop, coinMeta, currAddr]);
 
     return <>
         {header}
@@ -42,7 +101,7 @@ export const PageClaim: React.FC = () =>
         <div id="page-claim" className="page-regular">
             <div className="page-content">
 
-                <XDropLoader fetched={fetched} requireWallet={false}>
+                <XDropLoader fetched={fetchedXDrop} requireWallet={false}>
                 {(xdrop, coinMeta) => (
                     xdrop.is_ended ?
                     <CardEnded coinMeta={coinMeta} />
@@ -52,7 +111,7 @@ export const PageClaim: React.FC = () =>
                         </div>
                         <CardWallet coinMeta={coinMeta} />
                         <CardLink xdrop={xdrop} coinMeta={coinMeta} custom={custom} />
-                        <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} />
+                        <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} fetchedLinks={fetchedLinks} />
                     </>
                 )}
                 </XDropLoader>
@@ -145,10 +204,12 @@ const CardClaim: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     custom: CustomXDropConfig | null;
+    fetchedLinks: UseFetchResult<OwnedLinks>;
 }> = ({
     xdrop,
     coinMeta,
     custom,
+    fetchedLinks,
 }) =>
 {
     const currAcct = useCurrentAccount();
@@ -173,6 +234,7 @@ const CardClaim: React.FC<{
                         xdrop={xdrop}
                         coinMeta={coinMeta}
                         currAddr={currAcct.address}
+                        fetchedLinks={fetchedLinks}
                     />
                 </>
             )}
@@ -180,75 +242,30 @@ const CardClaim: React.FC<{
     );
 };
 
-type EligibleLinksWithStatus = {
-    allLinks: SuiLink[];
-    eligibleLinks: LinkWithStatus[];
-    claimableLinks: LinkWithStatus[];
-};
-
-const EMPTY_LINKS_WITH_STATUS: EligibleLinksWithStatus = {
-    allLinks: [],
-    eligibleLinks: [],
-    claimableLinks: [],
-} as const;
-
 const WidgetClaim: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     currAddr: string;
+    fetchedLinks: UseFetchResult<OwnedLinks>;
 }> = ({
     xdrop,
     coinMeta,
     currAddr,
+    fetchedLinks,
 }) =>
 {
     // == state ==
 
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
 
-    const eligibleLinksWithStatus = useFetch<EligibleLinksWithStatus>(async () =>
-    {
-        // Fetch SuiLink objects
-        const allLinks = await xdropClient.fetchOwnedLinks(currAddr, xdrop.network_name);
-        if (!allLinks?.length) {
-            return EMPTY_LINKS_WITH_STATUS;
-        }
-
-        // Fetch claim statuses for those links
-        const statuses = await xdropClient.fetchEligibleStatuses({
-            typeCoin: xdrop.type_coin,
-            linkNetwork: xdrop.network_name,
-            xdropId: xdrop.id,
-            addrs: allLinks.map(l => l.network_address),
-            onUpdate: msg => console.debug("[fetchEligibleStatuses]", msg),
-        });
-
-        // Merge links with their statuses, filter eligible links, and sort unclaimed links first
-        const eligibleLinks = allLinks
-            .map((link, i) => ({
-                ...link,
-                status: statuses[i]
-            }))
-            .filter(l => l.status.eligible)
-            .sort((a, b) => Number(!b.status.claimed) - Number(!a.status.claimed));
-
-        const claimableLinks = eligibleLinks.filter(link => !link.status.claimed);
-
-        return {
-            allLinks,
-            eligibleLinks,
-            claimableLinks,
-        };
-    }, [xdrop, coinMeta, currAddr]);
-
-    const { err, isLoading, data, refetch } = eligibleLinksWithStatus;
-    const { allLinks, eligibleLinks, claimableLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
+    const { err, isLoading, data, refetch } = fetchedLinks;
+    const { allLinks, eligibleLinks, claimableLinks } = data ?? EMPTY_OWNED_LINKS;
     const disableSubmit = isWorking || claimableLinks.length === 0;
 
     // == effects ==
 
     useEffect(() => { // dev only
-        data && console.debug("[WidgetClaim] eligibleLinksWithStatus:", data);
+        data && console.debug("[WidgetClaim] fetchedLinks:", data);
     }, [data]);
 
     // == functions ==
