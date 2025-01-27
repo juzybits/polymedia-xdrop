@@ -43,7 +43,7 @@ export const CUSTOM_XDROPS: Record<
     "testnet": {},
     "devnet": {
         "demo": {
-            xdropId: "0x02b38f71ce00443d4bc78249d4b98aed6da2779ec29be253c07c4ef924d8376a",
+            xdropId: "0x270bf8f1ccac18c18e0bb566295ff334f694953b0d4e6e0b4c0be98e8b61c89c",
             bannerUrl: "https://dummyimage.com/1600x900/011346/eee/",
             step2: step2Migration,
             step3: step3Migration,

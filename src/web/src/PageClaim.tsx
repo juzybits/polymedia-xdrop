@@ -154,7 +154,7 @@ const CardWallet: React.FC<{
 
         {hasWallet ?
             <div className="card-desc">
-                <p>✅ Your Sui wallet is installed and ready.</p>
+                <p>✅ Your Sui wallet is installed.</p>
             </div>
         : <>
             <div className="card-desc">
@@ -180,31 +180,53 @@ const CardLink: React.FC<{
     fetchedLinks,
 }) => {
     const { isWorking } = useAppContext();
-    const linkAmount = fetchedLinks.data?.allLinks.length ?? 0;
+
+    const { err, isLoading, data } = fetchedLinks;
+    const linkAmount = data?.allLinks.length ?? 0;
+
+    const customStep2 = custom?.step2?.(xdrop, coinMeta);
+    const btnSubmit =
+        <BtnLinkExternal href="https://www.suilink.io/" disabled={isWorking}>
+            LINK {linkAmount === 0 ? "ADDRESS" : "MORE ADDRESSES"}
+        </BtnLinkExternal>;
+
     return (
     <Card>
         <div className="card-title">
             <p>Step 2: Verify your {xdrop.network_name} address</p>
         </div>
 
-        {custom?.step2?.(xdrop, coinMeta) ?? <>
-            {linkAmount > 0 &&
-            <div className="card-desc">
-                <p>✅  You've linked {linkAmount} {xdrop.network_name} addresses.</p>
-            </div>}
-            {linkAmount === 0 &&
-            <div className="card-desc">
-                <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
-            </div>
+        {customStep2 ?
+        <>
+            {customStep2}
+            {btnSubmit}
+        </> :
+        <>
+        {(() => {
+            if (err) {
+                return <CardMsg>{err}</CardMsg>;
+            } else if (isLoading) {
+                return <CardSpinner />;
             }
-            <div className="card-desc">
-                <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
-            </div>
+            return (
+            <>
+                {linkAmount > 0
+                ? <>
+                    <div className="card-desc">
+                        <p>✅  You've linked {linkAmount} {xdrop.network_name} address{linkAmount > 1 ? "es" : ""} to your Sui wallet.</p>
+                    </div>
+                </> : <>
+                    <div className="card-desc">
+                        <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
+                    </div>
+                    <div className="card-desc">
+                        <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
+                    </div>
+                </>}
+                {btnSubmit}
+            </>);
+        })()}
         </>}
-        {/* TODO show "you've connected X addresses" */}
-            <BtnLinkExternal href="https://www.suilink.io/" disabled={isWorking}>
-                LINK {linkAmount === 0 ? "ADDRESS" : "MORE ADDRESSES"}
-            </BtnLinkExternal>
     </Card>);
 };
 
