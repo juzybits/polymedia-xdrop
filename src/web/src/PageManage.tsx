@@ -179,7 +179,7 @@ export const PageManage: React.FC = () =>
                                     }}
                                 />;
 
-                            const showAddClaimsFirst = xdrop.claims.size === 0;
+                            const showAddClaimsFirst = xdrop.claims.length === 0;
 
                             return <>
                                 {showAddClaimsFirst
@@ -427,7 +427,7 @@ const CardAddClaims: React.FC<{
                 })(),
                 // check for addresses already in xdrop
                 (async () => {
-                    if (xdrop.claims.size === 0)
+                    if (xdrop.claims.length === 0)
                         return;
                     console.debug("[onSubmit] checking for existing addresses in xdrop");
                     const statuses = await xdropClient.fetchEligibleStatuses({
@@ -472,12 +472,12 @@ const CardAddClaims: React.FC<{
 
     return <Card>
         <div className="card-title">
-            <p>Add {xdrop.claims.size > 0 ? "more " : ""}claims</p>
+            <p>Add {xdrop.claims.length > 0 ? "more " : ""}claims</p>
         </div>
 
         <div className="card-desc">
             <p>
-                {xdrop.claims.size === 0
+                {xdrop.claims.length === 0
                     ? <>Configure who can claim {symbol}. </>
                     : <>You can add more eligible addresses. </>
                 }

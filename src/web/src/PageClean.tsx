@@ -103,7 +103,7 @@ const CardClean = ({
 }) => {
     const { isWorking, setIsWorking, xdropClient } = useAppContext();
 
-    const disableSubmit = isWorking || !xdrop.is_ended || xdrop.claims.size === 0;
+    const disableSubmit = isWorking || !xdrop.is_ended || xdrop.claims.length === 0;
 
     const onSubmit = async () =>
     {
@@ -137,7 +137,7 @@ const CardClean = ({
     if (!xdrop.is_ended) {
         return <CardMsg>XDrop has not ended</CardMsg>;
     }
-    if (xdrop.claims.size === 0) {
+    if (xdrop.claims.length === 0) {
         return <CardMsg>Already clean</CardMsg>;
     }
 
