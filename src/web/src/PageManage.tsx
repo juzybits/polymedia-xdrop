@@ -14,7 +14,7 @@ import { BtnLinkInternal, BtnSubmit } from "./comp/buttons";
 import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
-import { clientWithKeypair, fmtBal, generateRandomEthereumAddress, generateRandomSolanaAddress } from "./lib/helpers";
+import { clientWithKeypair, fmtBal, generateRandomEthereumAddress, generateRandomSolanaAddress, shortenString } from "./lib/helpers";
 import { devLinkedForeignAddrs } from "./PageDevLink";
 import { PageNotFound } from "./PageNotFound";
 
@@ -436,7 +436,9 @@ const CardAddClaims: React.FC<{
                         onUpdate: msg => console.debug("[fetchEligibleStatuses]", msg),
                     });
                     const claimsAndStatus = claims.map((claim, i) => ({ ...claim, status: statuses[i] }));
-                    const existingAddrs = claimsAndStatus.filter(c => c.status.eligible).map(c => shortenAddress(c.foreignAddr));
+                    const existingAddrs = claimsAndStatus
+                        .filter(c => c.status.eligible)
+                            .map(c => shortenString(c.foreignAddr));
                     if (existingAddrs.length > 0) {
                         throw new Error(`Addresses already in xDrop: ${existingAddrs.join(", ")}`);
                     }

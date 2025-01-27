@@ -18,6 +18,11 @@ export function clientWithKeypair(client: XDropClient, pair: Keypair)
     });
 }
 
+
+export function shortenString(str: string): string {
+    return str.slice(0, 6) + "…" + str.slice(-4);
+}
+
 /**
  * Generate a random Ethereum-like address (for development purposes only).
  * Returns a string that looks like an Ethereum address (0x + 40 hex chars),
