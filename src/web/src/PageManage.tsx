@@ -150,7 +150,22 @@ export const PageManage: React.FC = () =>
                         {currAcct!.address !== xdrop.admin
                         ? <CardNotAdmin xdrop={xdrop} />
                         : (() => {
-                            const cardsOpenAndPause = <>
+                            const cardAddClaims =
+                                <CardAddClaims
+                                    currAddr={currAcct!.address}
+                                    xdrop={xdrop}
+                                    coinMeta={coinMeta}
+                                    onSuccess={() => {
+                                        fetched.refetch();
+                                        setStatsBlink(true);
+                                    }}
+                                />;
+
+                            const showAddClaimsFirst = xdrop.claims.length === 0;
+
+                            return <>
+                                {showAddClaimsFirst && <>{cardAddClaims}</>}
+
                                 {!xdrop.is_ended && xdrop.is_paused && xdrop.claims.length > 0 &&
                                 <CardAdminAction
                                     title="Open claims"
@@ -166,25 +181,6 @@ export const PageManage: React.FC = () =>
                                     btnTxt="PAUSE CLAIMS"
                                     submit={() => onSubmitAction(admin_pauses_xdrop, true)}
                                 />}
-                            </>;
-
-                            const cardAddClaims =
-                                <CardAddClaims
-                                    currAddr={currAcct!.address}
-                                    xdrop={xdrop}
-                                    coinMeta={coinMeta}
-                                    onSuccess={() => {
-                                        fetched.refetch();
-                                        setStatsBlink(true);
-                                    }}
-                                />;
-
-                            const showAddClaimsFirst = xdrop.claims.length === 0;
-
-                            return <>
-                                {showAddClaimsFirst
-                                ? <>{cardAddClaims}{cardsOpenAndPause}</>
-                                : <>{cardsOpenAndPause}{cardAddClaims}</>}
 
                                 {!xdrop.is_ended && xdrop.claims.length > 0 &&
                                 <CardAdminAction
@@ -202,6 +198,8 @@ export const PageManage: React.FC = () =>
                                     btnTxt="RECLAIM"
                                     submit={() => onSubmitAction(admin_reclaims_balance, false)}
                                 />}
+
+                                {!showAddClaimsFirst && <>{cardAddClaims}</>}
                             </>;
                         })()}
                     </>;
