@@ -149,6 +149,7 @@ const CardClaim: React.FC<{
 
 type EligibleLinksWithStatus = {
     eligibleLinks: LinkWithStatus[];
+    claimableLinks: LinkWithStatus[];
     hasAnyLinks: boolean;
     hasEligibleLinks: boolean;
     hasClaimableLinks: boolean;
@@ -156,6 +157,7 @@ type EligibleLinksWithStatus = {
 
 const EMPTY_LINKS_WITH_STATUS: EligibleLinksWithStatus = {
     eligibleLinks: [],
+    claimableLinks: [],
     hasAnyLinks: false,
     hasEligibleLinks: false,
     hasClaimableLinks: false,
@@ -202,16 +204,19 @@ const WidgetClaim: React.FC<{
             .filter(l => l.status.eligible)
             .sort((a, b) => Number(!b.status.claimed) - Number(!a.status.claimed));
 
+        const claimableLinks = eligibleLinks.filter(link => !link.status.claimed);
+
         return {
+            eligibleLinks,
+            claimableLinks,
             hasAnyLinks: links.length > 0,
             hasEligibleLinks: eligibleLinks.length > 0,
-            hasClaimableLinks: eligibleLinks.some(l => !l.status.claimed),
-            eligibleLinks,
+            hasClaimableLinks: claimableLinks.length > 0,
         };
     }, [xdrop, coinMeta, currAddr]);
 
     const { err, isLoading, data, refetch } = eligibleLinksWithStatus;
-    const { hasAnyLinks, hasEligibleLinks, eligibleLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
+    const { eligibleLinks, claimableLinks, hasAnyLinks, hasEligibleLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
     const disableSubmit = !currAcct || isWorking || !data?.hasClaimableLinks;
 
     // == effects ==
@@ -230,7 +235,7 @@ const WidgetClaim: React.FC<{
             const resp = await xdropClient.userClaims(
                 currAddr,
                 xdrop,
-                eligibleLinks.map(l => l.id)
+                claimableLinks.map(l => l.id)
             );
             console.debug("[onSubmit] okay:", resp);
             toast.success("Success");
@@ -254,9 +259,7 @@ const WidgetClaim: React.FC<{
     }
 
     const totalClaimable = fmtBal(
-        eligibleLinks
-            .filter(link => !link.status.claimed)
-                .reduce((sum, link) => sum + link.status.amount, 0n),
+        claimableLinks.reduce((sum, link) => sum + link.status.amount, 0n),
         coinMeta.decimals,
         coinMeta.symbol
     );
@@ -278,7 +281,7 @@ const WidgetClaim: React.FC<{
                     return <>
                         <div className="card-title" style={{ fontSize: "1.1em" }}>Claimable amounts:</div>
                         {eligibleLinks.map(linkWStat =>
-                            <CardClaimableLink key={linkWStat.id} xdrop={xdrop} coinMeta={coinMeta} link={linkWStat} />
+                            <CardEligibleLink key={linkWStat.id} xdrop={xdrop} coinMeta={coinMeta} link={linkWStat} />
                         )}
                     </>;
                 })()}
@@ -302,7 +305,7 @@ const WidgetClaim: React.FC<{
     </>;
 };
 
-const CardClaimableLink: React.FC<{
+const CardEligibleLink: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     link: LinkWithStatus;
