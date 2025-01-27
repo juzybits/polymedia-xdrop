@@ -151,16 +151,12 @@ type EligibleLinksWithStatus = {
     eligibleLinks: LinkWithStatus[];
     claimableLinks: LinkWithStatus[];
     hasAnyLinks: boolean;
-    hasEligibleLinks: boolean;
-    hasClaimableLinks: boolean;
 };
 
 const EMPTY_LINKS_WITH_STATUS: EligibleLinksWithStatus = {
     eligibleLinks: [],
     claimableLinks: [],
     hasAnyLinks: false,
-    hasEligibleLinks: false,
-    hasClaimableLinks: false,
 } as const;
 
 const WidgetClaim: React.FC<{
@@ -210,14 +206,12 @@ const WidgetClaim: React.FC<{
             eligibleLinks,
             claimableLinks,
             hasAnyLinks: links.length > 0,
-            hasEligibleLinks: eligibleLinks.length > 0,
-            hasClaimableLinks: claimableLinks.length > 0,
         };
     }, [xdrop, coinMeta, currAddr]);
 
     const { err, isLoading, data, refetch } = eligibleLinksWithStatus;
-    const { eligibleLinks, claimableLinks, hasAnyLinks, hasEligibleLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
-    const disableSubmit = !currAcct || isWorking || !data?.hasClaimableLinks;
+    const { eligibleLinks, claimableLinks, hasAnyLinks } = data ?? EMPTY_LINKS_WITH_STATUS;
+    const disableSubmit = !currAcct || isWorking || claimableLinks.length === 0;
 
     // == effects ==
 
@@ -273,7 +267,7 @@ const WidgetClaim: React.FC<{
                             You haven't linked any addresses yet.
                         </Card>;
                     }
-                    if (!hasEligibleLinks) {
+                    if (eligibleLinks.length === 0) {
                         return <Card className="slim disabled">
                             None of your linked addresses are eligible.
                         </Card>;
@@ -288,12 +282,12 @@ const WidgetClaim: React.FC<{
             </div>
         </div>
 
-        {hasEligibleLinks && <>
+        {eligibleLinks.length > 0 && <>
             {!xdrop.is_open
             ? <div className="card-desc">
                 <p className="text-orange">Claims are not open yet</p>
             </div>
-            : !data!.hasClaimableLinks
+            : claimableLinks.length === 0
             ? <div className="card-desc">
                 <p className="text-green">✅ Claimed</p>
             </div>
