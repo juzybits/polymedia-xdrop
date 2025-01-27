@@ -231,6 +231,71 @@ export class XDropClient extends SuiClientBase
         };
     }
 
+    public async fetchXDropsEnded(
+        cursor: string | null | undefined,
+        limit: number,
+    ) {
+        const result = await this.graphClient.query({
+            query: graphql(`
+                query($limit: Int!, $cursor: String, $eventType: String!) {
+                    events(
+                        last: $limit
+                        before: $cursor
+                        filter: {
+                            eventType: $eventType
+                        }
+                    ) {
+                        pageInfo {
+                            hasPreviousPage
+                            startCursor
+                        }
+                        nodes {
+                            transactionBlock { digest }
+                            timestamp
+                            contents { json }
+                        }
+                    }
+                }
+            `),
+            variables: {
+                limit, cursor, eventType: `${this.xdropPkgId}::xdrop::EventEnd`,
+            }
+        });
+
+        if (result.errors) {
+            throw new Error(`[fetchCreatedXDrops] GraphQL error: ${JSON.stringify(result.errors, null, 2)}`);
+        }
+        const data = result.data;
+        if (!data) {
+            throw new Error("[fetchCreatedXDrops] GraphQL returned no data");
+        }
+
+        const events = data.events.nodes
+            .map(event => ({
+                digest: event.transactionBlock!.digest!,
+                timestamp: new Date(event.timestamp!),
+                ...event.contents.json as XDropIdentifier,
+            }))
+            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
+        const xdrops = await this.fetchXDrops(events.map(evt => evt.id));
+
+        const enhancedXDrops = xdrops.map(xdrop => {
+            const event = events.find(e => e.id === xdrop.id);
+            return {
+                ...xdrop,
+                digest: event!.digest,
+                timestamp: event!.timestamp,
+            };
+        });
+
+        return {
+            hasNextPage: data.events.pageInfo.hasPreviousPage,
+            nextCursor: data.events.pageInfo.startCursor,
+            data: enhancedXDrops,
+        };
+    }
+
     public async fetchOwnedLinks(
         owner: string,
         linkNetwork: LinkNetwork,

@@ -1,13 +1,15 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useRef } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
-import { useFetch, UseFetchResult } from "@polymedia/suitcase-react";
+import { BtnPrevNext, isLocalhost, useFetch, UseFetchResult } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
 
+import { useFetchAndPaginate } from "@polymedia/suitcase-react";
 import { useAppContext } from "./App";
-import { BtnSubmit } from "./comp/buttons";
-import { Card, CardMsg, CardXDropDetails, XDropStats } from "./comp/cards";
+import { BtnLinkInternal, BtnSubmit } from "./comp/buttons";
+import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { Loader, XDropLoader } from "./comp/loader";
 
@@ -17,7 +19,7 @@ export const PageClean = () =>
     const currAcct = useCurrentAccount();
     const { header, xdropClient } = useAppContext();
 
-    const capFetch = useFetch(
+    const fetchedCap = useFetch(
         async () => !currAcct ? undefined : xdropClient.fetchOneCleanerCapId(currAcct.address),
         [xdropClient, currAcct],
     );
@@ -27,42 +29,60 @@ export const PageClean = () =>
         <div id="page-clean" className="page-regular">
             { !xdropId
                 ? <SubPageList />
-                : <SubPageClean xdropId={xdropId} capFetch={capFetch} />
+                : <SubPageClean xdropId={xdropId} fetchedCap={fetchedCap} />
             }
         </div>
     </>;
 };
 
+const PAGE_SIZE = isLocalhost() ? 10 : 10;
+
 const SubPageList = () => {
-    const mockXDrops = [
-        { id: "0x123", name: "XDrop 1", created_at: new Date().toISOString() },
-        { id: "0x456", name: "XDrop 2", created_at: new Date().toISOString() },
-    ];
+    const { xdropClient, isWorking } = useAppContext();
+    const listRef = useRef<HTMLDivElement>(null);
+
+    const xdrops = useFetchAndPaginate(
+        async (cursor) => await xdropClient.fetchXDropsEnded(cursor as any, PAGE_SIZE), // eslint-disable-line
+        [xdropClient],
+    );
+
+    if (xdrops.err !== null) {
+        return <CardMsg>{xdrops.err}</CardMsg>;
+    }
+    if (xdrops.page.length === 0) {
+        return xdrops.isLoading
+            ? <CardSpinner />
+            : <CardMsg>No ended xDrops found</CardMsg>;
+    }
 
     return <>
         <div className="page-content">
             <div className="page-title">
-                Recent xDrops
+                Ended xDrops
             </div>
 
-            {mockXDrops.map(xdrop => (
-                <Card key={xdrop.id}>
-                    <a href={`/clean/${xdrop.id}`} className="clean-list-item">
-                        <div className="name">{xdrop.name}</div>
-                        <div className="date">{new Date(xdrop.created_at).toLocaleDateString()}</div>
-                    </a>
-                </Card>
-            ))}
+            <div ref={listRef} className={`card-list ${xdrops.isLoading ? "loading" : ""}`}>
+                {xdrops.isLoading && <CardSpinner />}
+                {xdrops.page.map(x =>
+                    <CardXDropDetails xdrop={x} key={x.id}
+                        button={<BtnLinkInternal to={`/clean/${x.id}`} disabled={isWorking}>
+                            CLEAN
+                        </BtnLinkInternal>}
+                        extraDetails={<XDropDetail label="Ended:" val={x.timestamp.toLocaleString()} />}
+                    />
+                )}
+            </div>
+            <BtnPrevNext data={xdrops} scrollToRefOnPageChange={listRef} />
         </div>
     </>;
 };
 
 const SubPageClean = ({
     xdropId,
-    capFetch,
+    fetchedCap,
 }: {
     xdropId: string;
-    capFetch: UseFetchResult<string | null>;
+    fetchedCap: UseFetchResult<string | null>;
 }) =>
 {
     const fetchedXDrop = useXDrop(xdropId);
@@ -79,7 +99,7 @@ const SubPageClean = ({
                     extraDetails={<XDropStats xdrop={xdrop} coinMeta={_coinMeta} />}
                 />
 
-                <Loader name="Cleaner Cap" fetcher={capFetch}>
+                <Loader name="Cleaner Cap" fetcher={fetchedCap}>
                 {cleanerCapId =>
                     <CardClean
                         xdrop={xdrop}
