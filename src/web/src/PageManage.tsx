@@ -18,35 +18,60 @@ import { clientWithKeypair, fmtBal, generateRandomEthereumAddress, generateRando
 import { devLinkedForeignAddrs } from "./PageDevLink";
 import { PageNotFound } from "./PageNotFound";
 
-type AdminAction = (tx: Transaction) => TransactionResult;
+type AdminActionFn = (tx: Transaction) => TransactionResult;
+type AdminAction = {
+    title: string;
+    info: string;
+    btnTxt: string;
+    submit: AdminActionFn;
+    show: boolean;
+    blinkStatus: boolean;
+};
+const BLINK_DURATION_MS = 4000;
 
 export const PageManage: React.FC = () =>
 {
+    // === state ===
+
     const { xdropId } = useParams();
     if (!xdropId) return <PageNotFound />;
 
     const { header, isWorking, setIsWorking, xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
     const fetched = useXDrop(xdropId);
+    const disableSubmit = isWorking || !currAcct;
+
+    // === animations ===
+
+    const [statusBlink, setStatusBlink] = useState(false);
     const [statsBlink, setStatsBlink] = useState(false);
+    useEffect(() => {
+        if (!statusBlink) { return; }
+        const timer = setTimeout(() => { setStatusBlink(false); }, BLINK_DURATION_MS);
+        return () => clearTimeout(timer);
+    }, [statusBlink]);
 
     useEffect(() => {
         if (!statsBlink) { return; }
-        const timer = setTimeout(() => { setStatsBlink(false); }, 4000);
+        const timer = setTimeout(() => { setStatsBlink(false); }, BLINK_DURATION_MS);
         return () => clearTimeout(timer);
     }, [statsBlink]);
 
-    const disableSubmit = isWorking || !currAcct;
+    // === functions ===
+
     const onSubmitAction = async (action: AdminAction) => {
         if (disableSubmit) return;
         try {
             setIsWorking(true);
             const tx = new Transaction();
-            action(tx);
+            action.submit(tx);
             const resp = await xdropClient.signAndExecuteTx(tx);
             console.debug("[onSubmit] okay:", resp);
             toast.success("Success");
             fetched.refetch();
+            if (action.blinkStatus) {
+                setStatusBlink(true);
+            }
         } catch (err) {
             console.warn("[onSubmit] error:", err);
             const msg = xdropClient.errToStr(err, "Something went wrong");
@@ -55,6 +80,8 @@ export const PageManage: React.FC = () =>
             setIsWorking(false);
         }
     };
+
+    // === html ===
 
     return <>
         {header}
@@ -67,7 +94,7 @@ export const PageManage: React.FC = () =>
                 <XDropLoader fetched={fetched} requireWallet={true}>
                 {(xdrop, coinMeta) =>
                 {
-                    const admin_opens_xdrop: AdminAction = (tx) =>
+                    const admin_opens_xdrop: AdminActionFn = (tx) =>
                         XDropModule.admin_opens_xdrop(
                             tx,
                             xdropClient.xdropPkgId,
@@ -76,7 +103,7 @@ export const PageManage: React.FC = () =>
                             xdrop.id,
                         );
 
-                    const admin_pauses_xdrop: AdminAction = (tx) =>
+                    const admin_pauses_xdrop: AdminActionFn = (tx) =>
                         XDropModule.admin_pauses_xdrop(
                             tx,
                             xdropClient.xdropPkgId,
@@ -85,7 +112,7 @@ export const PageManage: React.FC = () =>
                             xdrop.id,
                         );
 
-                    const admin_ends_and_reclaims_xdrop: AdminAction = (tx) => {
+                    const admin_ends_and_reclaims_xdrop: AdminActionFn = (tx) => {
                         const result = XDropModule.admin_ends_xdrop(
                             tx,
                             xdropClient.xdropPkgId,
@@ -98,7 +125,7 @@ export const PageManage: React.FC = () =>
 
                     // const admin_sets_admin_address: AdminAction = (tx) => // TODO
 
-                    const admin_reclaims_balance: AdminAction = (tx) => {
+                    const admin_reclaims_balance: AdminActionFn = (tx) => {
                         const [coin] = XDropModule.admin_reclaims_balance(
                             tx,
                             xdropClient.xdropPkgId,
@@ -118,6 +145,7 @@ export const PageManage: React.FC = () =>
                             btnTxt: "OPEN CLAIMS",
                             submit: admin_opens_xdrop,
                             show: !xdrop.is_ended && xdrop.is_paused,
+                            blinkStatus: true,
                         },
                         {
                             title: "Pause claims",
@@ -125,6 +153,7 @@ export const PageManage: React.FC = () =>
                             btnTxt: "PAUSE CLAIMS",
                             submit: admin_pauses_xdrop,
                             show: !xdrop.is_ended && xdrop.is_open,
+                            blinkStatus: true,
                         },
                         {
                             title: "End xDrop",
@@ -132,6 +161,7 @@ export const PageManage: React.FC = () =>
                             btnTxt: "END PERMANENTLY",
                             submit: admin_ends_and_reclaims_xdrop,
                             show: !xdrop.is_ended,
+                            blinkStatus: true,
                         },
                         {
                             title: "Reclaim Balance",
@@ -139,15 +169,18 @@ export const PageManage: React.FC = () =>
                             btnTxt: "RECLAIM",
                             submit: admin_reclaims_balance,
                             show: xdrop.is_ended && xdrop.balance > 0n,
+                            blinkStatus: false,
                         },
                     ];
 
                     return <>
-                        <CardXDropDetails xdrop={xdrop}
+                        <CardXDropDetails
+                            xdrop={xdrop}
+                            statusClass={statusBlink ? "blink" : ""}
                             extraDetails={<XDropStats
                                 xdrop={xdrop}
                                 coinMeta={coinMeta}
-                                statClass={statsBlink ? "blink" : ""}
+                                detailClass={statsBlink ? "blink" : ""}
                             />}
                             button={<BtnLinkInternal to={`/claim/${xdrop.id}`} disabled={isWorking}>
                                 VIEW CLAIM PAGE
@@ -170,7 +203,7 @@ export const PageManage: React.FC = () =>
                                 <CardAction
                                 key={idx}
                                 {...action}
-                                submit={() => onSubmitAction(action.submit)}
+                                submit={() => onSubmitAction(action)}
                                 />
                             ))}
                         </>}

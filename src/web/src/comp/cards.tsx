@@ -47,11 +47,12 @@ const FullCardMsg = ({ children }: {
     </div>;
 };
 
-export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
+export const CardXDropDetails = ({ xdrop, title, extraDetails, button, statusClass }: {
     xdrop: XDropIdentifier & { status: XDropStatus; network_name: LinkNetwork };
     title?: React.ReactNode;
     extraDetails?: React.ReactNode;
     button?: React.ReactNode;
+    statusClass?: string;
 }) => {
     // return null;
     const { explorer, network } = useAppContext();
@@ -59,7 +60,7 @@ export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
         <div className="card compact">
             {title && <div className="card-title">{title}</div>}
             <div className="card-details">
-                <XDropDetail label="Status:" val={<XDropStatusLabel status={xdrop.status} />} />
+                <XDropDetail label="Status:" val={<XDropStatusLabel status={xdrop.status} />} className={statusClass} />
                 <XDropDetail label="Network:" val={xdrop.network_name} />
                 <XDropDetail label="xDrop ID:" val={<LinkToExplorer addr={xdrop.id} kind="object" explorer={explorer} network={network} />} />
                 <XDropDetail label="Coin type:" val={<LinkToExplorer addr={xdrop.type_coin} kind="coin" explorer={explorer} network={network} />} />
@@ -70,16 +71,16 @@ export const CardXDropDetails = ({ xdrop, title, extraDetails, button }: {
     );
 };
 
-export const XDropStats = ({ xdrop, coinMeta, statClass }: {
+export const XDropStats = ({ xdrop, coinMeta, detailClass }: {
     xdrop: XDrop;
     coinMeta: CoinMetadata;
-    statClass?: string;
+    detailClass?: string;
 }) => {
     return <>
-        <XDropDetail label="Balance claimed/unclaimed:" className={statClass}
+        <XDropDetail label="Balance claimed/unclaimed:" className={detailClass}
             val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / `
             + formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")} />
-        <XDropDetail label="Addresses claimed/unclaimed:" className={statClass}
+        <XDropDetail label="Addresses claimed/unclaimed:" className={detailClass}
             val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
         {/* <XDropDetail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} /> */}
     </>;

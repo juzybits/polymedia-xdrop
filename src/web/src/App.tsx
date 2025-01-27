@@ -195,7 +195,7 @@ const App = (args: {
                 {modalContent}
             </Modal>}
 
-            <Toaster position="bottom-center" />
+            <Toaster position="top-center" />
 
         </div>
     </AppContext.Provider>
