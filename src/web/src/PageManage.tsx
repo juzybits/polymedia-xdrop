@@ -291,7 +291,10 @@ const CardAddClaims: React.FC<{
 
     const privateKey = useInputPrivateKey({
         label: "Admin private key (optional, DYOR 🚨):",
-        html: { placeholder: "suiprivkey..." },
+        html: {
+            value: import.meta.env.VITE_PRIVATE_KEY ?? "",
+            placeholder: "suiprivkey...",
+        },
         validateValue: (pk) => {
             if (pk.toSuiAddress() !== xdrop.admin) {
                 return { err: "Admin private key does not match XDrop admin.", val: undefined };
@@ -394,7 +397,7 @@ const CardAddClaims: React.FC<{
 
             // submit the tx
             console.debug("[onSubmit] submitting tx");
-            const client = clientWithKeypair(xdropClient, privateKey.val);
+            const client = !privateKey.val ? xdropClient : clientWithKeypair(xdropClient, privateKey.val);
             const resps = await client.adminAddsClaims({
                 sender: currAddr,
                 xdrop,

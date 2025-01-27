@@ -116,8 +116,7 @@ const CardClean = ({
             const foreignAddrs = await xdropClient.fetchAllClaimAddrs(xdrop.claims.id, true);
 
             console.debug("[onSubmit] submitting tx");
-            const client = clientWithKeypair(xdropClient);
-            const resp = await client.cleanerDeletesClaims({
+            const resp = await xdropClient.cleanerDeletesClaims({
                 cleanerCapId,
                 xdrop,
                 addrs: foreignAddrs,
