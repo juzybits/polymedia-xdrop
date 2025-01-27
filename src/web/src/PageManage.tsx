@@ -19,14 +19,6 @@ import { devLinkedForeignAddrs } from "./PageDevLink";
 import { PageNotFound } from "./PageNotFound";
 
 type AdminActionFn = (tx: Transaction) => TransactionResult;
-type AdminAction = {
-    title: string;
-    info: string;
-    btnTxt: string;
-    submit: AdminActionFn;
-    show: boolean;
-    blinkStatus: boolean;
-};
 const BLINK_DURATION_MS = 4000;
 
 export const PageManage: React.FC = () =>
@@ -59,17 +51,20 @@ export const PageManage: React.FC = () =>
 
     // === functions ===
 
-    const onSubmitAction = async (action: AdminAction) => {
+    const onSubmitAction = async (
+        submit: AdminActionFn,
+        blinkStatus: boolean,
+    ) => {
         if (disableSubmit) return;
         try {
             setIsWorking(true);
             const tx = new Transaction();
-            action.submit(tx);
+            submit(tx);
             const resp = await xdropClient.signAndExecuteTx(tx);
             console.debug("[onSubmit] okay:", resp);
             toast.success("Success");
             fetched.refetch();
-            if (action.blinkStatus) {
+            if (blinkStatus) {
                 setStatusBlink(true);
             }
         } catch (err) {
@@ -138,41 +133,6 @@ export const PageManage: React.FC = () =>
                         );
                     };
 
-                    const adminActions = [
-                        {
-                            title: "Open claims",
-                            info: "Allow users to claim their share of the xDrop.",
-                            btnTxt: "OPEN CLAIMS",
-                            submit: admin_opens_xdrop,
-                            show: !xdrop.is_ended && xdrop.is_paused,
-                            blinkStatus: true,
-                        },
-                        {
-                            title: "Pause claims",
-                            info: "Stop users from claiming their share of the xDrop.",
-                            btnTxt: "PAUSE CLAIMS",
-                            submit: admin_pauses_xdrop,
-                            show: !xdrop.is_ended && xdrop.is_open,
-                            blinkStatus: true,
-                        },
-                        {
-                            title: "End xDrop",
-                            info: "End the xDrop permanently and reclaim any remaining balance. This cannot be undone.",
-                            btnTxt: "END PERMANENTLY",
-                            submit: admin_ends_and_reclaims_xdrop,
-                            show: !xdrop.is_ended,
-                            blinkStatus: true,
-                        },
-                        {
-                            title: "Reclaim Balance",
-                            info: "Reclaim the remaining balance of the xDrop.",
-                            btnTxt: "RECLAIM",
-                            submit: admin_reclaims_balance,
-                            show: xdrop.is_ended && xdrop.balance > 0n,
-                            blinkStatus: false,
-                        },
-                    ];
-
                     return <>
                         <CardXDropDetails
                             xdrop={xdrop}
@@ -199,13 +159,39 @@ export const PageManage: React.FC = () =>
                                     setStatsBlink(true);
                                 }}
                             />
-                            {adminActions.map((action, idx) => (
-                                <CardAction
-                                key={idx}
-                                {...action}
-                                submit={() => onSubmitAction(action)}
-                                />
-                            ))}
+
+                            {!xdrop.is_ended && xdrop.is_paused &&
+                            <CardAdminAction
+                                title="Open claims"
+                                info="Allow users to claim their share of the xDrop."
+                                btnTxt="OPEN CLAIMS"
+                                submit={() => onSubmitAction(admin_opens_xdrop, true)}
+                            />}
+
+                            {!xdrop.is_ended && xdrop.is_open &&
+                            <CardAdminAction
+                                title="Pause claims"
+                                info="Stop users from claiming their share of the xDrop."
+                                btnTxt="PAUSE CLAIMS"
+                                submit={() => onSubmitAction(admin_pauses_xdrop, true)}
+                            />}
+
+                            {!xdrop.is_ended &&
+                            <CardAdminAction
+                                title="End xDrop"
+                                info="End the xDrop permanently and reclaim any remaining balance. This cannot be undone."
+                                btnTxt="END PERMANENTLY"
+                                submit={() => onSubmitAction(admin_ends_and_reclaims_xdrop, true)}
+                                btnClass="red"/>
+                            }
+
+                            {xdrop.is_ended && xdrop.balance > 0n &&
+                            <CardAdminAction
+                                title="Reclaim Balance"
+                                info="Reclaim the remaining balance of the xDrop."
+                                btnTxt="RECLAIM"
+                                submit={() => onSubmitAction(admin_reclaims_balance, false)}
+                            />}
                         </>}
                     </>;
                 }}
@@ -216,32 +202,37 @@ export const PageManage: React.FC = () =>
     </>;
 };
 
-const CardAction: React.FC<{
+const CardAdminAction: React.FC<{
     title: string;
     info: string;
     btnTxt: string;
     submit: () => Promise<void>;
-    show: boolean;
-    disabled?: boolean;
-}> = (a) =>
-{
-    if (!a.show) return null;
-
+    btnClass?: string;
+}> = ({
+    title,
+    info,
+    btnTxt,
+    submit,
+    btnClass = ""
+}) => {
     const { isWorking } = useAppContext();
-    const disableBtn = isWorking || a.disabled;
 
     return (
         <Card>
             <div className="card-title">
-                <p>{a.title}</p>
+                <p>{title}</p>
             </div>
             <div className="card-desc">
-                <p>{a.info}</p>
+                <p>{info}</p>
             </div>
             <div className="card-desc">
-                <BtnSubmit disabled={disableBtn} onClick={a.submit}
-                    className={a.btnTxt === "END PERMANENTLY" ? "red" : ""}
-                >{a.btnTxt}</BtnSubmit>
+                <BtnSubmit
+                    disabled={isWorking}
+                    onClick={submit}
+                    className={btnClass}
+                >
+                    {btnTxt}
+                </BtnSubmit>
             </div>
         </Card>
     );
