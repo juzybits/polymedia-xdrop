@@ -50,7 +50,7 @@ export const AppRouter = () =>
                     <Route path="/new" element={<PageNew />} />
                     <Route path="/claim/:xdropId" element={<PageClaim />} />
                     <Route path="/manage/:xdropId" element={<PageManage />} />
-                    <Route path="/clean/:xdropId?" element={<PageClean />} />
+                    <Route path="/clean" element={<PageClean />} />
                     <Route path="/user" element={<PageUser />} />
                     <Route path="/settings" element={<PageSettings />} />
                     <Route path="/dev-link" element={<PageDevLink />} />
