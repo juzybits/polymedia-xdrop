@@ -1,7 +1,7 @@
 import { Keypair } from "@mysten/sui/cryptography";
 
 import { formatBalance } from "@polymedia/suitcase-core";
-import { XDropClient } from "@polymedia/xdrop-sdk";
+import { LinkNetwork, XDropClient } from "@polymedia/xdrop-sdk";
 
 export function fmtBal(balance: bigint, decimals: number, symbol: string) {
     return `${formatBalance(balance, decimals, "compact")} ${symbol}`;
@@ -21,6 +21,12 @@ export function clientWithKeypair(client: XDropClient, pair: Keypair)
 export function shortenForeignAddr(addr: string): string {
     return addr.slice(0, addr.startsWith("0x") ? 6 : 4)
         + "…" + addr.slice(-4);
+}
+
+export function foreignAddrUrl(network: LinkNetwork, addr: string): string {
+    if (network === "Ethereum") return `https://etherscan.io/address/${addr}`;
+    if (network === "Solana") return `https://solscan.io/address/${addr}`;
+    throw new Error(`Unsupported network: ${network}`);
 }
 
 /**

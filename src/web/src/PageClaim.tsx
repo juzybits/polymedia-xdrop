@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 
 import { shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
-import { LinkNetwork, LinkWithStatus, SuiLink, XDrop } from "@polymedia/xdrop-sdk";
+import { LinkWithStatus, SuiLink, XDrop } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
 import { BtnLinkExternal, BtnSubmit } from "./comp/buttons";
@@ -16,7 +16,7 @@ import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { showConfetti } from "./lib/confetti";
 import { CUSTOM_XDROPS, CustomXDropConfig } from "./lib/custom";
-import { fmtBal, shortenForeignAddr } from "./lib/helpers";
+import { fmtBal, foreignAddrUrl, shortenForeignAddr } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
 export const PageClaim: React.FC = () =>
@@ -351,7 +351,7 @@ const CardEligibleLink: React.FC<{
         <div className="card-body">
             <div>
                 {xdrop.network_name} address: <LinkExternal
-                    href={linkedAddrUrl(xdrop.network_name, link.network_address)}
+                    href={foreignAddrUrl(xdrop.network_name, link.network_address)}
                     className="link-external nowrap"
                 >
                     {shortenForeignAddr(link.network_address)}
@@ -360,11 +360,3 @@ const CardEligibleLink: React.FC<{
         </div>
     </Card>;
 };
-
-// === helpers ===
-
-function linkedAddrUrl(network: LinkNetwork, addr: string): string {
-    if (network === "Ethereum") return `https://etherscan.io/address/${addr}`;
-    if (network === "Solana") return `https://solscan.io/address/${addr}`;
-    throw new Error(`Unsupported network: ${network}`);
-}
