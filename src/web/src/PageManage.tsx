@@ -151,7 +151,7 @@ export const PageManage: React.FC = () =>
                         ? <CardNotAdmin xdrop={xdrop} />
                         : (() => {
                             const cardsOpenAndPause = <>
-                                {!xdrop.is_ended && xdrop.is_paused &&
+                                {!xdrop.is_ended && xdrop.is_paused && xdrop.claims.length > 0 &&
                                 <CardAdminAction
                                     title="Open claims"
                                     info="Allow users to claim their share of the xDrop."
@@ -159,7 +159,7 @@ export const PageManage: React.FC = () =>
                                     submit={() => onSubmitAction(admin_opens_xdrop, true)}
                                 />}
 
-                                {!xdrop.is_ended && xdrop.is_open &&
+                                {!xdrop.is_ended && xdrop.is_open && xdrop.claims.length > 0 &&
                                 <CardAdminAction
                                     title="Pause claims"
                                     info="Stop users from claiming their share of the xDrop."
@@ -186,7 +186,7 @@ export const PageManage: React.FC = () =>
                                 ? <>{cardAddClaims}{cardsOpenAndPause}</>
                                 : <>{cardsOpenAndPause}{cardAddClaims}</>}
 
-                                {!xdrop.is_ended &&
+                                {!xdrop.is_ended && xdrop.claims.length > 0 &&
                                 <CardAdminAction
                                     title="End xDrop"
                                     info="End the xDrop permanently and reclaim any remaining balance. This cannot be undone."
