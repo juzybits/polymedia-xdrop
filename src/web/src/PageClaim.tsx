@@ -4,17 +4,18 @@ import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
-import { NetworkName, shortenAddress } from "@polymedia/suitcase-core";
+import { shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch } from "@polymedia/suitcase-react";
 import { LinkNetwork, LinkWithStatus, SuiLink, XDrop } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
-import { BtnSubmit, BtnLinkExternal } from "./comp/buttons";
+import { BtnLinkExternal, BtnSubmit } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { showConfetti } from "./lib/confetti";
+import { CUSTOM_XDROPS, CustomXDropConfig } from "./lib/custom";
 import { fmtBal, shortenForeignAddr } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";
 
@@ -26,7 +27,7 @@ export const PageClaim: React.FC = () =>
     const { header, network, isWorking } = useAppContext();
 
     // Handle custom xDrops
-    const custom = CustomXDrops[network][xdropId] ?? null;
+    const custom = CUSTOM_XDROPS[network][xdropId] ?? null;
     xdropId = custom?.xdropId ?? xdropId;
 
     const fetched = useXDrop(xdropId);
@@ -367,53 +368,3 @@ function linkedAddrUrl(network: LinkNetwork, addr: string): string {
     if (network === "Solana") return `https://solscan.io/address/${addr}`;
     throw new Error(`Unsupported network: ${network}`);
 }
-
-// === custom xdrops ===
-
-type CustomXDropConfig = {
-    xdropId: string;
-    bannerUrl?: string;
-    step2?: CustomStep;
-    step3?: CustomStep;
-};
-
-type CustomStep = (xdrop: XDrop, coinMeta: CoinMetadata) => React.ReactNode;
-
-const step2Migration: CustomStep = (xdrop, coinMeta) => <>
-    <div className="card-desc">
-        <p>Prove that you own {coinMeta.symbol} on {xdrop.network_name} by linking your {xdrop.network_name} address to your Sui wallet.</p>
-    </div>
-    <div className="card-desc">
-        <p>If you hold {coinMeta.symbol} in multiple addresses, you can link them all to the same Sui wallet.</p>
-    </div>
-</>;
-
-const step3Migration: CustomStep = (xdrop, coinMeta) => <>
-    <div className="card-desc">
-        <p>You'll receive the same amount of {coinMeta.symbol} on Sui as you have in your {xdrop.network_name} address.</p>
-    </div>
-</>;
-
-const CustomXDrops: Record<
-    NetworkName,
-    Record<string, CustomXDropConfig>
-> = {
-    "mainnet": {
-        "detf": {
-            xdropId: "0x53d19097beb34b0be5ffb3994a0b7d3100c7a12f217a2cdb4beb020743d7be2f", // DEMO
-            bannerUrl: "/img/banner-detf.webp",
-            step2: step2Migration,
-            step3: step3Migration,
-        },
-    },
-    "testnet": {},
-    "devnet": {
-        "detf": {
-            xdropId: "0x02b38f71ce00443d4bc78249d4b98aed6da2779ec29be253c07c4ef924d8376a",
-            bannerUrl: "https://dummyimage.com/1600x900/011346/eee/",
-            step2: step2Migration,
-            step3: step3Migration,
-        },
-    },
-    "localnet": {},
-};
