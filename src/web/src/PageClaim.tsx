@@ -253,6 +253,14 @@ const WidgetClaim: React.FC<{
         return <CardSpinner />;
     }
 
+    const totalClaimable = fmtBal(
+        eligibleLinks
+            .filter(link => !link.status.claimed)
+                .reduce((sum, link) => sum + link.status.amount, 0n),
+        coinMeta.decimals,
+        coinMeta.symbol
+    );
+
     return <>
         <div className="card-desc">
             <div className="card-list slim-list">
@@ -287,7 +295,7 @@ const WidgetClaim: React.FC<{
                 <p className="text-green">✅ Claimed</p>
             </div>
             : <BtnSubmit disabled={disableSubmit} onClick={onSubmit}>
-                CLAIM {coinMeta.symbol}
+                CLAIM {totalClaimable}
             </BtnSubmit>}
         </>}
 
@@ -306,6 +314,7 @@ const CardClaimableLink: React.FC<{
     return <Card className={`slim ${link.status.claimed ? "disabled" : "subcard"}`}>
         <div className="card-header">
             <div className="card-title">
+                {!link.status.claimed ? "💰 " : "✅ "}
                 {fmtBal(link.status.amount, coinMeta.decimals, coinMeta.symbol)}
                 {link.status.claimed && " (claimed)"}
             </div>
