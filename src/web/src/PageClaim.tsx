@@ -110,7 +110,7 @@ export const PageClaim: React.FC = () =>
                             Claim {coinMeta.symbol}
                         </div>
                         <CardWallet coinMeta={coinMeta} />
-                        <CardLink xdrop={xdrop} coinMeta={coinMeta} custom={custom} />
+                        <CardLink xdrop={xdrop} coinMeta={coinMeta} custom={custom} fetchedLinks={fetchedLinks} />
                         <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} fetchedLinks={fetchedLinks} />
                     </>
                 )}
@@ -172,30 +172,38 @@ const CardLink: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     custom: CustomXDropConfig | null;
+    fetchedLinks: UseFetchResult<OwnedLinks>;
 }> = ({
     xdrop,
     coinMeta,
     custom,
+    fetchedLinks,
 }) => {
     const { isWorking } = useAppContext();
+    const linkAmount = fetchedLinks.data?.allLinks.length ?? 0;
     return (
     <Card>
         <div className="card-title">
             <p>Step 2: Verify your {xdrop.network_name} address</p>
-            {/* TODO: show checkmark */}
         </div>
 
         {custom?.step2?.(xdrop, coinMeta) ?? <>
+            {linkAmount > 0 &&
+            <div className="card-desc">
+                <p>✅  You've linked {linkAmount} {xdrop.network_name} addresses.</p>
+            </div>}
+            {linkAmount === 0 &&
             <div className="card-desc">
                 <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
             </div>
+            }
             <div className="card-desc">
                 <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
             </div>
         </>}
         {/* TODO show "you've connected X addresses" */}
             <BtnLinkExternal href="https://www.suilink.io/" disabled={isWorking}>
-                LINK ADDRESS
+                LINK {linkAmount === 0 ? "ADDRESS" : "MORE ADDRESSES"}
             </BtnLinkExternal>
     </Card>);
 };
