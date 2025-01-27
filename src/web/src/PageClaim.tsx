@@ -277,10 +277,14 @@ const WidgetClaim: React.FC<{
         {hasEligibleLinks && <>
             {!xdrop.is_open
             ? <div className="card-desc">
-                <p className="text-orange">Claims are not open yet.</p>
+                <p className="text-orange">Claims are not open yet</p>
+            </div>
+            : !data!.hasClaimableLinks
+            ? <div className="card-desc">
+                <p className="text-green">✅ Claimed</p>
             </div>
             : <BtnSubmit disabled={disableSubmit} onClick={onSubmit}>
-                CLAIM ALL
+                CLAIM {coinMeta.symbol}
             </BtnSubmit>}
         </>}
 

@@ -419,7 +419,7 @@ const CardAddClaims: React.FC<{
 
     return <Card>
         <div className="card-title">
-            <p>Add Claims</p>
+            <p>Add {xdrop.claims.size > 0 ? "more " : ""}claims</p>
         </div>
 
         <div className="card-desc">
