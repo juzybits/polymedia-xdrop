@@ -77,11 +77,11 @@ export const XDropStats = ({ xdrop, coinMeta, detailClass }: {
     detailClass?: string;
 }) => {
     return <>
-        <XDropDetail label="Balance claimed/unclaimed:" className={detailClass}
+        <XDropDetail label="Balance claimed/total:" className={detailClass}
             val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / `
-            + formatBalance(xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")} />
-        <XDropDetail label="Addresses claimed/unclaimed:" className={detailClass}
-            val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_unclaimed}`} />
+            + formatBalance(xdrop.stats.amount_claimed + xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")} />
+        <XDropDetail label="Addresses claimed/total:" className={detailClass}
+            val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_claimed + xdrop.stats.addrs_unclaimed}`} />
         {/* <XDropDetail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} /> */}
     </>;
 };
