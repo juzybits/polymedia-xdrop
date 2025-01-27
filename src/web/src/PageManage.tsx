@@ -7,14 +7,15 @@ import { useParams } from "react-router-dom";
 
 import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
 import { isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
-import { calculateFee, FEE, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
+import { calculateFee, FEE, LinkNetwork, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
 import { BtnLinkInternal, BtnSubmit } from "./comp/buttons";
 import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
-import { clientWithKeypair, fmtBal } from "./lib/helpers";
+import { clientWithKeypair, fmtBal, generateRandomEthereumAddress, generateRandomSolanaAddress } from "./lib/helpers";
+import { devLinkedForeignAddrs } from "./PageDevLink";
 import { PageNotFound } from "./PageNotFound";
 
 type AdminAction = (tx: Transaction) => TransactionResult;
@@ -229,7 +230,7 @@ const CardAddClaims: React.FC<{
     }>({
         msgRequired: "",
         html: {
-            value: devClaimsOrEmpty(),
+            value: devClaimsOrEmpty(xdrop.network_name),
             required: true,
             placeholder: xdrop.network_name === "Solana"
                 ? "AaAaAa,1000\nBbBbBb,2000"
@@ -292,7 +293,7 @@ const CardAddClaims: React.FC<{
     const privateKey = useInputPrivateKey({
         label: "Admin private key (optional, DYOR 🚨):",
         html: {
-            value: import.meta.env.VITE_PRIVATE_KEY ?? "",
+            value: String(import.meta.env.VITE_PRIVATE_KEY ?? ""),
             placeholder: "suiprivkey...",
         },
         validateValue: (pk) => {
@@ -496,20 +497,20 @@ const CardNotAdmin: React.FC<{
     </Card>;
 };
 
-function devClaimsOrEmpty()
-{
+/**
+ * Generate development claims data as CSV string for testing purposes.
+ */
+function devClaimsOrEmpty(network: LinkNetwork): string {
     if (!isLocalhost()) return "";
-    return (
-// `0x0000000000000000000000000000000000000AaA,100
-// 0x1111111111111111111111111111111111111BbB,200
-// ` +
-Array.from({ length: 1000 }, () => {
-        // Generate random Ethereum address (40 hex chars)
-        const addr = "0x" + Array.from({ length: 40 }, () =>
-            Math.floor(Math.random() * 16).toString(16)
-        ).join("");
-        // Random amount between 1 and 100
-        const amount = Math.random() * 100 + 1;
-        return `${addr},${amount}`;
-    }).join("\n"));
+
+    const randomAddr = network === "Solana"
+        ? generateRandomSolanaAddress
+        : generateRandomEthereumAddress;
+
+    const randomAmount = () => Math.floor(Math.random() * 100 + 1);
+
+    return [
+        ...devLinkedForeignAddrs[network].map(addr => `${addr},${randomAmount()}`),
+        ...Array.from({ length: 1000 }, () => `${randomAddr()},${randomAmount()}`),
+    ].join("\n");
 }

@@ -9,7 +9,7 @@ import { BtnSubmit } from "./comp/buttons";
 import { Card } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 
-const linkedForeignAddrs: Record<LinkNetwork, string[]> = {
+export const devLinkedForeignAddrs: Record<LinkNetwork, string[]> = {
     "Ethereum": [
         "0x0000000000000000000000000000000000000AaA",
         "0x1111111111111111111111111111111111111BbB",
@@ -19,9 +19,6 @@ const linkedForeignAddrs: Record<LinkNetwork, string[]> = {
         "Test222BbbbbbbbbbbbbbbbbbbbbbbbbbbbBbB"
     ],
 };
-    // "0xccfbf70e03c97c0137cd3c0b5009e8ad4942b84d",
-    // "0xddbac1074966ca45a35455f8710e5bca39e3f8e6",
-    // "0xe0180ffc8ecea5744cdf28161760cc61c003c08f",
 
 export const PageDevLink: React.FC = () =>
 {
@@ -43,7 +40,7 @@ export const PageDevLink: React.FC = () =>
             setIsWorking(true);
             const tx = new Transaction();
             for (const network of LINK_NETWORKS) {
-                for (let foreignAddr of linkedForeignAddrs[network]) {
+                for (let foreignAddr of devLinkedForeignAddrs[network]) {
                     if (network === "Ethereum") {
                         foreignAddr = foreignAddr.toLowerCase();
                     }
@@ -86,7 +83,7 @@ export const PageDevLink: React.FC = () =>
                 <div className="card-desc">
                     <p>Link Network: Ethereum</p>
                     <p>Linked Addresses:</p>
-                    <pre>{JSON.stringify(linkedForeignAddrs, null, 2)}</pre>
+                    <pre>{JSON.stringify(devLinkedForeignAddrs, null, 2)}</pre>
                 </div>
                 <div>
                     {currAcct

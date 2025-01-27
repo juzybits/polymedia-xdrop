@@ -10,7 +10,6 @@ import { BtnSubmit } from "./comp/buttons";
 import { Card, CardMsg, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { Loader, XDropLoader } from "./comp/loader";
-import { clientWithKeypair } from "./lib/helpers";
 
 export const PageClean = () =>
 {
