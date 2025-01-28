@@ -548,6 +548,6 @@ function devClaimsOrEmpty(network: LinkNetwork): string {
 
     return [
         ...devLinkedForeignAddrs[network].map(addr => `${addr},${randomAmount()}`),
-        ...Array.from({ length: 1000 }, () => `${randomAddr()},${randomAmount()}`),
+        ...Array.from({ length: 2500 }, () => `${randomAddr()},${randomAmount()}`),
     ].join("\n");
 }

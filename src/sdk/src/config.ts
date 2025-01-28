@@ -51,3 +51,10 @@ export const FEE: {
     bps: 20n,
     addr: "0xda55c41d7cdebe663ed2abcfbb8d8e9351f796443513b6655d360d78f6c17035",
 };
+
+export const CLEANER_ADDR: Record<NetworkName, string> = {
+    mainnet: "0xe450a68cdc1df43810ebbd1e49f2e5c29bc4b5a04b7917a6059e043ecd75d152",
+    testnet: "0x00ac6b954c3756efeb806b4c9e2e38bcd5095c73317f84b747ae9f95b97bbfc7",
+    devnet: "0x00ac6b954c3756efeb806b4c9e2e38bcd5095c73317f84b747ae9f95b97bbfc7",
+    localnet: "0x00ac6b954c3756efeb806b4c9e2e38bcd5095c73317f84b747ae9f95b97bbfc7",
+};

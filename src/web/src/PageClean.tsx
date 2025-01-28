@@ -1,13 +1,17 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 
 import { BtnPrevNext, isLocalhost, useFetch, useFetchAndPaginate } from "@polymedia/suitcase-react";
-import { MAX_OBJECTS_PER_TX, XDrop } from "@polymedia/xdrop-sdk";
+import { CLEANER_ADDR, MAX_OBJECTS_PER_TX, XDrop } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
 import { BtnSubmit } from "./comp/buttons";
-import { CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
+import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
+import { ConnectToGetStarted } from "./comp/connect";
+import { useAdminPrivateKey } from "./lib/hooks";
+import React from "react";
+import { clientWithKeypair } from "./lib/helpers";
 
 export const PageClean = () =>
 {
@@ -20,7 +24,7 @@ export const PageClean = () =>
             <div className="page-content">
                 <div className="page-title">Ended xDrops</div>
                 {!currAcct
-                    ? <CardMsg>Connect your wallet to clean xDrops</CardMsg>
+                    ? <Card><ConnectToGetStarted /></Card>
                     : <ListEndedXDrops currAddr={currAcct.address} />
                 }
             </div>
@@ -36,12 +40,20 @@ const ListEndedXDrops = ({
     currAddr: string;
 }) =>
 {
-    const { xdropClient, isWorking, setIsWorking } = useAppContext();
+    const { network, xdropClient, isWorking, setIsWorking } = useAppContext();
     const listRef = useRef<HTMLDivElement>(null);
 
+    const privateKey = useAdminPrivateKey(CLEANER_ADDR[network]);
+    const cleanerAddr = privateKey.val?.toSuiAddress() ?? currAddr;
+
     const fetchedCap = useFetch(
-        async () => xdropClient.fetchOneCleanerCapId(currAddr),
-        [xdropClient, currAddr],
+        async () => {
+            console.debug("[fetchOneCleanerCapId] fetching cleaner cap id for", cleanerAddr);
+            const resp = await xdropClient.fetchOneCleanerCapId(cleanerAddr);
+            console.debug("[fetchOneCleanerCapId] fetched cleaner cap id:", resp);
+            return resp;
+        },
+        [xdropClient, cleanerAddr],
     );
     const cleanerCapId = fetchedCap.data;
 
@@ -52,6 +64,8 @@ const ListEndedXDrops = ({
         }),
         [xdropClient],
     );
+
+    const disableSubmit = isWorking || !cleanerCapId || privateKey.err !== null;
 
     const onClean = async (xdrop: XDrop) =>
     {
@@ -65,6 +79,8 @@ const ListEndedXDrops = ({
             const totalBatches = Math.ceil(totalClaims / MAX_OBJECTS_PER_TX);
             let batchCount = 0;
 
+            const client = !privateKey.val ? xdropClient : clientWithKeypair(xdropClient, privateKey.val);
+
             console.debug(`[onClean] will clean ${totalClaims} claims in ${totalBatches} batches`);
             while (hasMore)
             {
@@ -77,7 +93,7 @@ const ListEndedXDrops = ({
                 }
 
                 console.debug(`[onClean] cleaning ${result.addrs.length} claims`);
-                await xdropClient.cleanerDeletesClaims({
+                await client.cleanerDeletesClaims({
                     cleanerCapId,
                     xdrop,
                     addrs: result.addrs,
@@ -117,13 +133,18 @@ const ListEndedXDrops = ({
     }
 
     return <>
+        <Card>
+            <div className="card-desc">
+                <div>{privateKey.input}</div>
+            </div>
+        </Card>
         <div ref={listRef} className={`card-list ${fetchedXdrops.isLoading ? "loading" : ""}`}>
             {fetchedXdrops.isLoading && <CardSpinner />}
             {fetchedXdrops.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
                     button={
                         <BtnSubmit
-                            disabled={isWorking || !cleanerCapId || x.claims.length === 0}
+                            disabled={disableSubmit || x.claims.length === 0}
                             onClick={() => onClean(x)}
                         >
                             {x.claims.length === 0 ? "CLEAN" : `CLEAN (${x.claims.length})`}
