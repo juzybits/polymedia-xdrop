@@ -1,6 +1,6 @@
 # xDrop
 
-xDrop is a cross-chain airdrop system. It lets users claim coins on Sui by proving ownership of their Ethereum or Solana addresses via [SuiLink](https://www.suilink.io/).
+xDrop is a cross-chain airdrop system built on Sui and powered by [SuiLink](https://www.suilink.io/). It lets you distribute Sui coins to users on Solana, Ethereum, and other EVM chains.
 
 ![Polymedia xDrop](https://xdrop.polymedia.app/img/open-graph.webp)
 
