@@ -13,7 +13,6 @@ import { Glitch } from "./comp/glitch";
 import { getGraphqlUrl, loadNetworkConfig } from "./lib/network";
 import { PageClaim } from "./PageClaim";
 import { PageClean } from "./PageClean";
-import { PageComingSoon } from "./PageComingSoon";
 import { PageDevLink } from "./PageDevLink";
 import { PageHome } from "./PageHome";
 import { PageManage } from "./PageManage";
