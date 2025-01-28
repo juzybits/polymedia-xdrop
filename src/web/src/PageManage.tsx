@@ -357,7 +357,7 @@ const CardAddClaims = ({
 
         try {
             setIsWorking(true);
-            const { claims, coinTotalAndFee } = textArea.val;
+            const { claims, coinTotal, coinFee,coinTotalAndFee } = textArea.val;
 
             // last moment validation against onchain state
             await Promise.all(
@@ -392,7 +392,7 @@ const CardAddClaims = ({
                     ]);
 
                     const summary = !isSuiXDrop ?
-                        { has: { coinBal, suiBal }, needs: { coinTotalAndFee, gasTotal } }
+                        { has: { coinBal, suiBal }, needs: { coinTotal, coinFee, coinTotalAndFee, gasTotal } }
                         : { has: suiBal, needs: coinTotalAndFee + gasTotal };
                     console.debug("[onSubmit] balances:", JSON.stringify(summary, null, 2));
 
