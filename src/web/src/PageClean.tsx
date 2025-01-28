@@ -65,7 +65,7 @@ const ListEndedXDrops = ({
             const totalBatches = Math.ceil(totalClaims / MAX_OBJECTS_PER_TX);
             let batchCount = 0;
 
-            console.debug(`[onClean] starting cleanup of ${totalClaims} claims`);
+            console.debug(`[onClean] will clean ${totalClaims} claims in ${totalBatches} batches`);
             while (hasMore)
             {
                 console.debug(`[onClean] fetching batch ${batchCount+1}/${totalBatches}`);
@@ -81,7 +81,6 @@ const ListEndedXDrops = ({
                     cleanerCapId,
                     xdrop,
                     addrs: result.addrs,
-                    onUpdate: msg => console.debug("[cleanerDeletesClaims]", msg),
                 });
 
                 cleanedCount += result.addrs.length;

@@ -4,7 +4,7 @@ import { SuiGraphQLClient } from "@mysten/sui/graphql";
 import { graphql } from "@mysten/sui/graphql/schemas/latest";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 
-import { chunkArray, devInspectAndGetReturnValues, ObjChangeKind, SignTx, SuiClientBase, TransferModule, TxErrorParser, WaitForTxOptions } from "@polymedia/suitcase-core";
+import { chunkArray, devInspectAndGetReturnValues, ObjChangeKind, SignTx, SuiClientBase, TransferModule, TxErrorParser, WaitForTxOptions , fetchDynamicFields } from "@polymedia/suitcase-core";
 
 import { ERRORS } from "./config.js";
 import { serialBatchesOfParallelOperations } from "./misc.js";
@@ -30,12 +30,6 @@ export const MAX_OBJECTS_PER_TX = 1000;
  * Maximum function args size is 16384 bytes (`max_pure_argument_size`).
  */
 export const MAX_ADDRS_PER_FN = 350; // breaks at 381 addresses (2024-11-29)
-
-/**
- * Maximum number of results returned by a single Sui RPC request.
- * (see sui/crates/sui-json-rpc-api/src/lib.rs)
- */
-export const RPC_QUERY_MAX_RESULT_LIMIT = 50;
 
 /**
  * Execute transactions on the XDrop Sui package.
@@ -76,33 +70,17 @@ export class XDropClient extends SuiClientBase
      */
     public async fetchClaimAddrs(
         claimsTableId: string,
-        totalLimit: number,
-        startCursor?: string | null
+        limit: number,
     ) {
-        const addrs: string[] = [];
-        let cursor = startCursor;
-        let hasNextPage = true;
+        const { data, hasNextPage, cursor } = await fetchDynamicFields({
+            client: this.suiClient,
+            parentId: claimsTableId,
+            limit,
+        });
 
-        while (hasNextPage && addrs.length < totalLimit) {
-            // calculate how many more DOFs we need
-            const remaining = totalLimit - addrs.length;
-            const batchLimit = Math.min(remaining, RPC_QUERY_MAX_RESULT_LIMIT);
-
-            const page = await this.suiClient.getDynamicFields({
-                parentId: claimsTableId,
-                cursor,
-                limit: batchLimit
-            });
-
-            for (const dof of page.data) {
-                if (dof.objectType === `${this.xdropPkgId}::xdrop::Claim`) {
-                    addrs.push(String(dof.name.value));
-                }
-            }
-
-            hasNextPage = page.hasNextPage;
-            cursor = page.nextCursor;
-        }
+        const addrs = data
+            .filter(dof => dof.objectType === `${this.xdropPkgId}::xdrop::Claim`)
+            .map(dof => String(dof.name.value));
 
         return { addrs, hasNextPage, cursor };
     }
