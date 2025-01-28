@@ -9,7 +9,7 @@ import { Card } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 import { RPC_ENDPOINTS } from "./lib/network";
 
-export const PageSettings: React.FC = () =>
+export const PageSettings = () =>
 {
     // === state ===
 
@@ -33,7 +33,7 @@ export const PageSettings: React.FC = () =>
     </>;
 };
 
-const SectionConnection: React.FC = () =>
+const SectionConnection = () =>
 {
     // === state ===
 
@@ -60,7 +60,7 @@ const SectionConnection: React.FC = () =>
     </Card>);
 };
 
-const SectionExplorer: React.FC = () =>
+const SectionExplorer = () =>
 {
     const { explorer, setExplorer } = useAppContext();
 
@@ -76,7 +76,7 @@ const SectionExplorer: React.FC = () =>
     </Card>);
 };
 
-const SectionNetwork: React.FC = () =>
+const SectionNetwork = () =>
 {
     const { network, setNetwork } = useAppContext();
 
@@ -96,7 +96,7 @@ const SectionNetwork: React.FC = () =>
 };
 
 
-const SectionRpc: React.FC = () =>
+const SectionRpc = () =>
 {
     // === state ===
 

@@ -7,7 +7,7 @@ import { useAppContext } from "./App";
 import { Card } from "./comp/cards";
 import { HeroBanner } from "./comp/hero";
 
-export const PageHome: React.FC = () =>
+export const PageHome = () =>
 {
     const { header } = useAppContext();
     return <>
@@ -27,7 +27,7 @@ export const PageHome: React.FC = () =>
     </>;
 };
 
-const SectionHowItWorks: React.FC = () =>
+const SectionHowItWorks = () =>
 {
     return <>
         <div className="page-title">What is this?</div>
@@ -59,7 +59,7 @@ const SectionHowItWorks: React.FC = () =>
     </>;
 };
 
-// const SectionFeatured: React.FC = () =>
+// const SectionFeatured = () =>
 // {
 //     const { appCnf } = useAppContext();
 //     const xDrops = Object.values(appCnf);
@@ -84,7 +84,7 @@ const SectionHowItWorks: React.FC = () =>
 //     </div>;
 // };
 
-// const SectionCreateYours: React.FC = () =>
+// const SectionCreateYours = () =>
 // {
 //     return <div>
 //         <div className="page-section">

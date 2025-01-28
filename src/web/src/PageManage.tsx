@@ -22,7 +22,7 @@ import { PageNotFound } from "./PageNotFound";
 type AdminActionFn = (tx: Transaction) => TransactionResult;
 const BLINK_DURATION_MS = 4000;
 
-export const PageManage: React.FC = () =>
+export const PageManage = () =>
 {
     // === state ===
 
@@ -212,18 +212,18 @@ export const PageManage: React.FC = () =>
     </>;
 };
 
-const CardAdminAction: React.FC<{
+const CardAdminAction = ({
+    title,
+    info,
+    btnTxt,
+    submit,
+    btnClass = "",
+}: {
     title: string;
     info: string;
     btnTxt: string;
     submit: () => Promise<void>;
     btnClass?: string;
-}> = ({
-    title,
-    info,
-    btnTxt,
-    submit,
-    btnClass = ""
 }) => {
     const { isWorking } = useAppContext();
 
@@ -248,16 +248,16 @@ const CardAdminAction: React.FC<{
     );
 };
 
-const CardAddClaims: React.FC<{
-    currAddr: string;
-    xdrop: XDrop;
-    coinMeta: CoinMetadata;
-    onSuccess: () => void;
-}> = ({
+const CardAddClaims = ({
     currAddr,
     xdrop,
     coinMeta,
     onSuccess,
+}: {
+    currAddr: string;
+    xdrop: XDrop;
+    coinMeta: CoinMetadata;
+    onSuccess: () => void;
 }) =>
 {
     if (xdrop.is_ended) return null;
@@ -528,10 +528,10 @@ const CardAddClaims: React.FC<{
     </Card>;
 };
 
-const CardNotAdmin: React.FC<{
-    xdrop: XDrop;
-}> = ({
+const CardNotAdmin = ({
     xdrop,
+}: {
+    xdrop: XDrop;
 }) => {
     return <Card>
         <div className="card-title">Not admin</div>

@@ -8,7 +8,7 @@ import { BtnLinkInternal } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 
-export const PageUser: React.FC = () =>
+export const PageUser = () =>
 {
     // === state ===
 

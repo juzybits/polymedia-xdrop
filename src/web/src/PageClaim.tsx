@@ -31,7 +31,7 @@ const EMPTY_OWNED_LINKS: OwnedLinks = {
     claimableLinks: [],
 } as const;
 
-export const PageClaim: React.FC = () =>
+export const PageClaim = () =>
 {
     // === state ===
 
@@ -121,10 +121,10 @@ export const PageClaim: React.FC = () =>
     </>;
 };
 
-const CardEnded: React.FC<{
-    coinMeta: CoinMetadata;
-}> = ({
+const CardEnded = ({
     coinMeta,
+}: {
+    coinMeta: CoinMetadata;
 }) => {
     return (
     <Card className="center-text">
@@ -138,10 +138,10 @@ const CardEnded: React.FC<{
 );
 };
 
-const CardWallet: React.FC<{
-    coinMeta: CoinMetadata;
-}> = ({
+const CardWallet = ({
     coinMeta,
+}: {
+    coinMeta: CoinMetadata;
 }) => {
     const wallets = useWallets();
     const hasWallet = wallets.length > 0;
@@ -168,16 +168,16 @@ const CardWallet: React.FC<{
     );
 };
 
-const CardLink: React.FC<{
-    xdrop: XDrop;
-    coinMeta: CoinMetadata;
-    custom: CustomXDropConfig | null;
-    fetchLinks: UseFetchResult<OwnedLinks>;
-}> = ({
+const CardLink = ({
     xdrop,
     coinMeta,
     custom,
     fetchLinks,
+}: {
+    xdrop: XDrop;
+    coinMeta: CoinMetadata;
+    custom: CustomXDropConfig | null;
+    fetchLinks: UseFetchResult<OwnedLinks>;
 }) => {
     const currAcct = useCurrentAccount();
     const { isWorking } = useAppContext();
@@ -252,16 +252,16 @@ const CardLink: React.FC<{
     );
 };
 
-const CardClaim: React.FC<{
-    xdrop: XDrop;
-    coinMeta: CoinMetadata;
-    custom: CustomXDropConfig | null;
-    fetchLinks: UseFetchResult<OwnedLinks>;
-}> = ({
+const CardClaim = ({
     xdrop,
     coinMeta,
     custom,
     fetchLinks,
+}: {
+    xdrop: XDrop;
+    coinMeta: CoinMetadata;
+    custom: CustomXDropConfig | null;
+    fetchLinks: UseFetchResult<OwnedLinks>;
 }) =>
 {
     const currAcct = useCurrentAccount();
@@ -294,16 +294,16 @@ const CardClaim: React.FC<{
     );
 };
 
-const WidgetClaim: React.FC<{
-    xdrop: XDrop;
-    coinMeta: CoinMetadata;
-    currAddr: string;
-    fetchLinks: UseFetchResult<OwnedLinks>;
-}> = ({
+const WidgetClaim = ({
     xdrop,
     coinMeta,
     currAddr,
     fetchLinks,
+}: {
+    xdrop: XDrop;
+    coinMeta: CoinMetadata;
+    currAddr: string;
+    fetchLinks: UseFetchResult<OwnedLinks>;
 }) =>
 {
     // == state ==
@@ -400,14 +400,14 @@ const WidgetClaim: React.FC<{
     </>;
 };
 
-const CardEligibleLink: React.FC<{
-    xdrop: XDrop;
-    coinMeta: CoinMetadata;
-    link: LinkWithStatus;
-}> = ({
+const CardEligibleLink = ({
     xdrop,
     coinMeta,
     link,
+}: {
+    xdrop: XDrop;
+    coinMeta: CoinMetadata;
+    link: LinkWithStatus;
 }) => {
     return <Card className={`slim ${link.status.claimed ? "disabled" : "subcard"}`}>
         <div className="card-header">

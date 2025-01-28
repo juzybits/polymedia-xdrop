@@ -1,13 +1,18 @@
-
 import { Glitch } from "./glitch";
 
-export const HeroBanner: React.FC<{
+export const HeroBanner = ({
+    title,
+    subtitle,
+    description,
+    actions,
+    extra,
+}: {
     title: string;
     subtitle?: React.ReactNode;
     description?: React.ReactNode;
     actions?: React.ReactNode;
     extra?: React.ReactNode;
-}> = ({ title, subtitle, description, actions, extra }) => {
+}) => {
     return (
         <div className="hero-banner">
             <Glitch text={title} />

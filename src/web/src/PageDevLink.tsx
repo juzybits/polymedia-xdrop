@@ -22,7 +22,7 @@ export const devLinkedForeignAddrs: Record<LinkNetwork, string[]> = {
     ],
 };
 
-export const PageDevLink: React.FC = () =>
+export const PageDevLink = () =>
 {
     // === state ===
 

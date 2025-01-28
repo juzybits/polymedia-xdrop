@@ -1,9 +1,7 @@
-import React from "react";
-
-export const Glitch: React.FC<{
-    text: string;
-}> = ({
+export const Glitch = ({
     text,
+}: {
+    text: string;
 }) =>
 {
     return <div className="glitch">

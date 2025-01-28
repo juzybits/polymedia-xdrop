@@ -1,9 +1,7 @@
-import React from "react";
-
 import { useAppContext } from "./App";
 import { Card } from "./comp/cards";
 
-export const PageNotFound: React.FC = () =>
+export const PageNotFound = () =>
 {
     const { header } = useAppContext();
     return <>

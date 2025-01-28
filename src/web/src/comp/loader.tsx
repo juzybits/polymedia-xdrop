@@ -8,14 +8,14 @@ import { Card, CardMsg, CardSpinner } from "./cards";
 import { ConnectToGetStarted } from "./connect";
 import { UseXDropResult } from "./hooks";
 
-export const XDropLoader: React.FC<{
-    fetch: UseXDropResult;
-    requireWallet: boolean;
-    children: (xdrop: XDrop, coinMeta: CoinMetadata) => React.ReactNode;
-}> = ({
+export const XDropLoader = ({
     fetch,
     requireWallet,
     children,
+}: {
+    fetch: UseXDropResult;
+    requireWallet: boolean;
+    children: (xdrop: XDrop, coinMeta: CoinMetadata) => React.ReactNode;
 }) => {
     const currAcct = useCurrentAccount();
 
@@ -45,7 +45,9 @@ export const XDropLoader: React.FC<{
 };
 
 export const Loader = <T,>({
-    name, fetcher, children
+    name,
+    fetcher,
+    children
 }: {
     name: string;
     fetcher: UseFetchResult<T>;

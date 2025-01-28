@@ -13,7 +13,7 @@ import { BtnSubmit } from "./comp/buttons";
 import { Card } from "./comp/cards";
 import { ConnectOr } from "./comp/connect";
 
-export const PageNew: React.FC = () =>
+export const PageNew = () =>
 {
     // === state ===
 
