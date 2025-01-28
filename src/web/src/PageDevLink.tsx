@@ -11,12 +11,14 @@ import { BtnConnect } from "./comp/connect";
 
 export const devLinkedForeignAddrs: Record<LinkNetwork, string[]> = {
     "Ethereum": [
-        "0x0000000000000000000000000000000000000AaA",
-        "0x1111111111111111111111111111111111111BbB",
+        "0x1111111111111111111111111111111111111AaA",
+        "0x2222222222222222222222222222222222222BbB",
+        // "0x3333333333333333333333333333333333333CcC",
     ],
     "Solana": [
         "Test111AaaaaaaaaaaaaaaaaaaaaaaaaaaaAaA",
-        "Test222BbbbbbbbbbbbbbbbbbbbbbbbbbbbBbB"
+        "Test222BbbbbbbbbbbbbbbbbbbbbbbbbbbbBbB",
+        // "Test333CcccccccccccccccccccccccccccCcC",
     ],
 };
 

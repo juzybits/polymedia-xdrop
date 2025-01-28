@@ -168,7 +168,7 @@ const CardWallet: React.FC<{
     );
 };
 
-const CardLink: React.FC<{ // TODO: add reload button
+const CardLink: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     custom: CustomXDropConfig | null;
@@ -185,63 +185,71 @@ const CardLink: React.FC<{ // TODO: add reload button
     const { err, isLoading, data } = fetchLinks;
     const linkAmount = data?.allLinks.length ?? 0;
 
-    const customStep2 = custom?.step2?.(xdrop, coinMeta);
-    const btnSubmit =
+    // === html ===
+
+    const msg1 = (
+        <div className="card-desc">
+            <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
+        </div>
+    );
+    const msg2 = (
+        <div className="card-desc">
+            <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
+        </div>
+    );
+    const btnSubmit = (
         <BtnLinkExternal href="https://www.suilink.io/" disabled={isWorking}>
             LINK {linkAmount === 0 ? "ADDRESS" : "MORE ADDRESSES"}
-        </BtnLinkExternal>;
+        </BtnLinkExternal>
+    );
+    const LinksStatus = ({ msg }: { msg: React.ReactNode }) => (
+        <div className="card-desc">
+            <p>
+                {msg} (<a onClick={() => fetchLinks.refetch()} style={{ cursor: "pointer" }}>
+                    reload
+                </a>).
+            </p>
+        </div>
+    );
+
+    let content;
+    if (err) {
+        content = <CardMsg>{err}</CardMsg>;
+    } else if (isLoading) {
+        content = <CardSpinner />;
+    } else if (custom?.step2) {
+        content = <>
+            {custom.step2(xdrop, coinMeta)}
+            {btnSubmit}
+        </>;
+    } else if (!currAcct) {
+        content = <>
+            {msg1}
+            {msg2}
+            {btnSubmit}
+        </>;
+    } else if (linkAmount === 0) {
+        content = <>
+            <LinksStatus msg={<>❌ You haven't linked any {xdrop.network_name} addresses to your Sui wallet yet</>} />
+            {msg1}
+            {btnSubmit}
+        </>;
+    } else {
+        content = <>
+            <LinksStatus msg={<>✅ You've linked {linkAmount} {xdrop.network_name} address{linkAmount > 1 ? "es" : ""} to your Sui wallet</>} />
+            {msg2}
+            {btnSubmit}
+        </>;
+    }
 
     return (
-    <Card>
-        <div className="card-title">
-            <p>Step 2: Verify your {xdrop.network_name} address</p>
-        </div>
-
-        {customStep2 ?
-        <>
-            {customStep2}
-            {btnSubmit}
-        </> :
-        <>
-        {(() => {
-            if (err) {
-                return <CardMsg>{err}</CardMsg>;
-            } else if (isLoading) {
-                return <CardSpinner />;
-            }
-            const msg1 = <div className="card-desc">
-                <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
-            </div>;
-            const msg2 = <div className="card-desc">
-                <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
-            </div>;
-            return (
-            <>
-                {currAcct
-                ? <>
-
-                    {linkAmount === 0
-                    ? <>
-                        <div className="card-desc">
-                            <p>❌ You haven't linked any {xdrop.network_name} addresses to your Sui wallet yet.</p>
-                        </div>
-                        {msg1}
-                    </>
-                    : <>
-                        <div className="card-desc">
-                            <p>✅  You've linked {linkAmount} {xdrop.network_name} address{linkAmount > 1 ? "es" : ""} to your Sui wallet.</p>
-                        </div>
-                        {msg2}
-                    </>}
-                </> : <>
-                    {msg1}
-                    {msg2}
-                </>}
-                {btnSubmit}
-            </>);
-        })()}
-        </>}
-    </Card>);
+        <Card>
+            <div className="card-title">
+                <p>Step 2: Verify your {xdrop.network_name} address</p>
+            </div>
+            {content}
+        </Card>
+    );
 };
 
 const CardClaim: React.FC<{
