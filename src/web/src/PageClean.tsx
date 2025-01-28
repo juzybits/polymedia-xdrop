@@ -139,7 +139,9 @@ const ListEndedXDrops = ({
     return <>
         <Card>
             <div className="card-desc">
-                <div>{privateKey.input}</div>
+                <form onSubmit={e => e.preventDefault()}>
+                    <div>{privateKey.input}</div>
+                </form>
             </div>
         </Card>
         <div ref={listRef} className={`card-list ${fetchedXdrops.isLoading ? "loading" : ""}`}>

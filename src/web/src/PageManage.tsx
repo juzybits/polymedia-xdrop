@@ -508,7 +508,9 @@ const CardAddClaims: React.FC<{
                     <p>Your PK will never leave your browser and is secured by Trust Me Bro™ technology.</p>
                 </div>
                 <div className="card-desc">
-                    {privateKey.input}
+                    <form onSubmit={e => e.preventDefault()}>
+                        {privateKey.input}
+                    </form>
                 </div>
             </>}
         </>}
