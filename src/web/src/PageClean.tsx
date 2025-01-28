@@ -8,13 +8,12 @@ import { CLEANER_ADDR, MAX_OBJECTS_PER_TX, XDrop } from "@polymedia/xdrop-sdk";
 import { useAppContext } from "./App";
 import { BtnSubmit } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
-import { ConnectToGetStarted } from "./comp/connect";
+import { BtnConnect } from "./comp/connect";
 import { clientWithKeypair } from "./lib/helpers";
 import { useAdminPrivateKey } from "./lib/hooks";
 
 export const PageClean = () =>
 {
-    const currAcct = useCurrentAccount();
     const { header } = useAppContext();
 
     return <>
@@ -22,10 +21,7 @@ export const PageClean = () =>
         <div id="page-clean" className="page-regular">
             <div className="page-content">
                 <div className="page-title">Ended xDrops</div>
-                {!currAcct
-                    ? <Card><ConnectToGetStarted /></Card>
-                    : <ListEndedXDrops currAddr={currAcct.address} />
-                }
+                <ListEndedXDrops />
             </div>
         </div>
     </>;
@@ -33,12 +29,9 @@ export const PageClean = () =>
 
 const PAGE_SIZE = isLocalhost() ? 10 : 10;
 
-const ListEndedXDrops = ({
-    currAddr,
-}: {
-    currAddr: string;
-}) =>
+const ListEndedXDrops = () =>
 {
+    const currAcct = useCurrentAccount();
     const { network, xdropClient, isWorking, setIsWorking } = useAppContext();
     const listRef = useRef<HTMLDivElement>(null);
 
@@ -47,10 +40,11 @@ const ListEndedXDrops = ({
         label: "Cleaner private key:",
         errorMsg: "Cleaner private key does not match XDrop cleaner.",
     });
-    const cleanerAddr = privateKey.val?.toSuiAddress() ?? currAddr;
+    const cleanerAddr = privateKey.val?.toSuiAddress() ?? currAcct?.address ?? null;
 
     const fetchCap = useFetch(
         async () => {
+            if (!cleanerAddr) return null;
             console.debug("[fetchOneCleanerCapId] fetching cleaner cap id for", cleanerAddr);
             const resp = await xdropClient.fetchOneCleanerCapId(cleanerAddr);
             console.debug("[fetchOneCleanerCapId] fetched cleaner cap id:", resp);
@@ -138,6 +132,7 @@ const ListEndedXDrops = ({
     return <>
         <Card>
             <div className="card-desc">
+                {!currAcct && <BtnConnect />}
                 <form onSubmit={e => e.preventDefault()}>
                     <div>{privateKey.input}</div>
                 </form>
