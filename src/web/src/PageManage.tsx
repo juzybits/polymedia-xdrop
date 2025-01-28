@@ -481,7 +481,6 @@ const CardAddClaims: React.FC<{
                     ? <>Configure who can claim {symbol}. </>
                     : <>You can add more eligible addresses. </>
                 }
-                Once you're happy with the list, you can open claims below.
             </p>
         </div>
 
