@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
 import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
-import { isLocalhost, useInputPrivateKey, useTextArea } from "@polymedia/suitcase-react";
+import { isLocalhost, useTextArea } from "@polymedia/suitcase-react";
 import { calculateFee, FEE, LinkNetwork, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "./App";
@@ -15,6 +15,7 @@ import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { clientWithKeypair, fmtBal, generateRandomEthereumAddress, generateRandomSolanaAddress, shortenForeignAddr } from "./lib/helpers";
+import { useAdminPrivateKey } from "./lib/hooks";
 import { devLinkedForeignAddrs } from "./PageDevLink";
 import { PageNotFound } from "./PageNotFound";
 
@@ -337,19 +338,7 @@ const CardAddClaims: React.FC<{
         deps: [],
     });
 
-    const privateKey = useInputPrivateKey({
-        label: "Admin private key (optional, DYOR 🚨):",
-        html: {
-            value: String(import.meta.env.VITE_PRIVATE_KEY ?? ""),
-            placeholder: "suiprivkey...",
-        },
-        validateValue: (pk) => {
-            if (pk.toSuiAddress() !== xdrop.admin) {
-                return { err: "Admin private key does not match XDrop admin.", val: undefined };
-            }
-            return { err: null, val: pk };
-        },
-    });
+    const privateKey = useAdminPrivateKey(xdrop.admin);
 
     const disableSubmit = isWorking || textArea.err !== null || privateKey.err !== null;
     const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_OBJECTS_PER_TX);
