@@ -168,7 +168,7 @@ const CardWallet: React.FC<{
     );
 };
 
-const CardLink: React.FC<{
+const CardLink: React.FC<{ // TODO: add reload button
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     custom: CustomXDropConfig | null;

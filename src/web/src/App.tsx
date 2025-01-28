@@ -45,20 +45,15 @@ export const AppRouter = () =>
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<AppSuiProviders />} >
-                {!isProdDomain ? <>
-                    <Route index element={<PageHome />} />
-                    <Route path="/new" element={<PageNew />} />
-                    <Route path="/claim/:xdropId" element={<PageClaim />} />
-                    <Route path="/manage/:xdropId" element={<PageManage />} />
-                    <Route path="/clean" element={<PageClean />} />
-                    <Route path="/user" element={<PageUser />} />
-                    <Route path="/settings" element={<PageSettings />} />
-                    <Route path="/dev-link" element={<PageDevLink />} />
-                    <Route path="*" element={<PageNotFound />} />
-                </> : <>
-                    <Route index element={<PageComingSoon />} />
-                    <Route path="*" element={<PageComingSoon />} />
-                </>}
+                <Route index element={<PageHome />} />
+                <Route path="/new" element={<PageNew />} />
+                <Route path="/claim/:xdropId" element={<PageClaim />} />
+                <Route path="/manage/:xdropId" element={<PageManage />} />
+                <Route path="/clean" element={<PageClean />} />
+                <Route path="/user" element={<PageUser />} />
+                <Route path="/settings" element={<PageSettings />} />
+                <Route path="/dev-link" element={<PageDevLink />} />
+                <Route path="*" element={<PageNotFound />} />
             </Route>
         </Routes>
     </BrowserRouter>
@@ -215,17 +210,14 @@ const Header = () =>
                 {network !== "mainnet" && <span className="header-network-label">{network}</span>}
             </Link>
         </div>
-        {!isProdDomain &&
-        <>
-            <Link to="/new" className="header-item" title="Create Auction">
-                <IconNew />
-            </Link>
-            <Link to="/user" className="header-item" title="Your History">
-                <IconHistory />
-            </Link>
-            <Link to="/settings" className="header-item" title="Settings">
-                <IconGears />
-            </Link>
-        </>}
+        <Link to="/new" className="header-item" title="Create Auction">
+            <IconNew />
+        </Link>
+        <Link to="/user" className="header-item" title="Your History">
+            <IconHistory />
+        </Link>
+        <Link to="/settings" className="header-item" title="Settings">
+            <IconGears />
+        </Link>
     </header>);
 };

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { LinkExternal } from "@polymedia/suitcase-react";
 
-import { isProdDomain, useAppContext } from "./App";
+import { useAppContext } from "./App";
 import { Card } from "./comp/cards";
 import { HeroBanner } from "./comp/hero";
 
@@ -15,7 +15,7 @@ export const PageHome: React.FC = () =>
         <HeroBanner
             title="xDrop"
             description={<>Distribute Sui coins to Ethereum and Solana users.</>}
-            actions={isProdDomain ? null : <Link to="/new" className="btn">GET STARTED</Link>}
+            actions={<Link to="/new" className="btn">GET STARTED</Link>}
         />
         <div id="page-home" className="page-regular">
             <div className="page-content">
