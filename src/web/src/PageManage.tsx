@@ -338,7 +338,11 @@ const CardAddClaims: React.FC<{
         deps: [],
     });
 
-    const privateKey = useAdminPrivateKey(xdrop.admin);
+    const privateKey = useAdminPrivateKey({
+        expectedAddr: xdrop.admin,
+        label: "Admin private key (optional, DYOR 🚨):",
+        errorMsg: "Admin private key does not match XDrop admin.",
+    });
 
     const disableSubmit = isWorking || textArea.err !== null || privateKey.err !== null;
     const requiredTxs = !textArea.val ? 0 : Math.ceil(textArea.val.claims.length / MAX_OBJECTS_PER_TX);

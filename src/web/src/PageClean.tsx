@@ -43,7 +43,11 @@ const ListEndedXDrops = ({
     const { network, xdropClient, isWorking, setIsWorking } = useAppContext();
     const listRef = useRef<HTMLDivElement>(null);
 
-    const privateKey = useAdminPrivateKey(CLEANER_ADDR[network]);
+    const privateKey = useAdminPrivateKey({
+        expectedAddr: CLEANER_ADDR[network],
+        label: "Cleaner private key:",
+        errorMsg: "Cleaner private key does not match XDrop cleaner.",
+    });
     const cleanerAddr = privateKey.val?.toSuiAddress() ?? currAddr;
 
     const fetchedCap = useFetch(
