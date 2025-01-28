@@ -179,6 +179,7 @@ const CardLink: React.FC<{ // TODO: add reload button
     custom,
     fetchLinks,
 }) => {
+    const currAcct = useCurrentAccount();
     const { isWorking } = useAppContext();
 
     const { err, isLoading, data } = fetchLinks;
@@ -208,20 +209,33 @@ const CardLink: React.FC<{ // TODO: add reload button
             } else if (isLoading) {
                 return <CardSpinner />;
             }
+            const msg1 = <div className="card-desc">
+                <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
+            </div>;
+            const msg2 = <div className="card-desc">
+                <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
+            </div>;
             return (
             <>
-                {linkAmount > 0
+                {currAcct
                 ? <>
-                    <div className="card-desc">
-                        <p>✅  You've linked {linkAmount} {xdrop.network_name} address{linkAmount > 1 ? "es" : ""} to your Sui wallet.</p>
-                    </div>
+
+                    {linkAmount === 0
+                    ? <>
+                        <div className="card-desc">
+                            <p>❌ You haven't linked any {xdrop.network_name} addresses to your Sui wallet yet.</p>
+                        </div>
+                        {msg1}
+                    </>
+                    : <>
+                        <div className="card-desc">
+                            <p>✅  You've linked {linkAmount} {xdrop.network_name} address{linkAmount > 1 ? "es" : ""} to your Sui wallet.</p>
+                        </div>
+                        {msg2}
+                    </>}
                 </> : <>
-                    <div className="card-desc">
-                        <p>Prove ownership of your {xdrop.network_name} address by linking it to your Sui wallet.</p>
-                    </div>
-                    <div className="card-desc">
-                        <p>You can link multiple {xdrop.network_name} addresses to the same Sui wallet.</p>
-                    </div>
+                    {msg1}
+                    {msg2}
                 </>}
                 {btnSubmit}
             </>);
