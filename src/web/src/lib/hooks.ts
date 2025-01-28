@@ -6,9 +6,9 @@ import { useInputPrivateKey } from "@polymedia/suitcase-react";
 export function useAdminPrivateKey({
     expectedAddr, label, errorMsg,
 }: {
-    expectedAddr: string,
-    label: string,
-    errorMsg: string,
+    expectedAddr: string;
+    label: string;
+    errorMsg: string;
 }) {
     return useInputPrivateKey({
         label,

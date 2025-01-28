@@ -1,5 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import toast from "react-hot-toast";
 
 import { BtnPrevNext, isLocalhost, useFetch, useFetchAndPaginate } from "@polymedia/suitcase-react";
@@ -9,9 +9,8 @@ import { useAppContext } from "./App";
 import { BtnSubmit } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
-import { useAdminPrivateKey } from "./lib/hooks";
-import React from "react";
 import { clientWithKeypair } from "./lib/helpers";
+import { useAdminPrivateKey } from "./lib/hooks";
 
 export const PageClean = () =>
 {
@@ -50,7 +49,7 @@ const ListEndedXDrops = ({
     });
     const cleanerAddr = privateKey.val?.toSuiAddress() ?? currAddr;
 
-    const fetchedCap = useFetch(
+    const fetchCap = useFetch(
         async () => {
             console.debug("[fetchOneCleanerCapId] fetching cleaner cap id for", cleanerAddr);
             const resp = await xdropClient.fetchOneCleanerCapId(cleanerAddr);
@@ -59,9 +58,9 @@ const ListEndedXDrops = ({
         },
         [xdropClient, cleanerAddr],
     );
-    const cleanerCapId = fetchedCap.data;
+    const cleanerCapId = fetchCap.data;
 
-    const fetchedXdrops = useFetchAndPaginate(
+    const fetchXDrops = useFetchAndPaginate(
         async (cursor) => await xdropClient.fetchXDropsByEvent("EventEnd", {
             cursor: cursor as any, // eslint-disable-line
             limit: PAGE_SIZE,
@@ -116,7 +115,7 @@ const ListEndedXDrops = ({
             } else {
                 console.debug(`[onClean] successfully cleaned all ${cleanedCount} claims`);
             }
-            // fetchedXdrops.refetch();
+            // fetchXDrops.refetch();
         } catch (err) {
             console.warn("[onClean] error:", err);
             const msg = xdropClient.errToStr(err, "Failed to clean xDrop");
@@ -126,13 +125,13 @@ const ListEndedXDrops = ({
         }
     };
 
-    if (fetchedCap.err !== null || fetchedXdrops.err !== null) {
-        return <CardMsg>{fetchedCap.err || fetchedXdrops.err}</CardMsg>;
+    if (fetchCap.err !== null || fetchXDrops.err !== null) {
+        return <CardMsg>{fetchCap.err || fetchXDrops.err}</CardMsg>;
     }
-    if (fetchedCap.isLoading || fetchedXdrops.isLoading) {
+    if (fetchCap.isLoading || fetchXDrops.isLoading) {
         return <CardSpinner />;
     }
-    if (fetchedXdrops.page.length === 0) {
+    if (fetchXDrops.page.length === 0) {
         return <CardMsg>No ended xDrops found</CardMsg>;
     }
 
@@ -144,9 +143,9 @@ const ListEndedXDrops = ({
                 </form>
             </div>
         </Card>
-        <div ref={listRef} className={`card-list ${fetchedXdrops.isLoading ? "loading" : ""}`}>
-            {fetchedXdrops.isLoading && <CardSpinner />}
-            {fetchedXdrops.page.map(x =>
+        <div ref={listRef} className={`card-list ${fetchXDrops.isLoading ? "loading" : ""}`}>
+            {fetchXDrops.isLoading && <CardSpinner />}
+            {fetchXDrops.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
                     button={
                         <BtnSubmit
@@ -163,6 +162,6 @@ const ListEndedXDrops = ({
                 />
             )}
         </div>
-        <BtnPrevNext data={fetchedXdrops} scrollToRefOnPageChange={listRef} />
+        <BtnPrevNext data={fetchXDrops} scrollToRefOnPageChange={listRef} />
     </>;
 };

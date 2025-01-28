@@ -49,10 +49,10 @@ export const PageClaim: React.FC = () =>
     xdropId = custom?.xdropId ?? xdropId;
 
     // onchain state
-    const fetchedXDrop = useXDrop(xdropId);
-    const { xdrop, coinMeta } = fetchedXDrop.data ?? {};
+    const fetchXDrop = useXDrop(xdropId);
+    const { xdrop, coinMeta } = fetchXDrop.data ?? {};
 
-    const fetchedLinks = useFetch<OwnedLinks>(async () =>
+    const fetchLinks = useFetch<OwnedLinks>(async () =>
     {
         if (!currAddr || !xdrop || !coinMeta) {
             return EMPTY_OWNED_LINKS;
@@ -101,7 +101,7 @@ export const PageClaim: React.FC = () =>
         <div id="page-claim" className="page-regular">
             <div className="page-content">
 
-                <XDropLoader fetched={fetchedXDrop} requireWallet={false}>
+                <XDropLoader fetch={fetchXDrop} requireWallet={false}>
                 {(xdrop, coinMeta) => (
                     xdrop.is_ended ?
                     <CardEnded coinMeta={coinMeta} />
@@ -110,8 +110,8 @@ export const PageClaim: React.FC = () =>
                             Claim {coinMeta.symbol}
                         </div>
                         <CardWallet coinMeta={coinMeta} />
-                        <CardLink xdrop={xdrop} coinMeta={coinMeta} custom={custom} fetchedLinks={fetchedLinks} />
-                        <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} fetchedLinks={fetchedLinks} />
+                        <CardLink xdrop={xdrop} coinMeta={coinMeta} custom={custom} fetchLinks={fetchLinks} />
+                        <CardClaim xdrop={xdrop} coinMeta={coinMeta} custom={custom} fetchLinks={fetchLinks} />
                     </>
                 )}
                 </XDropLoader>
@@ -172,16 +172,16 @@ const CardLink: React.FC<{ // TODO: add reload button
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     custom: CustomXDropConfig | null;
-    fetchedLinks: UseFetchResult<OwnedLinks>;
+    fetchLinks: UseFetchResult<OwnedLinks>;
 }> = ({
     xdrop,
     coinMeta,
     custom,
-    fetchedLinks,
+    fetchLinks,
 }) => {
     const { isWorking } = useAppContext();
 
-    const { err, isLoading, data } = fetchedLinks;
+    const { err, isLoading, data } = fetchLinks;
     const linkAmount = data?.allLinks.length ?? 0;
 
     const customStep2 = custom?.step2?.(xdrop, coinMeta);
@@ -234,12 +234,12 @@ const CardClaim: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     custom: CustomXDropConfig | null;
-    fetchedLinks: UseFetchResult<OwnedLinks>;
+    fetchLinks: UseFetchResult<OwnedLinks>;
 }> = ({
     xdrop,
     coinMeta,
     custom,
-    fetchedLinks,
+    fetchLinks,
 }) =>
 {
     const currAcct = useCurrentAccount();
@@ -264,7 +264,7 @@ const CardClaim: React.FC<{
                         xdrop={xdrop}
                         coinMeta={coinMeta}
                         currAddr={currAcct.address}
-                        fetchedLinks={fetchedLinks}
+                        fetchLinks={fetchLinks}
                     />
                 </>
             )}
@@ -276,26 +276,26 @@ const WidgetClaim: React.FC<{
     xdrop: XDrop;
     coinMeta: CoinMetadata;
     currAddr: string;
-    fetchedLinks: UseFetchResult<OwnedLinks>;
+    fetchLinks: UseFetchResult<OwnedLinks>;
 }> = ({
     xdrop,
     coinMeta,
     currAddr,
-    fetchedLinks,
+    fetchLinks,
 }) =>
 {
     // == state ==
 
     const { xdropClient, isWorking, setIsWorking } = useAppContext();
 
-    const { err, isLoading, data, refetch } = fetchedLinks;
+    const { err, isLoading, data, refetch } = fetchLinks;
     const { allLinks, eligibleLinks, claimableLinks } = data ?? EMPTY_OWNED_LINKS;
     const disableSubmit = isWorking || claimableLinks.length === 0;
 
     // == effects ==
 
     useEffect(() => { // dev only
-        data && console.debug("[WidgetClaim] fetchedLinks:", data);
+        data && console.debug("[WidgetClaim] fetchLinks:", data);
     }, [data]);
 
     // == functions ==

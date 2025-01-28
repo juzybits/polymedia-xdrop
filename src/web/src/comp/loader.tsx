@@ -9,25 +9,25 @@ import { ConnectToGetStarted } from "./connect";
 import { UseXDropResult } from "./hooks";
 
 export const XDropLoader: React.FC<{
-    fetched: UseXDropResult;
+    fetch: UseXDropResult;
     requireWallet: boolean;
     children: (xdrop: XDrop, coinMeta: CoinMetadata) => React.ReactNode;
 }> = ({
-    fetched,
+    fetch,
     requireWallet,
     children,
 }) => {
     const currAcct = useCurrentAccount();
 
-    if (fetched.err !== null) {
-        return <CardMsg>{fetched.err}</CardMsg>;
+    if (fetch.err !== null) {
+        return <CardMsg>{fetch.err}</CardMsg>;
     }
 
-    if (fetched.isLoading || fetched.data === undefined) {
+    if (fetch.isLoading || fetch.data === undefined) {
         return <CardSpinner />;
     }
 
-    const { xdrop, coinMeta } = fetched.data;
+    const { xdrop, coinMeta } = fetch.data;
 
     if (xdrop === null || coinMeta === null) {
         return <CardMsg>

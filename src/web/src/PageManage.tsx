@@ -31,7 +31,7 @@ export const PageManage: React.FC = () =>
 
     const { header, isWorking, setIsWorking, xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
-    const fetched = useXDrop(xdropId);
+    const fetchXDrop = useXDrop(xdropId);
     const disableSubmit = isWorking || !currAcct;
 
     // === animations ===
@@ -64,7 +64,7 @@ export const PageManage: React.FC = () =>
             const resp = await xdropClient.signAndExecuteTx(tx);
             console.debug("[onSubmit] okay:", resp);
             toast.success("Success");
-            fetched.refetch();
+            fetchXDrop.refetch();
             if (blinkStatus) {
                 setStatusBlink(true);
             }
@@ -87,7 +87,7 @@ export const PageManage: React.FC = () =>
                     Manage xDrop
                 </div>
 
-                <XDropLoader fetched={fetched} requireWallet={true}>
+                <XDropLoader fetch={fetchXDrop} requireWallet={true}>
                 {(xdrop, coinMeta) =>
                 {
                     const admin_opens_xdrop: AdminActionFn = (tx) =>
@@ -157,7 +157,7 @@ export const PageManage: React.FC = () =>
                                     xdrop={xdrop}
                                     coinMeta={coinMeta}
                                     onSuccess={() => {
-                                        fetched.refetch();
+                                        fetchXDrop.refetch();
                                         setStatsBlink(true);
                                     }}
                                 />;
