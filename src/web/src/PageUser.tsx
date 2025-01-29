@@ -7,6 +7,7 @@ import { RPC_RESULTS_PER_PAGE, useAppContext } from "./App";
 import { BtnLinkInternal } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
+import { LoaderPaginated } from "./comp/loader";
 
 export const PageUser = () =>
 {
@@ -45,27 +46,23 @@ const ListCreatedXDrops = ({ currAddr }: {
         [xdropClient, currAddr],
     );
 
-    if (fetchXDrops.err !== null) {
-        return <CardMsg>{fetchXDrops.err}</CardMsg>;
-    }
-    if (fetchXDrops.page.length === 0) {
-        return fetchXDrops.isLoading
-            ? <CardSpinner />
-            : <CardMsg>You haven't created any xDrops</CardMsg>;
-    }
-
     return <>
-        <div ref={listRef} className={`card-list ${fetchXDrops.isLoading ? "loading" : ""}`}>
-            {fetchXDrops.isLoading && <CardSpinner />}
-            {fetchXDrops.page.map(x =>
+    <LoaderPaginated fetcher={fetchXDrops}>
+    {(fetcher) => <>
+        <div ref={listRef} className={`card-list ${fetcher.isLoading ? "loading" : ""}`}>
+            {fetcher.isLoading && <CardSpinner />}
+            {fetcher.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
-                    button={<BtnLinkInternal to={`/manage/${x.id}`} disabled={isWorking}>
-                        MANAGE
-                    </BtnLinkInternal>}
+                    button={
+                        <BtnLinkInternal to={`/manage/${x.id}`} disabled={isWorking}>
+                            MANAGE
+                        </BtnLinkInternal>}
                     extraDetails={<XDropDetail label="Created:" val={x.timestamp.toLocaleString()} />}
                 />
             )}
         </div>
         <BtnPrevNext data={fetchXDrops} scrollToRefOnPageChange={listRef} />
+    </>}
+    </LoaderPaginated>
     </>;
 };
