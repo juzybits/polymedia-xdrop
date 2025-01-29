@@ -11,7 +11,7 @@ import { calculateFee, FEE, LinkNetwork, MAX_OBJECTS_PER_TX, validateAndNormaliz
 
 import { useAppContext } from "./App";
 import { BtnLinkInternal, BtnSubmit } from "./comp/buttons";
-import { Card, CardXDropDetails, XDropStats } from "./comp/cards";
+import { Card, CardXDropDetails, XDropDetailAddrs, XDropDetailBalance } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { clientWithKeypair, fmtBal, generateRandomEthereumAddress, generateRandomSolanaAddress, shortenForeignAddr } from "./lib/helpers";
@@ -138,11 +138,10 @@ export const PageManage = () =>
                         <CardXDropDetails
                             xdrop={xdrop}
                             statusClass={statusBlink ? "blink" : ""}
-                            extraDetails={<XDropStats
-                                xdrop={xdrop}
-                                coinMeta={coinMeta}
-                                detailClass={statsBlink ? "blink" : ""}
-                            />}
+                            extraDetails={<>
+                                <XDropDetailBalance xdrop={xdrop} coinMeta={coinMeta} detailClass={statsBlink ? "blink" : ""} />
+                                <XDropDetailAddrs xdrop={xdrop} detailClass={statsBlink ? "blink" : ""} />
+                            </>}
                             button={<BtnLinkInternal to={`/claim/${xdrop.id}`} disabled={isWorking}>
                                 VIEW CLAIM PAGE
                             </BtnLinkInternal>}

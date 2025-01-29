@@ -15,6 +15,7 @@ import { PageClaim } from "./PageClaim";
 import { PageClean } from "./PageClean";
 import { PageDevLink } from "./PageDevLink";
 import { PageHome } from "./PageHome";
+import { PageLatest } from "./PageLatest";
 import { PageManage } from "./PageManage";
 import { PageNew } from "./PageNew";
 import { PageNotFound } from "./PageNotFound";
@@ -49,6 +50,7 @@ export const AppRouter = () =>
                 <Route path="/claim/:xdropId" element={<PageClaim />} />
                 <Route path="/manage/:xdropId" element={<PageManage />} />
                 <Route path="/clean" element={<PageClean />} />
+                <Route path="/latest" element={<PageLatest />} />
                 <Route path="/user" element={<PageUser />} />
                 <Route path="/settings" element={<PageSettings />} />
                 <Route path="/dev-link" element={<PageDevLink />} />

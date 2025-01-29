@@ -71,21 +71,6 @@ export const CardXDropDetails = ({ xdrop, title, extraDetails, button, statusCla
     );
 };
 
-export const XDropStats = ({ xdrop, coinMeta, detailClass }: {
-    xdrop: XDrop;
-    coinMeta: CoinMetadata;
-    detailClass?: string;
-}) => {
-    return <>
-        <XDropDetail label="Balance claimed/total:" className={detailClass}
-            val={`${formatBalance(xdrop.stats.amount_claimed, coinMeta.decimals, "compact")} / `
-            + formatBalance(xdrop.stats.amount_claimed + xdrop.stats.amount_unclaimed, coinMeta.decimals, "compact")} />
-        <XDropDetail label="Addresses claimed/total:" className={detailClass}
-            val={`${xdrop.stats.addrs_claimed} / ${xdrop.stats.addrs_claimed + xdrop.stats.addrs_unclaimed}`} />
-        {/* <XDropDetail label="Admin:" val={<LinkToExplorer addr={xdrop.admin} kind="address" explorer={explorer} network={network} />} /> */}
-    </>;
-};
-
 export const XDropDetail = ({ label, val, className }: {
     label: string;
     val: React.ReactNode;
@@ -95,6 +80,45 @@ export const XDropDetail = ({ label, val, className }: {
         <span className="label">{label}</span>
         <span className="value">{val}</span>
     </div>;
+};
+
+export const XDropDetailBalance = ({
+    xdrop, coinMeta, detailClass
+}: {
+    xdrop: XDrop;
+    coinMeta: CoinMetadata;
+    detailClass?: string;
+}) => {
+    const claimed = formatBalance(
+        xdrop.stats.amount_claimed,
+        coinMeta.decimals,
+        "compact",
+    );
+    const total = formatBalance(
+        xdrop.stats.amount_claimed + xdrop.stats.amount_unclaimed,
+        coinMeta.decimals,
+        "compact",
+    );
+    return <XDropDetail
+        label="Balance claimed/total:"
+        val={`${claimed} / ${total}`}
+        className={detailClass}
+    />;
+};
+
+export const XDropDetailAddrs = ({
+    xdrop, detailClass
+}: {
+    xdrop: XDrop;
+    detailClass?: string;
+}) => {
+    const claimed = xdrop.stats.addrs_claimed;
+    const total = xdrop.stats.addrs_claimed + xdrop.stats.addrs_unclaimed;
+    return <XDropDetail
+        label="Addresses claimed/total:"
+        val={`${claimed} / ${total}`}
+        className={detailClass}
+    />;
 };
 
 export const XDropStatusLabel = ({ status }: {
