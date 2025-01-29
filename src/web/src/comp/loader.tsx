@@ -1,5 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
+import React from "react";
 
 import { UseFetchAndPaginateResult, UseFetchResult } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
@@ -63,15 +64,21 @@ export const Loader = <T,>({
 };
 
 export const LoaderPaginated = <T, C>({
-    fetcher, children
+    fetcher, children, msgErr, msgEmpty,
 }: {
     fetcher: UseFetchAndPaginateResult<T, C>;
     children: (fetcher: UseFetchAndPaginateResult<T, C>) => React.ReactNode;
+    msgErr?: React.ReactNode;
+    msgEmpty?: React.ReactNode;
 }) => {
     if (fetcher.err !== null)
-        return <CardMsg>{fetcher.err}</CardMsg>;
-    if (fetcher.isLoading || fetcher.page.length === 0)
-        return <CardSpinner />;
+        return <CardMsg>{msgErr ?? fetcher.err}</CardMsg>;
+
+    if (fetcher.page.length === 0) {
+        return fetcher.isLoading
+            ? <CardSpinner />
+            : <CardMsg>{msgEmpty ?? "None found"}</CardMsg>;
+    }
 
     return <>{children(fetcher)}</>;
 };

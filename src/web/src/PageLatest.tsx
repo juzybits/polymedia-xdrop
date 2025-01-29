@@ -35,11 +35,11 @@ const ListLatestXDrops = () =>
     );
 
     return <>
-        <LoaderPaginated fetcher={fetchXDrops}>
-        {(fetcher => <>
-            <div ref={listRef} className={`card-list ${fetchXDrops.isLoading ? "loading" : ""}`}>
-                {fetchXDrops.isLoading && <CardSpinner />}
-                {fetchXDrops.page.map(x =>
+    <LoaderPaginated fetcher={fetchXDrops}>
+        {(fetcher) => <>
+            <div ref={listRef} className={`card-list ${fetcher.isLoading ? "loading" : ""}`}>
+                {fetcher.isLoading && <CardSpinner />}
+                {fetcher.page.map(x =>
                     <CardXDropDetails xdrop={x} key={x.id}
                         extraDetails={<>
                             <XDropDetailAddrs xdrop={x} />
@@ -49,7 +49,7 @@ const ListLatestXDrops = () =>
                 )}
             </div>
             <BtnPrevNext data={fetchXDrops} scrollToRefOnPageChange={listRef} />
-        </>)}
-        </LoaderPaginated>
+        </>}
+    </LoaderPaginated>
     </>;
 };
