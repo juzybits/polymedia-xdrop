@@ -5,7 +5,7 @@ import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 
 import { RPC_RESULTS_PER_PAGE, useAppContext } from "./App";
 import { BtnLinkInternal } from "./comp/buttons";
-import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
+import { Card, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 import { LoaderPaginated } from "./comp/loader";
 
@@ -47,11 +47,11 @@ const ListCreatedXDrops = ({ currAddr }: {
     );
 
     return <>
-    <LoaderPaginated fetcher={fetchXDrops}>
-    {(fetcher) => <>
-        <div ref={listRef} className={`card-list ${fetcher.isLoading ? "loading" : ""}`}>
-            {fetcher.isLoading && <CardSpinner />}
-            {fetcher.page.map(x =>
+    <LoaderPaginated fetch={fetchXDrops}>
+    {(fetch) => <>
+        <div ref={listRef} className={`card-list ${fetch.isLoading ? "loading" : ""}`}>
+            {fetch.isLoading && <CardSpinner />}
+            {fetch.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
                     button={
                         <BtnLinkInternal to={`/manage/${x.id}`} disabled={isWorking}>

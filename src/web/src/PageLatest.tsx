@@ -35,11 +35,11 @@ const ListLatestXDrops = () =>
     );
 
     return <>
-    <LoaderPaginated fetcher={fetchXDrops}>
-    {(fetcher) => <>
-        <div ref={listRef} className={`card-list ${fetcher.isLoading ? "loading" : ""}`}>
-            {fetcher.isLoading && <CardSpinner />}
-            {fetcher.page.map(x =>
+    <LoaderPaginated fetch={fetchXDrops}>
+    {(fetch) => <>
+        <div ref={listRef} className={`card-list ${fetch.isLoading ? "loading" : ""}`}>
+            {fetch.isLoading && <CardSpinner />}
+            {fetch.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
                     extraDetails={<>
                         <XDropDetailAddrs xdrop={x} />

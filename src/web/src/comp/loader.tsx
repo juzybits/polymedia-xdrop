@@ -47,38 +47,38 @@ export const XDropLoader = ({
 
 export const Loader = <T,>({
     name,
-    fetcher,
+    fetch,
     children
 }: {
     name: string;
-    fetcher: UseFetchResult<T>;
+    fetch: UseFetchResult<T>;
     children: (data: NonNullable<T>) => React.ReactNode;
 }) => {
-    if (fetcher.err !== null)
-        return <CardMsg>{fetcher.err}</CardMsg>;
-    if (fetcher.isLoading || fetcher.data === undefined)
+    if (fetch.err !== null)
+        return <CardMsg>{fetch.err}</CardMsg>;
+    if (fetch.isLoading || fetch.data === undefined)
         return <CardSpinner />;
-    if (fetcher.data === null)
+    if (fetch.data === null)
         return <CardMsg>{name} not found</CardMsg>;
-    return <>{children(fetcher.data)}</>;
+    return <>{children(fetch.data)}</>;
 };
 
 export const LoaderPaginated = <T, C>({
-    fetcher, children, msgErr, msgEmpty,
+    fetch, children, msgErr, msgEmpty,
 }: {
-    fetcher: UseFetchAndPaginateResult<T, C>;
-    children: (fetcher: UseFetchAndPaginateResult<T, C>) => React.ReactNode;
+    fetch: UseFetchAndPaginateResult<T, C>;
+    children: (fetch: UseFetchAndPaginateResult<T, C>) => React.ReactNode;
     msgErr?: React.ReactNode;
     msgEmpty?: React.ReactNode;
 }) => {
-    if (fetcher.err !== null)
-        return <CardMsg>{msgErr ?? fetcher.err}</CardMsg>;
+    if (fetch.err !== null)
+        return <CardMsg>{msgErr ?? fetch.err}</CardMsg>;
 
-    if (fetcher.page.length === 0) {
-        return fetcher.isLoading
+    if (fetch.page.length === 0) {
+        return fetch.isLoading
             ? <CardSpinner />
             : <CardMsg>{msgEmpty ?? "None found"}</CardMsg>;
     }
 
-    return <>{children(fetcher)}</>;
+    return <>{children(fetch)}</>;
 };
