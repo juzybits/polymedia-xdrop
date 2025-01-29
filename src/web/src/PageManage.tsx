@@ -269,6 +269,7 @@ const CardAddClaims = ({
 
     const decimals = coinMeta.decimals;
     const symbol = coinMeta.symbol;
+    const networkPrefix = xdrop.network_name.toUpperCase().substring(0, 3);
 
     const textArea = useTextArea<{
         claims: { foreignAddr: string; amount: bigint }[];
@@ -280,9 +281,8 @@ const CardAddClaims = ({
         html: {
             value: devClaimsOrEmpty(xdrop.network_name),
             required: true,
-            placeholder: xdrop.network_name === "Solana"
-                ? "AaAaAa,1000\nBbBbBb,2000"
-                : "0xAAAAA,1000\n0xBBBBB,2000",
+            placeholder: networkPrefix + "_ADDRESS_1," + symbol + "_AMOUNT\n"
+                       + networkPrefix + "_ADDRESS_2," + symbol + "_AMOUNT\n..."
         },
         validateInput: (input) => {
             if (!input) {
@@ -357,7 +357,7 @@ const CardAddClaims = ({
 
         try {
             setIsWorking(true);
-            const { claims, coinTotal, coinFee,coinTotalAndFee } = textArea.val;
+            const { claims, coinTotal, coinFee, coinTotalAndFee } = textArea.val;
 
             // last moment validation against onchain state
             await Promise.all(
@@ -479,8 +479,7 @@ const CardAddClaims = ({
 
         <div className="card-desc">
             <p>
-                Enter 1 claim per line as follows:
-                <br />{xdrop.network_name.toUpperCase()}_ADDRESS,{symbol}_AMOUNT
+                Enter 1 claim per line as comma or tab separated values. You can copy-paste from a spreadsheet.
             </p>
         </div>
 
