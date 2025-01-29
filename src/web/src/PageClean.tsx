@@ -2,10 +2,10 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useRef } from "react";
 import toast from "react-hot-toast";
 
-import { BtnPrevNext, isLocalhost, useFetch, useFetchAndPaginate } from "@polymedia/suitcase-react";
+import { BtnPrevNext, useFetch, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import { CLEANER_ADDR, MAX_OBJECTS_PER_TX, XDrop } from "@polymedia/xdrop-sdk";
 
-import { useAppContext } from "./App";
+import { RPC_RESULTS_PER_PAGE, useAppContext } from "./App";
 import { BtnSubmit } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
@@ -26,8 +26,6 @@ export const PageClean = () =>
         </div>
     </>;
 };
-
-const PAGE_SIZE = isLocalhost() ? 10 : 10;
 
 const ListEndedXDrops = () =>
 {
@@ -57,7 +55,7 @@ const ListEndedXDrops = () =>
     const fetchXDrops = useFetchAndPaginate(
         async (cursor) => await xdropClient.fetchXDropsByEvent("EventEnd", {
             cursor: cursor as any, // eslint-disable-line
-            limit: PAGE_SIZE,
+            limit: RPC_RESULTS_PER_PAGE,
         }),
         [xdropClient],
     );

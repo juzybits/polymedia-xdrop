@@ -1,9 +1,8 @@
-import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useRef } from "react";
 
-import { BtnPrevNext, isLocalhost, useFetchAndPaginate } from "@polymedia/suitcase-react";
+import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 
-import { useAppContext } from "./App";
+import { RPC_RESULTS_PER_PAGE, useAppContext } from "./App";
 import { CardSpinner, CardXDropDetails, XDropDetail, XDropDetailAddrs } from "./comp/cards";
 import { LoaderPaginated } from "./comp/loader";
 
@@ -22,18 +21,15 @@ export const PageLatest = () =>
     </>;
 };
 
-const PAGE_SIZE = isLocalhost() ? 10 : 10;
-
 const ListLatestXDrops = () =>
 {
-    const currAcct = useCurrentAccount();
-    const { network, xdropClient, isWorking, setIsWorking } = useAppContext();
+    const { xdropClient } = useAppContext();
     const listRef = useRef<HTMLDivElement>(null);
 
     const fetchXDrops = useFetchAndPaginate(
         async (cursor) => await xdropClient.fetchXDropsByEvent("EventShare", {
             cursor: cursor as any, // eslint-disable-line
-            limit: PAGE_SIZE,
+            limit: RPC_RESULTS_PER_PAGE,
         }),
         [xdropClient],
     );

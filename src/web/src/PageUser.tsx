@@ -1,9 +1,9 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import React, { useRef } from "react";
 
-import { BtnPrevNext, isLocalhost, useFetchAndPaginate } from "@polymedia/suitcase-react";
+import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 
-import { useAppContext } from "./App";
+import { RPC_RESULTS_PER_PAGE, useAppContext } from "./App";
 import { BtnLinkInternal } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
@@ -29,8 +29,6 @@ export const PageUser = () =>
     </>;
 };
 
-const PAGE_SIZE = isLocalhost() ? 10 : 10;
-
 const ListCreatedXDrops = ({ currAddr }: {
     currAddr: string;
 }) =>
@@ -38,28 +36,28 @@ const ListCreatedXDrops = ({ currAddr }: {
     const { xdropClient, isWorking } = useAppContext();
     const listRef = useRef<HTMLDivElement>(null);
 
-    const xdrops = useFetchAndPaginate(
+    const fetchXDrops = useFetchAndPaginate(
         async (cursor) => await xdropClient.fetchXDropsByEvent("EventShare", {
             sender: currAddr,
             cursor: cursor as any, // eslint-disable-line
-            limit: PAGE_SIZE,
+            limit: RPC_RESULTS_PER_PAGE,
         }),
         [xdropClient, currAddr],
     );
 
-    if (xdrops.err !== null) {
-        return <CardMsg>{xdrops.err}</CardMsg>;
+    if (fetchXDrops.err !== null) {
+        return <CardMsg>{fetchXDrops.err}</CardMsg>;
     }
-    if (xdrops.page.length === 0) {
-        return xdrops.isLoading
+    if (fetchXDrops.page.length === 0) {
+        return fetchXDrops.isLoading
             ? <CardSpinner />
             : <CardMsg>You haven't created any xDrops</CardMsg>;
     }
 
     return <>
-        <div ref={listRef} className={`card-list ${xdrops.isLoading ? "loading" : ""}`}>
-            {xdrops.isLoading && <CardSpinner />}
-            {xdrops.page.map(x =>
+        <div ref={listRef} className={`card-list ${fetchXDrops.isLoading ? "loading" : ""}`}>
+            {fetchXDrops.isLoading && <CardSpinner />}
+            {fetchXDrops.page.map(x =>
                 <CardXDropDetails xdrop={x} key={x.id}
                     button={<BtnLinkInternal to={`/manage/${x.id}`} disabled={isWorking}>
                         MANAGE
@@ -68,6 +66,6 @@ const ListCreatedXDrops = ({ currAddr }: {
                 />
             )}
         </div>
-        <BtnPrevNext data={xdrops} scrollToRefOnPageChange={listRef} />
+        <BtnPrevNext data={fetchXDrops} scrollToRefOnPageChange={listRef} />
     </>;
 };

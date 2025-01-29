@@ -38,6 +38,8 @@ export const [ defaultNetwork, supportedNetworks ] =
 
 export type NetworkName = typeof supportedNetworks[number];
 
+export const RPC_RESULTS_PER_PAGE = isLocalhost() ? 10 : 10;
+
 // ==== router ====
 
 export const AppRouter = () =>
