@@ -13,8 +13,6 @@ import { XDropModule } from "./xdrop-functions.js";
 import { EligibleStatus, EligibleStatusBcs, objResToSuiLink, objResToXDrop, retValToEligibleStatus, SuiLink, XDrop, XDropEventName, XDropIdentifier } from "./xdrop-structs.js";
 import { calculateFee, extractXDropObjCreated } from "./xdrop-txs.js";
 
-const MAX_PARALLEL_RPC_CALLS = 20;
-
 /**
  * How many claims can be added to an xDrop in a single transaction.
  *
@@ -30,6 +28,8 @@ export const MAX_OBJECTS_PER_TX = 1000;
  * Maximum function args size is 16384 bytes (`max_pure_argument_size`).
  */
 export const MAX_ADDRS_PER_FN = 350; // breaks at 381 addresses (2024-11-29)
+
+const MAX_PARALLEL_RPC_CALLS = 20;
 
 /**
  * Execute transactions on the XDrop Sui package.

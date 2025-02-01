@@ -15,7 +15,6 @@
         "build": "vite build",
         "clean": "rm -rf dist/ node_modules/ .turbo/ .wrangler/",
         "deploy-dev": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-xdrop --branch dev",
-        "deploy-test": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-xdrop --branch test",
         "deploy-prod": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-xdrop --branch main",
         "dev": "vite",
         "host": "vite --host",
