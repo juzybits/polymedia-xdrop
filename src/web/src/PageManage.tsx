@@ -20,7 +20,6 @@ import { devLinkedForeignAddrs } from "./PageDevLink";
 import { PageNotFound } from "./PageNotFound";
 
 type AdminActionFn = (tx: Transaction) => TransactionResult;
-const BLINK_DURATION_MS = 4000;
 
 export const PageManage = () =>
 {
@@ -29,26 +28,12 @@ export const PageManage = () =>
     const { xdropId } = useParams();
     if (!xdropId) return <PageNotFound />;
 
-    const { header, isWorking, setIsWorking, xdropClient } = useAppContext();
     const currAcct = useCurrentAccount();
+    const { header, isWorking, setIsWorking, xdropClient } = useAppContext();
     const fetchXDrop = useXDrop(xdropId);
     const disableSubmit = isWorking || !currAcct;
 
-    // === animations ===
-
-    const [statusBlink, setStatusBlink] = useState(false);
-    const [statsBlink, setStatsBlink] = useState(false);
-    useEffect(() => {
-        if (!statusBlink) { return; }
-        const timer = setTimeout(() => { setStatusBlink(false); }, BLINK_DURATION_MS);
-        return () => clearTimeout(timer);
-    }, [statusBlink]);
-
-    useEffect(() => {
-        if (!statsBlink) { return; }
-        const timer = setTimeout(() => { setStatsBlink(false); }, BLINK_DURATION_MS);
-        return () => clearTimeout(timer);
-    }, [statsBlink]);
+    const [blink, setBlink] = useState<"status" | "stats" | null>(null);
 
     // === functions ===
 
@@ -59,15 +44,17 @@ export const PageManage = () =>
         if (disableSubmit) return;
         try {
             setIsWorking(true);
+            setBlink(null);
+
             const tx = new Transaction();
             submit(tx);
             const resp = await xdropClient.signAndExecuteTx(tx);
+
             console.debug("[onSubmit] okay:", resp);
             toast.success("Success");
+            blinkStatus && setBlink("status");
+
             fetchXDrop.refetch();
-            if (blinkStatus) {
-                setStatusBlink(true);
-            }
         } catch (err) {
             console.warn("[onSubmit] error:", err);
             const msg = xdropClient.errToStr(err, "Something went wrong");
@@ -137,10 +124,10 @@ export const PageManage = () =>
                     return <>
                         <CardXDropDetails
                             xdrop={xdrop}
-                            statusClass={statusBlink ? "blink" : ""}
+                            statusClass={blink === "status" ? "blink" : ""}
                             extraDetails={<>
-                                <XDropDetailBalance xdrop={xdrop} coinMeta={coinMeta} detailClass={statsBlink ? "blink" : ""} />
-                                <XDropDetailAddrs xdrop={xdrop} detailClass={statsBlink ? "blink" : ""} />
+                                <XDropDetailBalance xdrop={xdrop} coinMeta={coinMeta} detailClass={blink === "stats" ? "blink" : ""} />
+                                <XDropDetailAddrs xdrop={xdrop} detailClass={blink === "stats" ? "blink" : ""} />
                             </>}
                             button={<BtnLinkInternal to={`/claim/${xdrop.id}`} disabled={isWorking}>
                                 VIEW CLAIM PAGE
@@ -157,7 +144,7 @@ export const PageManage = () =>
                                     coinMeta={coinMeta}
                                     onSuccess={() => {
                                         fetchXDrop.refetch();
-                                        setStatsBlink(true);
+                                        setBlink("stats")
                                     }}
                                 />;
 
