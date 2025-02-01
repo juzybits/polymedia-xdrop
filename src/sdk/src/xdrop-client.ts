@@ -65,7 +65,7 @@ export class XDropClient extends SuiClientBase
     // === data fetching ===
 
     /**
-     * Fetch the foreign addresses of all claims in an xDrop.
+     * Fetch the foreign addresses that can claim an xDrop.
      * These addresses are strings and correspond to DOF keys.
      */
     public async fetchClaimAddrs(
