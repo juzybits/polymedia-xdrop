@@ -1,5 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import React, { useRef } from "react";
+import { useRef } from "react";
 
 import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 

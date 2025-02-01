@@ -109,7 +109,7 @@ export const PageManage = () =>
                         );
 
                     const admin_ends_and_reclaims_xdrop: AdminActionFn = (tx) => {
-                        const result = XDropModule.admin_ends_xdrop(
+                        XDropModule.admin_ends_xdrop(
                             tx,
                             xdropClient.xdropPkgId,
                             xdrop.type_coin,
@@ -317,7 +317,7 @@ const CardAddClaims = ({
                         }
                         claims.push({foreignAddr: addr, amount});
                         coinTotal += amount;
-                    } catch (e) {
+                    } catch (_e) {
                         throw new Error(`Invalid amount: ${amountStr}`);
                     }
                 }

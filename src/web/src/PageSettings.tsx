@@ -1,5 +1,4 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
-import React from "react";
 
 import { ExplorerRadioSelector, LinkExternal, LinkToExplorer, NetworkRadioSelector, RpcRadioSelector } from "@polymedia/suitcase-react";
 
