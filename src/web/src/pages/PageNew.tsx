@@ -6,10 +6,10 @@ import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
 import { IconGears, IconInfo, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 
-import { BtnSubmit } from "./comp/buttons";
-import { Card } from "./comp/cards";
-import { ConnectOr } from "./comp/connect";
-import { useAppContext } from "./lib/context";
+import { useAppContext } from "../app/context";
+import { BtnSubmit } from "../comp/buttons";
+import { Card } from "../comp/cards";
+import { ConnectOr } from "../comp/connect";
 
 export const PageNew = () =>
 {

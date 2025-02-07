@@ -10,20 +10,20 @@ import { CoinMetaFetcher } from "@polymedia/suitcase-core";
 import { ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
 import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 
-import { Glitch } from "./comp/glitch";
-import { AppContext, useAppContext } from "./lib/context";
-import { getGraphqlUrl, loadNetworkConfig, SupportedNetwork, supportedNetworks, defaultNetwork } from "./lib/network";
-import { PageClaim } from "./PageClaim";
-import { PageClean } from "./PageClean";
-import { PageDevLink } from "./PageDevLink";
-import { PageHome } from "./PageHome";
-import { PageLatest } from "./PageLatest";
-import { PageManage } from "./PageManage";
-import { PageNew } from "./PageNew";
-import { PageNotFound } from "./PageNotFound";
-import { PageSettings } from "./PageSettings";
-import { PageUser } from "./PageUser";
-import "./styles/App.less";
+import { getGraphqlUrl, loadNetworkConfig, SupportedNetwork, supportedNetworks, defaultNetwork } from "./config";
+import { AppContext, useAppContext } from "./context";
+import { Glitch } from "../comp/glitch";
+import { PageClaim } from "../pages/PageClaim";
+import { PageClean } from "../pages/PageClean";
+import { PageDevLink } from "../pages/PageDevLink";
+import { PageHome } from "../pages/PageHome";
+import { PageLatest } from "../pages/PageLatest";
+import { PageManage } from "../pages/PageManage";
+import { PageNew } from "../pages/PageNew";
+import { PageNotFound } from "../pages/PageNotFound";
+import { PageSettings } from "../pages/PageSettings";
+import { PageUser } from "../pages/PageUser";
+import "../styles/App.less";
 
 // ==== router ====
 
@@ -125,7 +125,7 @@ const App = (args: {
 
     const coinMetaFetcher = useMemo(() => {
         return new CoinMetaFetcher({ client: suiClient });
-    }, [suiClient]);
+    }, []);
 
     const appContext: AppContextType = {
         network: args.network, setNetwork: args.setNetwork,

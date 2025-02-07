@@ -3,10 +3,10 @@ import { Transaction } from "@mysten/sui/transactions";
 
 import { getNetworkConfig, LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 
-import { BtnSubmit } from "./comp/buttons";
-import { Card } from "./comp/cards";
-import { BtnConnect } from "./comp/connect";
-import { useAppContext } from "./lib/context";
+import { useAppContext } from "../app/context";
+import { BtnSubmit } from "../comp/buttons";
+import { Card } from "../comp/cards";
+import { BtnConnect } from "../comp/connect";
 
 export const devLinkedForeignAddrs: Record<LinkNetwork, string[]> = {
     "Ethereum": [

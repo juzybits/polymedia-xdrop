@@ -3,7 +3,7 @@ import { CoinMetadata } from "@mysten/sui/client";
 import { useFetch, UseFetchResult } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
 
-import { useAppContext } from "../lib/context";
+import { useAppContext } from "../app/context";
 
 export type UseXDropResult = UseFetchResult<{
     xdrop: XDrop | null;

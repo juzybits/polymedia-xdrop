@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 
 import { LinkExternal } from "@polymedia/suitcase-react";
 
-import { Card } from "./comp/cards";
-import { HeroBanner } from "./comp/hero";
-import { useAppContext } from "./lib/context";
+import { useAppContext } from "../app/context";
+import { Card } from "../comp/cards";
+import { HeroBanner } from "../comp/hero";
 
 export const PageHome = () =>
 {
