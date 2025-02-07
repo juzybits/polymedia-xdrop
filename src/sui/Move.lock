@@ -2,7 +2,7 @@
 
 [move]
 version = 3
-manifest_digest = "AD276484663CC9A1D44950C6782F917585CD5FB57E8A8E0C2119DBB781F94618"
+manifest_digest = "2FD00139C0459CE51E18DB7CA05B6AB50CB97B740DE60619F9E28916D7807921"
 deps_digest = "3C4103934B1E040BB6B23F1D610B4EF9F2F1166A50A104EADCF77467C004C600"
 dependencies = [
   { id = "Sui", name = "Sui" },
@@ -23,23 +23,23 @@ dependencies = [
 
 [[move.package]]
 id = "SuiLink"
-source = { local = "../suilink-v3" }
+source = { local = "../sui-suilink-v3" }
 
 dependencies = [
   { id = "Sui", name = "Sui" },
 ]
 
 [move.toolchain-version]
-compiler-version = "1.40.3"
+compiler-version = "1.41.1"
 edition = "2024.beta"
 flavor = "sui"
 
 [env]
 
 [env.devnet]
-chain-id = "3f2108a2"
-original-published-id = "0xfe0461ac2dfd829d9c6d2f3a4cc6db9ba17b5ae0785b0d2e94518338e24eff2c"
-latest-published-id = "0xfe0461ac2dfd829d9c6d2f3a4cc6db9ba17b5ae0785b0d2e94518338e24eff2c"
+chain-id = "5c7c5411"
+original-published-id = "0xa60a588e61bb0e6c9ec7eb2bc26a5fb4ef3b9f3371afbd0d4ea89e45d30d246a"
+latest-published-id = "0xa60a588e61bb0e6c9ec7eb2bc26a5fb4ef3b9f3371afbd0d4ea89e45d30d246a"
 published-version = "1"
 
 [env.mainnet]

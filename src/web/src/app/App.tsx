@@ -125,7 +125,7 @@ const App = (args: {
 
     const coinMetaFetcher = useMemo(() => {
         return new CoinMetaFetcher({ client: suiClient });
-    }, []);
+    }, [suiClient]);
 
     const appContext: AppContextType = {
         network: args.network, setNetwork: args.setNetwork,

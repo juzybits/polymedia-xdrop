@@ -7,7 +7,7 @@ license = "Apache-2.0"
 [dependencies]
 # Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
 Sui = { local = "../../../sui/crates/sui-framework/packages/sui-framework" }
-SuiLink = { local = "../suilink-v3" }
+SuiLink = { local = "../sui-suilink-v3" }
 
 [addresses]
 xdrop = "0x0"
