@@ -48,13 +48,13 @@ export class XDropClient extends SuiClientBase
         suiClient: SuiClient;
         signTx: SignTx;
         waitForTxOptions?: WaitForTxOptions;
-        txResponseOptions?: SuiTransactionBlockResponseOptions;
+        txRespOptions?: SuiTransactionBlockResponseOptions;
     }) {
         super({
             suiClient: args.suiClient,
             signTx: args.signTx,
             waitForTxOptions: args.waitForTxOptions,
-            txResponseOptions: args.txResponseOptions,
+            txRespOptions: args.txRespOptions,
         });
         this.graphClient = args.graphClient;
         this.xdropPkgId = args.xdropPkgId;
