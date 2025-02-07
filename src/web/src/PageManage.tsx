@@ -9,11 +9,11 @@ import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalan
 import { isLocalhost, useTextArea } from "@polymedia/suitcase-react";
 import { calculateFee, FEE, LinkNetwork, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 
-import { useAppContext } from "./App";
 import { BtnLinkInternal, BtnSubmit } from "./comp/buttons";
 import { Card, CardXDropDetails, XDropDetailAddrs, XDropDetailBalance } from "./comp/cards";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
+import { useAppContext } from "./lib/context";
 import { clientWithKeypair, fmtBal, generateRandomEthereumAddress, generateRandomSolanaAddress, shortenForeignAddr } from "./lib/helpers";
 import { useAdminPrivateKey } from "./lib/hooks";
 import { devLinkedForeignAddrs } from "./PageDevLink";

@@ -1,5 +1,5 @@
-import { useAppContext } from "./App";
 import { Card } from "./comp/cards";
+import { useAppContext } from "./lib/context";
 
 export const PageNotFound = () =>
 {

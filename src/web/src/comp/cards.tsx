@@ -5,7 +5,7 @@ import { formatBalance } from "@polymedia/suitcase-core";
 import { LinkToExplorer } from "@polymedia/suitcase-react";
 import { LinkNetwork, XDrop, XDropIdentifier, XDropStatus } from "@polymedia/xdrop-sdk";
 
-import { useAppContext } from "../App";
+import { useAppContext } from "../lib/context";
 
 export const Card = ({ className, children }: {
     className?: string;

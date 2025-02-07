@@ -3,11 +3,11 @@ import { useRef } from "react";
 
 import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 
-import { useAppContext } from "./App";
 import { BtnLinkInternal } from "./comp/buttons";
 import { Card, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 import { LoaderPaginated } from "./comp/loader";
+import { useAppContext } from "./lib/context";
 import { RPC_RESULTS_PER_PAGE } from "./lib/network";
 
 export const PageUser = () =>

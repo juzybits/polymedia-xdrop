@@ -8,13 +8,13 @@ import { shortenAddress } from "@polymedia/suitcase-core";
 import { LinkExternal, useFetch, UseFetchResult } from "@polymedia/suitcase-react";
 import { LinkWithStatus, SuiLink, XDrop } from "@polymedia/xdrop-sdk";
 
-import { useAppContext } from "./App";
 import { BtnLinkExternal, BtnSubmit } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
 import { useXDrop } from "./comp/hooks";
 import { XDropLoader } from "./comp/loader";
 import { showConfetti } from "./lib/confetti";
+import { useAppContext } from "./lib/context";
 import { CUSTOM_XDROPS, CustomXDropConfig } from "./lib/custom";
 import { fmtBal, foreignAddrUrl, shortenForeignAddr } from "./lib/helpers";
 import { PageNotFound } from "./PageNotFound";

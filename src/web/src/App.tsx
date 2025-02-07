@@ -2,7 +2,7 @@ import { ConnectModal, SuiClientProvider, WalletProvider, useSignTransaction, us
 import "@mysten/dapp-kit/dist/index.css";
 import { SuiGraphQLClient } from "@mysten/sui/graphql";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 
@@ -11,7 +11,8 @@ import { ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, loadExplo
 import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 
 import { Glitch } from "./comp/glitch";
-import { getGraphqlUrl, loadNetworkConfig , SupportedNetwork, supportedNetworks, defaultNetwork } from "./lib/network";
+import { AppContext, useAppContext } from "./lib/context";
+import { getGraphqlUrl, loadNetworkConfig, SupportedNetwork, supportedNetworks, defaultNetwork } from "./lib/network";
 import { PageClaim } from "./PageClaim";
 import { PageClean } from "./PageClean";
 import { PageDevLink } from "./PageDevLink";
@@ -83,17 +84,7 @@ const AppSuiProviders = () =>
 
 // ==== app ====
 
-const AppContext = createContext<AppContext | null>(null);
-
-export const useAppContext = () => {
-    const context = useContext(AppContext);
-    if (!context) {
-        throw new Error("useAppContext must be used within an AppContextProvider");
-    }
-    return context;
-};
-
-export type AppContext = {
+export type AppContextType = {
     network: SupportedNetwork; setNetwork: Setter<SupportedNetwork>;
     rpc: string; setRpc: Setter<string>;
     explorer: ExplorerName; setExplorer: Setter<ExplorerName>;
@@ -104,6 +95,7 @@ export type AppContext = {
     xdropClient: XDropClient;
     coinMetaFetcher: CoinMetaFetcher;
 };
+
 
 const App = (args: {
     network: SupportedNetwork; setNetwork: Setter<SupportedNetwork>;
@@ -135,7 +127,7 @@ const App = (args: {
         return new CoinMetaFetcher({ client: suiClient });
     }, [suiClient]);
 
-    const appContext: AppContext = {
+    const appContext: AppContextType = {
         network: args.network, setNetwork: args.setNetwork,
         rpc: args.rpc, setRpc: args.setRpc,
         explorer, setExplorer,
