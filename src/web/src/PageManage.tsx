@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
@@ -144,7 +144,7 @@ export const PageManage = () =>
                                     coinMeta={coinMeta}
                                     onSuccess={() => {
                                         fetchXDrop.refetch();
-                                        setBlink("stats")
+                                        setBlink("stats");
                                     }}
                                 />;
 

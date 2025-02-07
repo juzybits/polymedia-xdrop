@@ -6,7 +6,8 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 
-import { CoinMetaFetcher, ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
+import { CoinMetaFetcher } from "@polymedia/suitcase-core";
+import { ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
 import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 
 import { Glitch } from "./comp/glitch";
