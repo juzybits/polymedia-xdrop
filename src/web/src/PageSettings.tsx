@@ -2,11 +2,11 @@ import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 
 import { ExplorerRadioSelector, LinkExternal, LinkToExplorer, NetworkRadioSelector, RpcRadioSelector } from "@polymedia/suitcase-react";
 
-import { supportedNetworks, useAppContext } from "./App";
+import { useAppContext } from "./App";
 import { BtnSubmit } from "./comp/buttons";
 import { Card } from "./comp/cards";
 import { ConnectToGetStarted } from "./comp/connect";
-import { RPC_ENDPOINTS } from "./lib/network";
+import { supportedNetworks , RPC_ENDPOINTS } from "./lib/network";
 
 export const PageSettings = () =>
 {

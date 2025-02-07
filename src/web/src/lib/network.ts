@@ -1,13 +1,38 @@
 import { getFullnodeUrl } from "@mysten/sui/client";
 
 import { NetworkName } from "@polymedia/suitcase-core";
-import { loadRpc } from "@polymedia/suitcase-react";
+import { isLocalhost, loadRpc } from "@polymedia/suitcase-react";
+
+// === domains ===
+
+const isLocalDomain = isLocalhost();
+const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname;
+const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
+export const isProdDomain = "xdrop.polymedia.app" === window.location.hostname;
+
+// === sui networks ===
+
+export const [ defaultNetwork, supportedNetworks ] =
+    isLocalDomain  ? ["devnet" as const, ["mainnet", "testnet", "devnet"] as const]
+    : isDevDomain  ? ["devnet"   as const, ["devnet"] as const]
+    : isTestDomain ? ["testnet"  as const, ["testnet"] as const]
+    : /* prod */     ["mainnet"  as const, ["mainnet"] as const];
+
+export type SupportedNetwork = typeof supportedNetworks[number];
+
+// === rpc constraints ===
+
+export const RPC_RESULTS_PER_PAGE = isLocalhost() ? 10 : 10;
+
+// === graphql ===
 
 export const getGraphqlUrl = (network: NetworkName) => {
     if (network === "localnet")
         throw new Error("Localnet does not support graphql");
     return `https://sui-${network}.mystenlabs.com/graphql`;
 };
+
+// === jsonrpc ===
 
 export const loadNetworkConfig = (network: NetworkName) => ({
     url: loadRpc({

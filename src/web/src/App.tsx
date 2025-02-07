@@ -7,11 +7,11 @@ import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 
 import { CoinMetaFetcher } from "@polymedia/suitcase-core";
-import { ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
+import { ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
 import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 
 import { Glitch } from "./comp/glitch";
-import { getGraphqlUrl, loadNetworkConfig } from "./lib/network";
+import { getGraphqlUrl, loadNetworkConfig , SupportedNetwork, supportedNetworks, defaultNetwork } from "./lib/network";
 import { PageClaim } from "./PageClaim";
 import { PageClean } from "./PageClean";
 import { PageDevLink } from "./PageDevLink";
@@ -23,23 +23,6 @@ import { PageNotFound } from "./PageNotFound";
 import { PageSettings } from "./PageSettings";
 import { PageUser } from "./PageUser";
 import "./styles/App.less";
-
-// ==== config ====
-
-const isLocalDomain = isLocalhost();
-const isDevDomain = "dev.polymedia-xdrop.pages.dev" === window.location.hostname;
-const isTestDomain = "test.polymedia-xdrop.pages.dev" === window.location.hostname;
-export const isProdDomain = "xdrop.polymedia.app" === window.location.hostname;
-
-export const [ defaultNetwork, supportedNetworks ] =
-    isLocalDomain  ? ["devnet" as const, ["mainnet", "testnet", "devnet"] as const]
-    : isDevDomain  ? ["devnet"   as const, ["devnet"] as const]
-    : isTestDomain ? ["testnet"  as const, ["testnet"] as const]
-    : /* prod */     ["mainnet"  as const, ["mainnet"] as const];
-
-export type NetworkName = typeof supportedNetworks[number];
-
-export const RPC_RESULTS_PER_PAGE = isLocalhost() ? 10 : 10;
 
 // ==== router ====
 
@@ -111,7 +94,7 @@ export const useAppContext = () => {
 };
 
 export type AppContext = {
-    network: NetworkName; setNetwork: Setter<NetworkName>;
+    network: SupportedNetwork; setNetwork: Setter<SupportedNetwork>;
     rpc: string; setRpc: Setter<string>;
     explorer: ExplorerName; setExplorer: Setter<ExplorerName>;
     isWorking: boolean; setIsWorking: Setter<boolean>;
@@ -123,7 +106,7 @@ export type AppContext = {
 };
 
 const App = (args: {
-    network: NetworkName; setNetwork: Setter<NetworkName>;
+    network: SupportedNetwork; setNetwork: Setter<SupportedNetwork>;
     rpc: string; setRpc: Setter<string>;
 }) =>
 {

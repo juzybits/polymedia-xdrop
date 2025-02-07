@@ -5,12 +5,13 @@ import toast from "react-hot-toast";
 import { BtnPrevNext, useFetch, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import { CLEANER_ADDR, MAX_OBJECTS_PER_TX, XDrop } from "@polymedia/xdrop-sdk";
 
-import { RPC_RESULTS_PER_PAGE, useAppContext } from "./App";
+import { useAppContext } from "./App";
 import { BtnSubmit } from "./comp/buttons";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "./comp/cards";
 import { BtnConnect } from "./comp/connect";
 import { clientWithKeypair } from "./lib/helpers";
 import { useAdminPrivateKey } from "./lib/hooks";
+import { RPC_RESULTS_PER_PAGE } from "./lib/network";
 
 export const PageClean = () =>
 {
