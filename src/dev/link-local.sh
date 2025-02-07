@@ -9,12 +9,8 @@ SCRIPT_DIR="$( dirname "$(readlink -f "${BASH_SOURCE[0]}")" )"
 PATH_PROJECT="$( cd "$SCRIPT_DIR/../.." && pwd )"
 
 PATH_SUITCASE="$PATH_PROJECT/../polymedia-suitcase"
-PATH_COINMETA="$PATH_PROJECT/../polymedia-coinmeta"
 
 cd $PATH_SUITCASE
-pnpm build
-
-cd $PATH_COINMETA
 pnpm build
 
 cd $PATH_PROJECT/src/sdk
@@ -23,4 +19,3 @@ pnpm link $PATH_SUITCASE/src/core
 cd $PATH_PROJECT/src/web
 pnpm link $PATH_SUITCASE/src/core
 pnpm link $PATH_SUITCASE/src/react
-pnpm link $PATH_COINMETA/src/sdk

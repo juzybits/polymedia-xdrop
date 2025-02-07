@@ -2,7 +2,6 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-import { getCoinMeta } from "@polymedia/coinmeta";
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
 import { IconGears, IconInfo, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
@@ -18,7 +17,7 @@ export const PageNew = () =>
 
     const navigate = useNavigate();
     const currAcct = useCurrentAccount();
-    const { header, xdropClient, isWorking, setIsWorking } = useAppContext();
+    const { header, xdropClient, coinMetaFetcher, isWorking, setIsWorking } = useAppContext();
 
     // === form state ===
 
@@ -54,7 +53,7 @@ export const PageNew = () =>
 
         try {
             setIsWorking(true);
-            const coinMeta = await getCoinMeta(xdropClient.suiClient, coinType.val!);
+            const coinMeta = await coinMetaFetcher.getCoinMeta(coinType.val!);
             if (!coinMeta) {
                 throw new Error(`CoinMetadata not found for type ${shortenAddress(coinType.val)}`);
             }

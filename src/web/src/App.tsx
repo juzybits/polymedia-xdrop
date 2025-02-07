@@ -6,7 +6,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 
-import { ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
+import { CoinMetaFetcher, ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, isLocalhost, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
 import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 
 import { Glitch } from "./comp/glitch";
@@ -118,6 +118,7 @@ export type AppContext = {
     setModalContent: Setter<React.ReactNode>;
     header: React.ReactNode;
     xdropClient: XDropClient;
+    coinMetaFetcher: CoinMetaFetcher;
 };
 
 const App = (args: {
@@ -146,6 +147,10 @@ const App = (args: {
         });
     }, [suiClient, walletSignTx]);
 
+    const coinMetaFetcher = useMemo(() => {
+        return new CoinMetaFetcher({ client: suiClient });
+    }, [suiClient]);
+
     const appContext: AppContext = {
         network: args.network, setNetwork: args.setNetwork,
         rpc: args.rpc, setRpc: args.setRpc,
@@ -155,6 +160,7 @@ const App = (args: {
         setModalContent,
         header: <Header />,
         xdropClient,
+        coinMetaFetcher,
     };
 
     // === effects ===
