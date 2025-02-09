@@ -9,8 +9,8 @@ import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalan
 import { isLocalhost, useTextArea } from "@polymedia/suitcase-react";
 import { calculateFee, FEE, LinkNetwork, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 
-import { devLinkedForeignAddrs } from "./PageDevLink";
 import { PageNotFound } from "./PageNotFound";
+import { DEV_LINKED_FOREIGN_ADDRS } from "../app/config";
 import { useAppContext } from "../app/context";
 import { BtnLinkInternal, BtnSubmit } from "../comp/buttons";
 import { Card, CardXDropDetails, XDropDetailAddrs, XDropDetailBalance } from "../comp/cards";
@@ -538,7 +538,7 @@ function devClaimsOrEmpty(network: LinkNetwork): string {
     const randomAmount = () => Math.floor(Math.random() * 100 + 1);
 
     return [
-        ...devLinkedForeignAddrs[network].map(addr => `${addr},${randomAmount()}`),
+        ...DEV_LINKED_FOREIGN_ADDRS[network].map(addr => `${addr},${randomAmount()}`),
         ...Array.from({ length: 2500 }, () => `${randomAddr()},${randomAmount()}`),
     ].join("\n");
 }

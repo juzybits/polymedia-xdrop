@@ -1,25 +1,13 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 
-import { getNetworkConfig, LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
+import { getNetworkConfig, LINK_NETWORKS } from "@polymedia/xdrop-sdk";
 
+import { DEV_LINKED_FOREIGN_ADDRS } from "../app/config";
 import { useAppContext } from "../app/context";
 import { BtnSubmit } from "../comp/buttons";
 import { Card } from "../comp/cards";
 import { BtnConnect } from "../comp/connect";
-
-export const devLinkedForeignAddrs: Record<LinkNetwork, string[]> = {
-    "Ethereum": [
-        "0x1111111111111111111111111111111111111AaA",
-        "0x2222222222222222222222222222222222222BbB",
-        // "0x3333333333333333333333333333333333333CcC",
-    ],
-    "Solana": [
-        "Test111AaaaaaaaaaaaaaaaaaaaaaaaaaaaAaA",
-        "Test222BbbbbbbbbbbbbbbbbbbbbbbbbbbbBbB",
-        // "Test333CcccccccccccccccccccccccccccCcC",
-    ],
-};
 
 export const PageDevLink = () =>
 {
@@ -41,7 +29,7 @@ export const PageDevLink = () =>
             setIsWorking(true);
             const tx = new Transaction();
             for (const network of LINK_NETWORKS) {
-                for (let foreignAddr of devLinkedForeignAddrs[network]) {
+                for (let foreignAddr of DEV_LINKED_FOREIGN_ADDRS[network]) {
                     if (network === "Ethereum") {
                         foreignAddr = foreignAddr.toLowerCase();
                     }
@@ -84,7 +72,7 @@ export const PageDevLink = () =>
                 <div className="card-desc">
                     <p>Link Network: Ethereum</p>
                     <p>Linked Addresses:</p>
-                    <pre>{JSON.stringify(devLinkedForeignAddrs, null, 2)}</pre>
+                    <pre>{JSON.stringify(DEV_LINKED_FOREIGN_ADDRS, null, 2)}</pre>
                 </div>
                 <div>
                     {currAcct

@@ -2,6 +2,7 @@ import { getFullnodeUrl } from "@mysten/sui/client";
 
 import { NetworkName } from "@polymedia/suitcase-core";
 import { isLocalhost, loadRpc } from "@polymedia/suitcase-react";
+import { LinkNetwork } from "@polymedia/xdrop-sdk";
 
 // === domains ===
 
@@ -70,5 +71,20 @@ export const RPC_ENDPOINTS: Record<NetworkName, string[]> = {
     ],
     "localnet": [
         getFullnodeUrl("localnet"),
+    ],
+};
+
+// === dev ===
+
+export const DEV_LINKED_FOREIGN_ADDRS: Record<LinkNetwork, string[]> = {
+    "Ethereum": [
+        "0x1111111111111111111111111111111111111AaA",
+        "0x2222222222222222222222222222222222222BbB",
+        // "0x3333333333333333333333333333333333333CcC",
+    ],
+    "Solana": [
+        "Test111AaaaaaaaaaaaaaaaaaaaaaaaaaaaAaA",
+        "Test222BbbbbbbbbbbbbbbbbbbbbbbbbbbbBbB",
+        // "Test333CcccccccccccccccccccccccccccCcC",
     ],
 };
