@@ -1,10 +1,10 @@
 import { useRef } from "react";
 
-import { BtnPrevNext, useFetchAndPaginate, CardSpinner } from "@polymedia/suitcase-react";
+import { BtnPrevNext, useFetchAndPaginate, CardSpinner, CardDetail } from "@polymedia/suitcase-react";
 
 import { RPC_RESULTS_PER_PAGE } from "../app/config";
 import { useAppContext } from "../app/context";
-import { CardXDropDetails, XDropDetail, XDropDetailAddrs } from "../comp/cards";
+import { CardXDropDetails, XDropDetailAddrs } from "../comp/cards";
 import { LoaderPaginated } from "../comp/loader";
 
 export const PageLatest = () =>
@@ -44,7 +44,7 @@ const ListLatestXDrops = () =>
                 <CardXDropDetails xdrop={x} key={x.id}
                     extraDetails={<>
                         <XDropDetailAddrs xdrop={x} />
-                        <XDropDetail label="Created:" val={x.timestamp.toLocaleString()} />
+                        <CardDetail label="Created:" val={x.timestamp.toLocaleString()} />
                     </>}
                 />
             )}

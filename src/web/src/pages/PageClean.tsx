@@ -2,12 +2,12 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useRef } from "react";
 import toast from "react-hot-toast";
 
-import { BtnPrevNext, BtnSubmit, useFetch, useFetchAndPaginate, Card, CardMsg, CardSpinner } from "@polymedia/suitcase-react";
+import { BtnPrevNext, BtnSubmit, useFetch, useFetchAndPaginate, Card, CardMsg, CardSpinner, CardDetail } from "@polymedia/suitcase-react";
 import { CLEANER_ADDR, MAX_OBJECTS_PER_TX, XDrop } from "@polymedia/xdrop-sdk";
 
 import { RPC_RESULTS_PER_PAGE } from "../app/config";
 import { useAppContext } from "../app/context";
-import { CardXDropDetails, XDropDetail } from "../comp/cards";
+import { CardXDropDetails } from "../comp/cards";
 import { BtnConnect } from "../comp/connect";
 import { useAdminPrivateKey } from "../lib/hooks";
 import { clientWithKeypair } from "../lib/utils";
@@ -149,8 +149,8 @@ const ListEndedXDrops = () =>
                         </BtnSubmit>
                     }
                     extraDetails={<>
-                        <XDropDetail label="Ended:" val={x.timestamp.toLocaleString()} />
-                        <XDropDetail label="Claims:" val={x.claims.length} />
+                        <CardDetail label="Ended:" val={x.timestamp.toLocaleString()} />
+                        <CardDetail label="Claims:" val={x.claims.length} />
                     </>}
                 />
             )}
