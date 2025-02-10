@@ -75,9 +75,6 @@ importers:
       js-confetti:
         specifier: ^0.12.0
         version: 0.12.0
-      normalize.css:
-        specifier: ^8.0.1
-        version: 8.0.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -2012,9 +2009,6 @@ packages:
     resolution: {integrity: sha512-6k0YULvhpw+RoLNiQCRKOl09Rv1dPLr8hHnVjHqdolKwDrdNyk+Hmrthi4lIGPPz3r39dLx0hsF5s40sZ3Us4Q==}
     engines: {node: '>= 4.4.x'}
     hasBin: true
-
-  normalize.css@8.0.1:
-    resolution: {integrity: sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==}
 
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
@@ -4572,8 +4566,6 @@ snapshots:
       iconv-lite: 0.6.3
       sax: 1.4.1
     optional: true
-
-  normalize.css@8.0.1: {}
 
   object-assign@4.1.1: {}
 

@@ -30,7 +30,6 @@
         "@polymedia/xdrop-sdk": "workspace:*",
         "@tanstack/react-query": "^5.66.0",
         "js-confetti": "^0.12.0",
-        "normalize.css": "^8.0.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-hot-toast": "^2.5.1",
