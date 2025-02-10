@@ -14,9 +14,8 @@ import { DEV_LINKED_FOREIGN_ADDRS } from "../app/config";
 import { useAppContext } from "../app/context";
 import { BtnLinkInternal, BtnSubmit } from "../comp/buttons";
 import { Card, CardXDropDetails, XDropDetailAddrs, XDropDetailBalance } from "../comp/cards";
-import { useXDrop } from "../comp/hooks";
 import { XDropLoader } from "../comp/loader";
-import { useAdminPrivateKey } from "../lib/hooks";
+import { useXDrop , useAdminPrivateKey } from "../lib/hooks";
 import { clientWithKeypair, fmtBal, generateRandomEthereumAddress, generateRandomSolanaAddress, shortenForeignAddr } from "../lib/utils";
 
 type AdminActionFn = (tx: Transaction) => TransactionResult;

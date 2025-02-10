@@ -7,7 +7,7 @@ import { XDrop } from "@polymedia/xdrop-sdk";
 
 import { Card, CardMsg, CardSpinner } from "./cards";
 import { ConnectToGetStarted } from "./connect";
-import { UseXDropResult } from "./hooks";
+import { UseXDropResult } from "../lib/hooks";
 
 export const XDropLoader = ({
     fetch,

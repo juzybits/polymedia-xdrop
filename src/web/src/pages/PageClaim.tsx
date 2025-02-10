@@ -14,9 +14,9 @@ import { BtnLinkExternal, BtnSubmit } from "../comp/buttons";
 import { Card, CardMsg, CardSpinner } from "../comp/cards";
 import { ConnectToGetStarted } from "../comp/connect";
 import { CUSTOM_XDROPS, CustomXDropConfig } from "../comp/custom";
-import { useXDrop } from "../comp/hooks";
 import { XDropLoader } from "../comp/loader";
 import { showConfetti } from "../lib/confetti";
+import { useXDrop } from "../lib/hooks";
 import { fmtBal, foreignAddrUrl, shortenForeignAddr } from "../lib/utils";
 
 type OwnedLinks = {

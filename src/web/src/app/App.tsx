@@ -96,7 +96,6 @@ export type AppContextType = {
     coinMetaFetcher: CoinMetaFetcher;
 };
 
-
 const App = (args: {
     network: SupportedNetwork; setNetwork: Setter<SupportedNetwork>;
     rpc: string; setRpc: Setter<string>;
