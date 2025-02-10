@@ -2,10 +2,9 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CoinMetadata } from "@mysten/sui/client";
 import React from "react";
 
-import { UseFetchAndPaginateResult, UseFetchResult } from "@polymedia/suitcase-react";
+import { UseFetchAndPaginateResult, UseFetchResult, Card, CardMsg, CardSpinner } from "@polymedia/suitcase-react";
 import { XDrop } from "@polymedia/xdrop-sdk";
 
-import { Card, CardMsg, CardSpinner } from "./cards";
 import { ConnectToGetStarted } from "./connect";
 import { UseXDropResult } from "../lib/hooks";
 

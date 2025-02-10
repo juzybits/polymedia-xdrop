@@ -6,15 +6,15 @@ import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
 import { formatBalance, removeAddressLeadingZeros, shortenAddress, stringToBalance, TransferModule } from "@polymedia/suitcase-core";
-import { BtnLinkInternal, BtnSubmit, isLocalhost, useTextArea } from "@polymedia/suitcase-react";
+import { BtnLinkInternal, BtnSubmit, isLocalhost, useTextArea, Card } from "@polymedia/suitcase-react";
 import { calculateFee, FEE, LinkNetwork, MAX_OBJECTS_PER_TX, validateAndNormalizeNetworkAddr, XDrop, XDropModule } from "@polymedia/xdrop-sdk";
 
 import { PageNotFound } from "./PageNotFound";
 import { DEV_LINKED_FOREIGN_ADDRS } from "../app/config";
 import { useAppContext } from "../app/context";
-import { Card, CardXDropDetails, XDropDetailAddrs, XDropDetailBalance } from "../comp/cards";
+import { CardXDropDetails, XDropDetailAddrs, XDropDetailBalance } from "../comp/cards";
 import { XDropLoader } from "../comp/loader";
-import { useXDrop , useAdminPrivateKey } from "../lib/hooks";
+import { useXDrop, useAdminPrivateKey } from "../lib/hooks";
 import { clientWithKeypair, fmtBal, generateRandomEthereumAddress, generateRandomSolanaAddress, shortenForeignAddr } from "../lib/utils";
 
 type AdminActionFn = (tx: Transaction) => TransactionResult;

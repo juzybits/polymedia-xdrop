@@ -5,12 +5,11 @@ import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
 import { shortenAddress } from "@polymedia/suitcase-core";
-import { BtnLinkExternal, BtnSubmit, LinkExternal, useFetch, UseFetchResult } from "@polymedia/suitcase-react";
+import { BtnLinkExternal, BtnSubmit, LinkExternal, useFetch, UseFetchResult, Card, CardMsg, CardSpinner } from "@polymedia/suitcase-react";
 import { LinkWithStatus, SuiLink, XDrop } from "@polymedia/xdrop-sdk";
 
 import { PageNotFound } from "./PageNotFound";
 import { useAppContext } from "../app/context";
-import { Card, CardMsg, CardSpinner } from "../comp/cards";
 import { ConnectToGetStarted } from "../comp/connect";
 import { CUSTOM_XDROPS, CustomXDropConfig } from "../comp/custom";
 import { XDropLoader } from "../comp/loader";

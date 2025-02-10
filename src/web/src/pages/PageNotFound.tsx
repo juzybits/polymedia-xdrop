@@ -1,5 +1,6 @@
+import { Card } from "@polymedia/suitcase-react";
+
 import { useAppContext } from "../app/context";
-import { Card } from "../comp/cards";
 
 export const PageNotFound = () =>
 {

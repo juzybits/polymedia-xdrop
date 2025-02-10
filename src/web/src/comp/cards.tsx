@@ -7,46 +7,6 @@ import { LinkNetwork, XDrop, XDropIdentifier, XDropStatus } from "@polymedia/xdr
 
 import { useAppContext } from "../app/context";
 
-export const Card = ({ className, children }: {
-    className?: string;
-    children: React.ReactNode;
-}) => {
-    return <div className={`card compact ${className ?? ""}`}>
-        {children}
-    </div>;
-};
-
-export const CardSpinner = ({ className = "compact" }: {
-    className?: string;
-}) => {
-    return <div className={`card ${className}`}>
-        <FullCardMsg>
-            <div className="card-spinner" />
-        </FullCardMsg>
-    </div>;
-};
-
-export const CardMsg = ({ className = "compact", children }: {
-    className?: string;
-    children: React.ReactNode;
-}) => {
-    return <div className={`card break-any ${className}`}>
-        <FullCardMsg>
-            {children}
-        </FullCardMsg>
-    </div>;
-};
-
-const FullCardMsg = ({ children }: {
-    children: React.ReactNode;
-}) => {
-    return <div className="full-card-message">
-        <div className="msg">
-            {children}
-        </div>
-    </div>;
-};
-
 export const CardXDropDetails = ({ xdrop, title, extraDetails, button, statusClass }: {
     xdrop: XDropIdentifier & { status: XDropStatus; network_name: LinkNetwork };
     title?: React.ReactNode;
