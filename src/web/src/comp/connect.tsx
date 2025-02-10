@@ -1,49 +1,39 @@
-import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
+import { ReactNode } from "react";
 
-import { BtnSubmit } from "@polymedia/suitcase-react";
+import { BtnConnect as BtnConnectPoly, ConnectToGetStarted as ConnectToGetStartedPoly, ConnectOr as ConnectOrPoly } from "@polymedia/suitcase-react";
 
 import { useAppContext } from "../app/context";
 
-export const BtnConnect = () =>
-{
-    // === state ===
-
-    const currAcct = useCurrentAccount();
-    const { mutate: disconnect } = useDisconnectWallet();
-
-    const { isWorking, openConnectModal } = useAppContext();
-
-    const connectWallet = () => {
-        currAcct ? disconnect() : openConnectModal();
-    };
-
-    return (
-        <BtnSubmit disabled={isWorking} onClick={() => Promise.resolve(connectWallet())}>
-            CONNECT
-        </BtnSubmit>
-    );
-};
-
-export const ConnectToGetStarted = ({
-    msg,
-}: {
+export const BtnConnect = ({ msg }: {
     msg?: string;
 }) =>
 {
-    return <>
-        {msg && <div className="card-desc">{msg}</div>}
-        <BtnConnect />
-    </>;
+    const { isWorking, openConnectModal } = useAppContext();
+    return <BtnConnectPoly
+        btnMsg={msg}
+        isWorking={isWorking}
+        openConnectModal={openConnectModal}
+    />;
 };
 
-export const ConnectOr = ({
-    children
-}: {
-    children: React.ReactNode;
+export const ConnectToGetStarted = ({ msg }: {
+    msg?: string;
 }) =>
 {
-    const currAcct = useCurrentAccount();
-    return <>
-        {!currAcct ? <ConnectToGetStarted /> : children}
-    </>;
+    const { isWorking, openConnectModal } = useAppContext();
+    return <ConnectToGetStartedPoly
+        connectMsg={msg}
+        isWorking={isWorking}
+        openConnectModal={openConnectModal}
+    />;
+};
+
+export const ConnectOr = ({ children }: {
+    children: ReactNode;
+}) =>
+{
+    const { isWorking, openConnectModal } = useAppContext();
+    return <ConnectOrPoly isWorking={isWorking} openConnectModal={openConnectModal}>
+        {children}
+    </ConnectOrPoly>;
 };
