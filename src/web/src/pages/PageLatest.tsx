@@ -1,11 +1,10 @@
 import { useRef } from "react";
 
-import { BtnPrevNext, useFetchAndPaginate, CardSpinner, CardDetail } from "@polymedia/suitcase-react";
+import { BtnPrevNext, useFetchAndPaginate, CardSpinner, CardDetail, LoaderPaginated } from "@polymedia/suitcase-react";
 
 import { RPC_RESULTS_PER_PAGE } from "../app/config";
 import { useAppContext } from "../app/context";
 import { CardXDropDetails, XDropDetailAddrs } from "../comp/cards";
-import { LoaderPaginated } from "../comp/loader";
 
 export const PageLatest = () =>
 {
