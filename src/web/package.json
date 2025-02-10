@@ -25,8 +25,8 @@
     "dependencies": {
         "@mysten/dapp-kit": "^0.14.50",
         "@mysten/sui": "^1.21.2",
-        "@polymedia/suitcase-core": "^0.0.45",
-        "@polymedia/suitcase-react": "^0.0.45",
+        "@polymedia/suitcase-core": "^0.0.46",
+        "@polymedia/suitcase-react": "^0.0.46",
         "@polymedia/xdrop-sdk": "workspace:*",
         "@tanstack/react-query": "^5.66.0",
         "js-confetti": "^0.12.0",
