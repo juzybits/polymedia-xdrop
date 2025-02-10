@@ -2,7 +2,7 @@ import { CoinMetadata } from "@mysten/sui/client";
 import React from "react";
 
 import { formatBalance } from "@polymedia/suitcase-core";
-import { CardDetail, LinkToExplorer } from "@polymedia/suitcase-react";
+import { Card, CardDetail, LinkToExplorer } from "@polymedia/suitcase-react";
 import { LinkNetwork, XDrop, XDropIdentifier, XDropStatus } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "../app/context";
@@ -17,7 +17,7 @@ export const CardXDropDetails = ({ xdrop, title, extraDetails, button, statusCla
     // return null;
     const { explorer, network } = useAppContext();
     return (
-        <div className="card compact">
+        <Card>
             {title && <div className="card-title">{title}</div>}
             <div className="card-details">
                 <CardDetail label="Status:" val={<XDropStatusLabel status={xdrop.status} />} className={statusClass} />
@@ -27,7 +27,7 @@ export const CardXDropDetails = ({ xdrop, title, extraDetails, button, statusCla
                 {extraDetails}
             </div>
             {button}
-        </div>
+        </Card>
     );
 };
 

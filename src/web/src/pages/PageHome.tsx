@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
 
-import { LinkExternal, Card } from "@polymedia/suitcase-react";
+import { LinkExternal, Card, HeroBanner } from "@polymedia/suitcase-react";
 
 import { useAppContext } from "../app/context";
-import { HeroBanner } from "../comp/hero";
 
 export const PageHome = () =>
 {

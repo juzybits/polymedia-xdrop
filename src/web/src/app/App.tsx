@@ -7,12 +7,11 @@ import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 
 import { CoinMetaFetcher } from "@polymedia/suitcase-core";
-import { ExplorerName, IconGears, IconHistory, IconNew, Modal, Setter, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
+import { ExplorerName, Glitch, IconGears, IconHistory, IconNew, Modal, Setter, loadExplorer, loadNetwork } from "@polymedia/suitcase-react";
 import { XDropClient, getNetworkConfig } from "@polymedia/xdrop-sdk";
 
 import { getGraphqlUrl, loadNetworkConfig, SupportedNetwork, supportedNetworks, defaultNetwork } from "./config";
 import { AppContext, useAppContext } from "./context";
-import { Glitch } from "../comp/glitch";
 import { PageClaim } from "../pages/PageClaim";
 import { PageClean } from "../pages/PageClean";
 import { PageDevLink } from "../pages/PageDevLink";
