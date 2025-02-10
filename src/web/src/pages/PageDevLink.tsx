@@ -1,11 +1,11 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 
+import { BtnSubmit } from "@polymedia/suitcase-react";
 import { getNetworkConfig, LINK_NETWORKS } from "@polymedia/xdrop-sdk";
 
 import { DEV_LINKED_FOREIGN_ADDRS } from "../app/config";
 import { useAppContext } from "../app/context";
-import { BtnSubmit } from "../comp/buttons";
 import { Card } from "../comp/cards";
 import { BtnConnect } from "../comp/connect";
 

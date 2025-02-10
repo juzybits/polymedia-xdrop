@@ -1,11 +1,10 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useRef } from "react";
 
-import { BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
+import { BtnLinkInternal, BtnPrevNext, useFetchAndPaginate } from "@polymedia/suitcase-react";
 
 import { RPC_RESULTS_PER_PAGE } from "../app/config";
 import { useAppContext } from "../app/context";
-import { BtnLinkInternal } from "../comp/buttons";
 import { Card, CardSpinner, CardXDropDetails, XDropDetail } from "../comp/cards";
 import { ConnectToGetStarted } from "../comp/connect";
 import { LoaderPaginated } from "../comp/loader";

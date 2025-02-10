@@ -2,12 +2,11 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useRef } from "react";
 import toast from "react-hot-toast";
 
-import { BtnPrevNext, useFetch, useFetchAndPaginate } from "@polymedia/suitcase-react";
+import { BtnPrevNext, BtnSubmit, useFetch, useFetchAndPaginate } from "@polymedia/suitcase-react";
 import { CLEANER_ADDR, MAX_OBJECTS_PER_TX, XDrop } from "@polymedia/xdrop-sdk";
 
 import { RPC_RESULTS_PER_PAGE } from "../app/config";
 import { useAppContext } from "../app/context";
-import { BtnSubmit } from "../comp/buttons";
 import { Card, CardMsg, CardSpinner, CardXDropDetails, XDropDetail } from "../comp/cards";
 import { BtnConnect } from "../comp/connect";
 import { useAdminPrivateKey } from "../lib/hooks";

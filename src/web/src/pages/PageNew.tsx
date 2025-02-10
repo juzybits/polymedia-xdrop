@@ -3,11 +3,10 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 import { REGEX_TYPE_BASIC, shortenAddress } from "@polymedia/suitcase-core";
-import { IconGears, IconInfo, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
+import { BtnSubmit, IconGears, IconInfo, isLocalhost, useDropdown, useInputString } from "@polymedia/suitcase-react";
 import { LINK_NETWORKS, LinkNetwork } from "@polymedia/xdrop-sdk";
 
 import { useAppContext } from "../app/context";
-import { BtnSubmit } from "../comp/buttons";
 import { Card } from "../comp/cards";
 import { ConnectOr } from "../comp/connect";
 

@@ -1,6 +1,7 @@
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 
-import { BtnSubmit } from "./buttons";
+import { BtnSubmit } from "@polymedia/suitcase-react";
+
 import { useAppContext } from "../app/context";
 
 export const BtnConnect = () =>
