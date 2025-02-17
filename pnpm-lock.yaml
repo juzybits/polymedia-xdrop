@@ -46,11 +46,7 @@ importers:
         version: 1.21.2(typescript@5.7.3)
       '@polymedia/suitcase-core':
         specifier: ^0.0.46
-        version: link:../../../polymedia-suitcase/src/core
-    devDependencies:
-      typescript:
-        specifier: ^5.7.3
-        version: 5.7.3
+        version: 0.0.46(@mysten/sui@1.21.2(typescript@5.7.3))
 
   src/web:
     dependencies:
@@ -62,10 +58,10 @@ importers:
         version: 1.21.2(typescript@5.7.3)
       '@polymedia/suitcase-core':
         specifier: ^0.0.46
-        version: link:../../../polymedia-suitcase/src/core
+        version: 0.0.46(@mysten/sui@1.21.2(typescript@5.7.3))
       '@polymedia/suitcase-react':
         specifier: ^0.0.46
-        version: link:../../../polymedia-suitcase/src/react
+        version: 0.0.46(@mysten/dapp-kit@0.14.50(@tanstack/react-query@5.66.0(react@18.3.1))(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.3))(@mysten/sui@1.21.2(typescript@5.7.3))(react-router-dom@7.1.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@polymedia/xdrop-sdk':
         specifier: workspace:*
         version: link:../sdk
@@ -100,9 +96,6 @@ importers:
       less:
         specifier: ^4.2.2
         version: 4.2.2
-      typescript:
-        specifier: ^5.7.3
-        version: 5.7.3
       vite:
         specifier: ^6.1.0
         version: 6.1.0(less@4.2.2)
@@ -622,6 +615,19 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@polymedia/suitcase-core@0.0.46':
+    resolution: {integrity: sha512-blZ9gsn1KcDRwKYT4DlzTkW11PGtGqX8ruyw+WKzW6TYc2KAPBtlVnJToEeKTJ1N4H7zgKUkA/9M/l7HXP/BQw==}
+    peerDependencies:
+      '@mysten/sui': ^1.21.2
+
+  '@polymedia/suitcase-react@0.0.46':
+    resolution: {integrity: sha512-weCCIRqohGHiEPxGnu1yqYA2Bql6IGKqDtL6SGrHbtyMMVM8PtIHlM7uejx8PeH+0K5T2XSD9R+IwDL4IWPlKg==}
+    peerDependencies:
+      '@mysten/dapp-kit': ^0.14.50
+      '@mysten/sui': ^1.21.2
+      react: ^18.0.0
+      react-router-dom: ^7.0.0
 
   '@radix-ui/primitive@1.1.1':
     resolution: {integrity: sha512-SJ31y+Q/zAyShtXJc8x83i9TYdbAfHZ++tUZnvjJJqFjzsdUnKsxPL6IEtBlxKkU7yzer//GQtZSV4GbldL3YA==}
@@ -2007,6 +2013,9 @@ packages:
     engines: {node: '>= 4.4.x'}
     hasBin: true
 
+  normalize.css@8.0.1:
+    resolution: {integrity: sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==}
+
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
@@ -3008,6 +3017,19 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.0
+
+  '@polymedia/suitcase-core@0.0.46(@mysten/sui@1.21.2(typescript@5.7.3))':
+    dependencies:
+      '@mysten/sui': 1.21.2(typescript@5.7.3)
+
+  '@polymedia/suitcase-react@0.0.46(@mysten/dapp-kit@0.14.50(@tanstack/react-query@5.66.0(react@18.3.1))(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.3))(@mysten/sui@1.21.2(typescript@5.7.3))(react-router-dom@7.1.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@mysten/dapp-kit': 0.14.50(@tanstack/react-query@5.66.0(react@18.3.1))(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.3)
+      '@mysten/sui': 1.21.2(typescript@5.7.3)
+      '@polymedia/suitcase-core': 0.0.46(@mysten/sui@1.21.2(typescript@5.7.3))
+      normalize.css: 8.0.1
+      react: 18.3.1
+      react-router-dom: 7.1.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   '@radix-ui/primitive@1.1.1': {}
 
@@ -4555,6 +4577,8 @@ snapshots:
       iconv-lite: 0.6.3
       sax: 1.4.1
     optional: true
+
+  normalize.css@8.0.1: {}
 
   object-assign@4.1.1: {}
 
