@@ -46,7 +46,7 @@ export const PageManage = () =>
 
             const tx = new Transaction();
             submit(tx);
-            const resp = await xdropClient.signAndExecuteTx(tx);
+            const resp = await xdropClient.signAndExecuteTx({ tx });
 
             console.debug("[onSubmit] okay:", resp);
             toast.success("Success");

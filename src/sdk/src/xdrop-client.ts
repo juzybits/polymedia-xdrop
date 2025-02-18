@@ -161,13 +161,13 @@ export class XDropClient extends SuiClientBase
         xdropIds: string[],
     ): Promise<XDrop[]>
     {
-        return this.fetchAndParseObjs<XDrop>(
-            xdropIds,
-            (ids) => this.suiClient.multiGetObjects({
+        return this.fetchAndParseObjs<XDrop>({
+            objIds: xdropIds,
+            fetchFn: (ids) => this.suiClient.multiGetObjects({
                 ids, options: { showContent: true }
             }),
-            objResToXDrop,
-        );
+            parseFn: objResToXDrop,
+        });
     }
 
     public async fetchXDropsByEvent(
@@ -292,7 +292,7 @@ export class XDropClient extends SuiClientBase
             tx, this.xdropPkgId, typeCoin, networkType, xdropArg
         );
 
-        const resp = await this.signAndExecuteTx(tx);
+        const resp = await this.signAndExecuteTx({ tx });
 
         const xdropObjChange = extractXDropObjCreated(resp, this.xdropPkgId);
         if (!xdropObjChange) {
@@ -345,7 +345,7 @@ export class XDropClient extends SuiClientBase
                     fnClaims.map(c => c.amount),
                 );
             }
-            const resp = await this.dryRunOrSignAndExecute(tx, dryRun, sender);
+            const resp = await this.signAndExecuteTx({ tx, dryRun, sender });
             resps.push(resp);
         }
         return resps;
@@ -376,7 +376,7 @@ export class XDropClient extends SuiClientBase
             );
         }
 
-        return await this.signAndExecuteTx(tx);
+        return await this.signAndExecuteTx({ tx });
     }
 
     public async cleanerDeletesClaims({
@@ -406,7 +406,7 @@ export class XDropClient extends SuiClientBase
                     fnAddrs,
                 );
             }
-            const resp = await this.signAndExecuteTx(tx);
+            const resp = await this.signAndExecuteTx({ tx });
             resps.push(resp);
         }
         return resps;
