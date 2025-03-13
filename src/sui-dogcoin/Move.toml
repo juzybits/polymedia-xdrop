@@ -5,8 +5,8 @@ edition = "2024.beta"
 license = "Apache-2.0"
 
 [dependencies]
-# Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
-Sui = { local = "../../../sui/crates/sui-framework/packages/sui-framework" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
+# Sui = { local = "../../../../sui/crates/sui-framework/packages/sui-framework" }
 
 [addresses]
 dogcoin = "0x0"

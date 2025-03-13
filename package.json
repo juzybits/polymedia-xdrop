@@ -1,7 +1,7 @@
 {
     "private": true,
     "version": "0.0.0",
-    "name": "@polymedia/xdrop",
+    "name": "@polymedia/xdrop-monorepo",
     "author": "@juzybits (https://polymedia.app)",
     "homepage": "https://xdrop.polymedia.app",
     "description": "Cross-chain airdrop system on Sui",
