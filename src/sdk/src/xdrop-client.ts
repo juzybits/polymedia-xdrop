@@ -1,5 +1,5 @@
 import { bcs } from "@mysten/sui/bcs";
-import { SuiClient, SuiTransactionBlockResponse, SuiTransactionBlockResponseOptions } from "@mysten/sui/client";
+import { EventId, SuiClient, SuiTransactionBlockResponse, SuiTransactionBlockResponseOptions } from "@mysten/sui/client";
 import { SuiGraphQLClient } from "@mysten/sui/graphql";
 import { graphql } from "@mysten/sui/graphql/schemas/latest";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
@@ -170,7 +170,7 @@ export class XDropClient extends SuiClientBase
         });
     }
 
-    public async fetchXDropsByEvent(
+    public async fetchXDropsByEventGraphQL(
         eventType: XDropEventName,
         options: {
             sender?: string;
@@ -239,6 +239,47 @@ export class XDropClient extends SuiClientBase
         return {
             hasNextPage: data.events.pageInfo.hasPreviousPage,
             nextCursor: data.events.pageInfo.startCursor,
+            data: enhancedXDrops,
+        };
+    }
+
+    public async fetchXDropsByEventJsonRPC(
+        eventType: XDropEventName,
+        options: {
+            cursor?: EventId | null | undefined;
+            limit?: number | null | undefined;
+            order?: 'ascending' | 'descending' | null | undefined;
+        }
+    ) {
+        const result = await this.suiClient.queryEvents({
+            query: {
+                MoveEventType: `${this.xdropPkgId}::xdrop::${eventType}`,
+            },
+            ...options,
+        });
+
+        const events = result.data
+            .map(event => ({
+                digest: event.id.txDigest,
+                timestamp: new Date(Number(event.timestampMs)),
+                ...event.parsedJson as XDropIdentifier,
+            }))
+            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
+        const xdrops = await this.fetchXDrops(events.map(evt => evt.id));
+
+        const enhancedXDrops = xdrops.map(xdrop => {
+            const event = events.find(e => e.id === xdrop.id);
+            return {
+                ...xdrop,
+                digest: event!.digest,
+                timestamp: event!.timestamp,
+            };
+        });
+
+        return {
+            hasNextPage: result.hasNextPage,
+            nextCursor: result.nextCursor,
             data: enhancedXDrops,
         };
     }

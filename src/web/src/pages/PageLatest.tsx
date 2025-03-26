@@ -27,7 +27,7 @@ const ListLatestXDrops = () =>
     const listRef = useRef<HTMLDivElement>(null);
 
     const fetchXDrops = useFetchAndPaginate(
-        async (cursor) => await xdropClient.fetchXDropsByEvent("EventShare", {
+        async (cursor) => await xdropClient.fetchXDropsByEventJsonRPC("EventShare", {
             cursor: cursor as any, // eslint-disable-line
             limit: RPC_RESULTS_PER_PAGE,
         }),

@@ -37,7 +37,7 @@ const ListCreatedXDrops = ({ currAddr }: {
     const listRef = useRef<HTMLDivElement>(null);
 
     const fetchXDrops = useFetchAndPaginate(
-        async (cursor) => await xdropClient.fetchXDropsByEvent("EventShare", {
+        async (cursor) => await xdropClient.fetchXDropsByEventGraphQL("EventShare", {
             sender: currAddr,
             cursor: cursor as any, // eslint-disable-line
             limit: RPC_RESULTS_PER_PAGE,

@@ -53,7 +53,7 @@ const ListEndedXDrops = () =>
     const cleanerCapId = fetchCap.data;
 
     const fetchXDrops = useFetchAndPaginate(
-        async (cursor) => await xdropClient.fetchXDropsByEvent("EventEnd", {
+        async (cursor) => await xdropClient.fetchXDropsByEventJsonRPC("EventEnd", {
             cursor: cursor as any, // eslint-disable-line
             limit: RPC_RESULTS_PER_PAGE,
         }),
