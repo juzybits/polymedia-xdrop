@@ -23,25 +23,25 @@
         "typecheck": "tsc -b"
     },
     "dependencies": {
-        "@mysten/dapp-kit": "^0.14.50",
-        "@mysten/sui": "^1.21.2",
-        "@polymedia/suitcase-core": "^0.0.47",
-        "@polymedia/suitcase-react": "^0.0.47",
+        "@mysten/dapp-kit": "^0.15.2",
+        "@mysten/sui": "^1.26.1",
+        "@polymedia/suitcase-core": "^0.0.49",
+        "@polymedia/suitcase-react": "^0.0.49",
         "@polymedia/xdrop-sdk": "workspace:*",
-        "@tanstack/react-query": "^5.66.5",
+        "@tanstack/react-query": "^5.71.10",
         "js-confetti": "^0.12.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-hot-toast": "^2.5.2",
-        "react-router-dom": "^7.1.5"
+        "react-router-dom": "^7.4.1"
     },
     "devDependencies": {
-        "@types/react": "^18.3.18",
-        "@types/react-dom": "^18.3.5",
-        "@vitejs/plugin-react-swc": "^3.8.0",
+        "@types/react": "^18.3.20",
+        "@types/react-dom": "^18.3.6",
+        "@vitejs/plugin-react-swc": "^3.8.1",
         "less": "^4.2.2",
-        "vite": "^6.1.0",
-        "wrangler": "^3.109.1"
+        "vite": "^6.2.5",
+        "wrangler": "^4.7.1"
     },
     "type": "module",
     "sideEffects": false

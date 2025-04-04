@@ -8,7 +8,7 @@ set -o xtrace       # Print each command to the terminal before execution
 SCRIPT_DIR="$( dirname "$(readlink -f "${BASH_SOURCE[0]}")" )"
 PATH_PROJECT="$( cd "$SCRIPT_DIR/../.." && pwd )"
 
-PATH_SUITCASE="$PATH_PROJECT/../polymedia-suitcase"
+PATH_SUITCASE="$PATH_PROJECT/../suitcase"
 
 cd $PATH_SUITCASE
 pnpm build
