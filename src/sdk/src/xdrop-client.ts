@@ -162,7 +162,7 @@ export class XDropClient extends SuiClientBase
     ): Promise<XDrop[]>
     {
         return this.fetchAndParseObjs<XDrop>({
-            objIds: xdropIds,
+            ids: xdropIds,
             fetchFn: (ids) => this.suiClient.multiGetObjects({
                 ids, options: { showContent: true }
             }),
