@@ -20,15 +20,15 @@
     },
     "devDependencies": {
         "@eslint/compat": "^1.2.8",
-        "@eslint/js": "^9.23.0",
+        "@eslint/js": "^9.25.1",
         "@stylistic/eslint-plugin": "^4.2.0",
-        "eslint": "^9.23.0",
+        "eslint": "^9.25.1",
         "eslint-plugin-import": "^2.31.0",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-unused-imports": "^4.1.4",
         "turbo": "^2.5.0",
-        "typescript": "^5.8.2",
-        "typescript-eslint": "^8.29.0"
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.31.0"
     },
     "engines": {
         "node": ">=18"
