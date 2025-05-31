@@ -103,7 +103,7 @@ export const PageNew = () =>
             <Card>
                 <div className="card-title"><IconInfo />Help</div>
                 <div className="card-desc">
-                    <p>This creates an empty xDrop object on Sui. You can add eligible claims to it later.</p>
+                    <p>This creates an empty xDrop on Sui. You can add eligible claims to it later.</p>
                     <p><b><i>Network</i></b> is the blockchain where users are coming from.</p>
                     <p><b><i>Coin type</i></b> is the kind of Sui coin you want to distribute.</p>
                 </div>

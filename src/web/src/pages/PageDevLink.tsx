@@ -2,7 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 
 import { BtnSubmit, Card } from "@polymedia/suitcase-react";
-import { getNetworkConfig, LINK_NETWORKS } from "@polymedia/xdrop-sdk";
+import { getNetworkConfig, LINK_NETWORKS, validateAndNormalizeNetworkAddr } from "@polymedia/xdrop-sdk";
 
 import { DEV_LINKED_FOREIGN_ADDRS } from "../app/config";
 import { useAppContext } from "../app/context";
@@ -29,9 +29,7 @@ export const PageDevLink = () =>
             const tx = new Transaction();
             for (const network of LINK_NETWORKS) {
                 for (let foreignAddr of DEV_LINKED_FOREIGN_ADDRS[network]) {
-                    if (network === "Ethereum") {
-                        foreignAddr = foreignAddr.toLowerCase();
-                    }
+                    foreignAddr = validateAndNormalizeNetworkAddr(network, foreignAddr);
                     tx.moveCall({
                         package: netCnf.suilinkPkgId,
                         module: network.toLowerCase(),
