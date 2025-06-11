@@ -123,6 +123,8 @@ function devCoinTypeOrEmpty()
         return "0xf64a704b8fa0380f6bca10af0c9e5a5d478bbfc50b2a97898a7f1315289c7b54::dogcoin::DOGCOIN";
     if (network === "devnet")
         return "0x485f0ba856d2a966f7da5c9467807ebbc6ad1adb1672e22d20c27d5fa98bd15f::dogcoin::DOGCOIN";
+    if (network === "localnet")
+        return "0x940e72b16dfc2c6f82af0b3b1d74efdfa5a3966a9df3d65f98b1cde3c8418cd0::dogcoin::DOGCOIN";
 
     return "";
 }
