@@ -164,7 +164,7 @@ const App = (args: {
             <Outlet /> {/* Loads a Page*.tsx */}
 
             <ConnectModal
-                trigger={<></>}
+                trigger={<button style={{ display: "none" }} />}
                 open={showConnectModal}
                 onOpenChange={isOpen => { setShowConnectModal(isOpen); }}
             />
