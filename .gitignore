@@ -2,14 +2,16 @@
 
 # JavaScript
 .env.development.local
-.turbo
-.wrangler
 *.tsbuildinfo
-dist
-node_modules
+.turbo/
+.wrangler/
+dist/
+node_modules/
 
 # Sui
 .coverage_map.mvcov
 .trace
-build
-traces
+sui-prover.log.*
+build/
+package_summaries/
+traces/

@@ -20,7 +20,7 @@
         "host": "vite --host",
         "lint": "eslint src/ --report-unused-disable-directives --max-warnings 0",
         "preview": "pnpm build && vite preview",
-        "typecheck": "tsc -b"
+        "typecheck": "tsc -b --noEmit"
     },
     "dependencies": {
         "@mysten/dapp-kit": "^0.17.2",
